@@ -248,6 +248,12 @@ const formConfig = {
             addButtonText: '新增跟進計劃',
             itemFields: [
                 {
+                    id: 'discussionDate',
+                    label: '討論日期',
+                    type: 'date',
+                    required: true
+                },
+                {
                     id: 'followupPlan',
                     label: '跟進計劃',
                     type: 'textarea',
