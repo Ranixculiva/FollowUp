@@ -15,10 +15,11 @@
 </head>
 <body>
     <div class="container">
-        <input type="search" class="search-bar" placeholder="搜尋客戶...">
-        <div class="customer-list" id="customerList">
-            <!-- Customer cards will be inserted here -->
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="搜尋客戶...">
+            <button class="report-button" onclick="showReportDialog()">列印報表</button>
         </div>
+        <div id="customerList" class="customer-list"></div>
     </div>
 
     <div id="customerDetail" class="detail-view">
@@ -51,6 +52,18 @@
         <a href="#" class="nav-item" onclick="showAddCustomer()">新增客戶</a>
         <a href="#" class="nav-item" onclick="showFollowUps()">跟進計劃</a>
     </nav>
+
+    <!-- Report Dialog -->
+    <div id="reportDialog" class="dialog">
+        <div class="dialog-content">
+            <h2>選擇要列印的客戶</h2>
+            <div class="report-customer-list" id="reportCustomerList"></div>
+            <div class="dialog-buttons">
+                <button onclick="generateReport()">列印選擇的客戶</button>
+                <button onclick="closeReportDialog()">取消</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Register service worker

@@ -549,3 +549,248 @@ function toggleStep2TabVisibility(show) {
         }
     }
 }
+
+// Show report dialog
+async function showReportDialog() {
+    const dialog = document.getElementById('reportDialog');
+    const customerList = document.getElementById('reportCustomerList');
+    customerList.innerHTML = '';
+
+    // Get all customers
+    const customers = await getAllCustomers();
+
+    // Create customer list for selection
+    customers.forEach(customer => {
+        const item = document.createElement('div');
+        item.className = 'report-customer-item';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = customer.id;
+        
+        const label = document.createElement('label');
+        label.textContent = `${customer.name || '未命名'} ${customer.age ? `(${customer.age}歲)` : ''}`;
+        
+        item.appendChild(checkbox);
+        item.appendChild(label);
+        customerList.appendChild(item);
+    });
+
+    dialog.style.display = 'block';
+}
+
+// Close report dialog
+function closeReportDialog() {
+    document.getElementById('reportDialog').style.display = 'none';
+}
+
+// Generate report for selected customers
+async function generateReport() {
+    const selectedCheckboxes = document.querySelectorAll('#reportCustomerList input[type="checkbox"]:checked');
+    const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+    if (selectedIds.length === 0) {
+        alert('請選擇至少一位客戶');
+        return;
+    }
+
+    try {
+        // Hide all main content
+        document.querySelector('.container').style.display = 'none';
+        document.querySelector('.detail-view').style.display = 'none';
+
+        // Create report container
+        const reportContent = document.createElement('div');
+        reportContent.id = 'reportContent';
+        reportContent.style.padding = '20px';
+        reportContent.style.background = 'white';
+
+        // Generate reports for each selected customer
+        for (const id of selectedIds) {
+            const customer = await getCustomer(id);
+            if (customer) {
+                const customerReport = createCustomerReport(customer);
+                reportContent.appendChild(customerReport);
+            }
+        }
+
+        // Add report to body
+        document.body.appendChild(reportContent);
+
+        // Close dialog and print
+        closeReportDialog();
+        window.print();
+
+        // Cleanup after printing
+        document.body.removeChild(reportContent);
+        document.querySelector('.container').style.display = '';
+        document.querySelector('.detail-view').style.display = '';
+    } catch (error) {
+        console.error('Error generating report:', error);
+        alert('生成報表時發生錯誤，請稍後再試');
+        
+        // Restore display in case of error
+        document.querySelector('.container').style.display = '';
+        document.querySelector('.detail-view').style.display = '';
+    }
+}
+
+// Create customer report section
+function createCustomerReport(customer) {
+    const report = document.createElement('div');
+    report.className = 'customer-report';
+    report.style.pageBreakAfter = 'always';
+    report.style.marginBottom = '30px';
+
+    // Customer name as title
+    const nameTitle = document.createElement('h2');
+    nameTitle.textContent = customer.name || '未命名客戶';
+    nameTitle.style.fontSize = '24px';
+    nameTitle.style.marginBottom = '20px';
+    nameTitle.style.borderBottom = '2px solid black';
+    report.appendChild(nameTitle);
+
+    // Basic Information
+    const basicSection = createReportSection('基本資料', {
+        '電話': customer.phone,
+        'Line': customer.line,
+        'FB': customer.fb,
+        'IG': customer.ig,
+        '居住地': customer.address,
+        '年齡': customer.age ? `${customer.age}歲` : '',
+        '性別': customer.gender,
+        '如何認識': customer.howMet
+    });
+    report.appendChild(basicSection);
+
+    // STEAM Assessment
+    if (customer.steamS || customer.steamT || customer.steamE || customer.steamA || customer.steamM) {
+        const steamSection = createReportSection('STEAM評估', {
+            'List Owner': customer.listOwner,
+            '加入日期': customer.joinDate,
+            'S (銷售服務經驗)': getSteamLabel('steamS', customer.steamS),
+            'T (指導教練經驗)': getSteamLabel('steamT', customer.steamT),
+            'E (創業家經驗)': getSteamLabel('steamE', customer.steamE),
+            'A (態度積極)': getSteamLabel('steamA', customer.steamA),
+            'M (收入目標)': getSteamLabel('steamM', customer.steamM),
+            '網路銷售經驗': getSteamLabel('onlineSales', customer.onlineSales),
+            '人脈關係': getSteamLabel('connections', customer.connections),
+            '總分': customer.totalScore
+        });
+        report.appendChild(steamSection);
+    }
+
+    // Step2 Information
+    if (customer.isStep2) {
+        const step2Section = createReportSection('Step 2 資料', {
+            '婚姻狀況': customer.maritalStatus,
+            '年收入': customer.annualIncome,
+            '金錢需求': customer.moneyNeeds,
+            '關係': customer.relationship,
+            '關係親疏': customer.relationshipCloseness,
+            '顏色評級': customer.colorRating,
+            '對產品興趣': customer.productInterest,
+            '興趣': customer.interests,
+            '健康狀況': customer.health,
+            '夢想': customer.dreams,
+            '最近邀約日期': customer.lastInviteDate,
+            '產品/事業展示日期': customer.lastPresentationDate,
+            '第一次跟進': customer.firstFollowUp,
+            '第二次跟進': customer.secondFollowUp,
+            '備注': customer.notes
+        });
+        report.appendChild(step2Section);
+    }
+
+    // FORMHD Assessment
+    const formhdSection = createReportSection('FORMHD評估', {
+        'F - 家庭狀況': customer.formF,
+        '另一半職業': customer.formFSpouse,
+        '子女數量/年齡': customer.formFChildren,
+        '就學/就業': customer.formFEducation,
+        '家中成員/寵物': customer.formFFamily,
+        'O - 職業': customer.formO,
+        '收入': customer.formOIncome,
+        '上班型態': customer.formOWorkType,
+        '時間': customer.formOTime,
+        'R - 休閒娛樂': customer.formR,
+        'M - 財務狀況': customer.formM,
+        'H - 健康狀況': customer.formH,
+        '運動狀況': customer.formHExercise,
+        'D - 對未來期待': customer.formD
+    });
+    report.appendChild(formhdSection);
+
+    // Customer Evaluation
+    const evaluationSection = createReportSection('客戶評估', {
+        '持有信用卡': customer.hasCard ? '是' : '否',
+        '加盟金': customer.joinFee,
+        '對美安認知': customer.maKnowledge,
+        '興趣/疑惑/異議': customer.questions,
+        '談過美安概念': customer.discussedMA ? '是' : '否',
+        '試用產品': customer.triedProduct ? '是' : '否',
+        '使用產品': customer.usingProduct ? '是' : '否'
+    });
+    report.appendChild(evaluationSection);
+
+    // Follow-up Plans
+    if (customer.followup && customer.followup.length > 0) {
+        const followupSection = createReportSection('跟進計劃', {});
+        
+        customer.followup.forEach((plan, index) => {
+            const planDiv = document.createElement('div');
+            planDiv.style.marginBottom = '15px';
+            planDiv.innerHTML = `
+                <strong>計劃 ${index + 1}</strong><br>
+                <span style="font-weight: bold;">討論日期:</span> ${plan.discussionDate || '無'}<br>
+                <span style="font-weight: bold;">計劃內容:</span> ${plan.followupPlan || '無'}<br>
+                <span style="font-weight: bold;">執行日期:</span> ${plan.followupDate || '無'}<br>
+                <span style="font-weight: bold;">反饋:</span> ${plan.followupFeedback || '無'}
+            `;
+            followupSection.appendChild(planDiv);
+        });
+
+        report.appendChild(followupSection);
+    }
+
+    return report;
+}
+
+// Create a section for the report
+function createReportSection(title, fields) {
+    const section = document.createElement('div');
+    section.className = 'report-section';
+    section.style.marginBottom = '20px';
+
+    const titleElement = document.createElement('h3');
+    titleElement.textContent = title;
+    titleElement.style.borderBottom = '1px solid black';
+    titleElement.style.paddingBottom = '5px';
+    titleElement.style.marginBottom = '10px';
+    section.appendChild(titleElement);
+
+    Object.entries(fields).forEach(([label, value]) => {
+        if (value) {
+            const field = document.createElement('div');
+            field.style.marginBottom = '8px';
+            field.innerHTML = `
+                <span style="font-weight: bold;">${label}:</span>
+                <span>${value}</span>
+            `;
+            section.appendChild(field);
+        }
+    });
+
+    return section;
+}
+
+// Get STEAM label based on value
+function getSteamLabel(field, value) {
+    if (!value) return '';
+    
+    const options = formConfig.sections.steam.fields.find(f => f.id === field)?.options;
+    if (!options) return value;
+
+    const option = options.find(opt => opt.value === value.toString());
+    return option ? option.label : value;
+}
