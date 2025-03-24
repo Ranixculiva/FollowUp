@@ -24,19 +24,19 @@ async function initializeUI() {
         filterButton.onclick = toggleStep2Filter;
         document.querySelector('.container').insertBefore(filterButton, document.querySelector('.customer-list'));
         
-        // Set up search handler
-        const searchBar = document.querySelector('.search-bar');
+    // Set up search handler
+    const searchBar = document.querySelector('.search-bar');
         if (searchBar) {
-            searchBar.addEventListener('input', debounce(handleSearch, 300));
+    searchBar.addEventListener('input', debounce(handleSearch, 300));
         } else {
             console.warn('Search bar element not found. Search functionality will be disabled.');
         }
 
         // Set up form change tracking and STEAM score calculation
-        const formInputs = document.querySelectorAll('input, select, textarea');
-        formInputs.forEach(input => {
-            input.addEventListener('change', () => {
-                hasUnsavedChanges = true;
+    const formInputs = document.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            hasUnsavedChanges = true;
                 if (input.id.startsWith('steam') || input.id === 'onlineSales' || input.id === 'connections') {
                     calculateSteamScore();
                 }
@@ -70,8 +70,8 @@ async function initializeUI() {
             console.warn('Customer form not found. Form submission will be disabled.');
         }
 
-        // Load initial customer list
-        await refreshCustomerList();
+    // Load initial customer list
+    await refreshCustomerList();
     } catch (error) {
         console.error('Error initializing application:', error);
         alert('初始化失敗，請重新整理頁面');
@@ -357,7 +357,20 @@ function showTab(tabName) {
     document.querySelectorAll('.form-tab').forEach(tab => {
         tab.classList.remove('active');
     });
-    document.querySelector(`.form-tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+    const selectedTab = document.querySelector(`.form-tab[onclick="showTab('${tabName}')"]`);
+    selectedTab.classList.add('active');
+
+    // Scroll the selected tab to center
+    const tabsContainer = document.querySelector('.form-tabs');
+    const tabsContainerWidth = tabsContainer.offsetWidth;
+    const tabOffsetLeft = selectedTab.offsetLeft;
+    const tabWidth = selectedTab.offsetWidth;
+    const scrollLeft = tabOffsetLeft - (tabsContainerWidth / 2) + (tabWidth / 2);
+    
+    tabsContainer.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+    });
 }
 
 // Load customer data into form
