@@ -2,8 +2,14 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4a90e2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="離線客戶管理與跟進系統">
     <title>客戶管理系統</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/customer.css">
 </head>
@@ -23,18 +29,29 @@
         </div>
 
         <div id="basicSection" class="form-section active">
-            <div class="form-group">
-                <label class="form-label">姓名</label>
-                <input type="text" class="form-input" id="name">
+            <div class="profile-grid">
+                <div class="form-group">
+                    <label class="form-label">姓名</label>
+                    <input type="text" class="form-input" id="name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">電話/Line/FB</label>
+                    <input type="text" class="form-input" id="contact">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">居住地</label>
+                    <input type="text" class="form-input" id="address">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">年齡/性別</label>
+                    <input type="text" class="form-input" id="ageGender">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">如何認識對方</label>
+                    <input type="text" class="form-input" id="howMet">
+                </div>
             </div>
-            <div class="form-group">
-                <label class="form-label">電話/Line/FB</label>
-                <input type="text" class="form-input" id="contact">
-            </div>
-            <div class="form-group">
-                <label class="form-label">居住地</label>
-                <input type="text" class="form-input" id="address">
-            </div>
+
             <div class="form-group">
                 <label class="form-label">家庭狀況</label>
                 <input type="text" class="form-input" id="familyStatus">
@@ -43,12 +60,51 @@
                 <label class="form-label">子女數量/年齡</label>
                 <input type="text" class="form-input" id="children">
             </div>
+            <div class="form-group">
+                <label class="form-label">職業/收入/上班型態/時間</label>
+                <input type="text" class="form-input" id="occupation">
+            </div>
+            <div class="form-group">
+                <label class="form-label">休閒娛樂</label>
+                <input type="text" class="form-input" id="leisure">
+            </div>
+            <div class="form-group">
+                <label class="form-label">財務狀況</label>
+                <input type="text" class="form-input" id="financialStatus">
+            </div>
+            <div class="form-group">
+                <label class="form-label">健康狀況</label>
+                <input type="text" class="form-input" id="healthStatus">
+            </div>
+            <div class="form-group">
+                <label class="form-label">對未來的期待</label>
+                <input type="text" class="form-input" id="futureExpectations">
+            </div>
         </div>
 
         <div id="formSection" class="form-section">
+            <div class="form-score">
+                <div class="score-item">
+                    <div class="score-label">F</div>
+                    <div class="score-value" id="formFScore">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">O</div>
+                    <div class="score-value" id="formOScore">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">R</div>
+                    <div class="score-value" id="formRScore">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">M</div>
+                    <div class="score-value" id="formMScore">0</div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label class="form-label">F (家庭狀況)</label>
-                <select class="form-input" id="formF">
+                <select class="form-input" id="formF" onchange="updateScore()">
                     <option value="0">沒有</option>
                     <option value="3">接觸過</option>
                     <option value="5">專業</option>
@@ -56,15 +112,15 @@
             </div>
             <div class="form-group">
                 <label class="form-label">O (職業收入)</label>
-                <select class="form-input" id="formO">
-                    <option value="0">沒有</option>
-                    <option value="3">接觸過</option>
+                <select class="form-input" id="formO" onchange="updateScore()">
+                    <option value="0">暫無收入需求</option>
+                    <option value="3">收入不穩定或不滿意</option>
                     <option value="5">專業</option>
                 </select>
             </div>
             <div class="form-group">
                 <label class="form-label">R (人際關係)</label>
-                <select class="form-input" id="formR">
+                <select class="form-input" id="formR" onchange="updateScore()">
                     <option value="0">沒有</option>
                     <option value="3">接觸過</option>
                     <option value="5">專業</option>
@@ -72,11 +128,32 @@
             </div>
             <div class="form-group">
                 <label class="form-label">M (管理能力)</label>
-                <select class="form-input" id="formM">
+                <select class="form-input" id="formM" onchange="updateScore()">
                     <option value="0">沒有</option>
                     <option value="3">接觸過</option>
                     <option value="5">專業</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">需求分析</label>
+                <div class="profile-grid">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="needWeightLoss"> 減脂減重
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="needSkincare"> 保養彩妝
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="needHealth"> 健康網站
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="needIncome"> 增加收入
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="needPassiveIncome"> 永續收入
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -88,6 +165,10 @@
             <div class="form-group">
                 <label class="form-label">執行日期</label>
                 <input type="date" class="form-input" id="followupDate">
+            </div>
+            <div class="form-group">
+                <label class="form-label">反饋</label>
+                <textarea class="form-input" id="followupFeedback" rows="3"></textarea>
             </div>
             <div class="timeline" id="followupTimeline">
                 <!-- Timeline items will be inserted here -->
@@ -103,6 +184,20 @@
         <a href="#" class="nav-item" onclick="showFollowUps()">跟進計劃</a>
     </nav>
 
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
     <script src="js/db.js"></script>
     <script src="js/customer.js"></script>
     <script src="js/ui.js"></script>
