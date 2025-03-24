@@ -478,3 +478,23 @@ async function loadCustomers() {
 function handleAddCustomer() {
     document.getElementById('customerForm').reset();
 }
+
+// Delete customer
+async function handleDeleteCustomer() {
+    if (!currentCustomerId) {
+        alert('無法刪除：找不到客戶');
+        return;
+    }
+
+    if (!confirm('確定要刪除此客戶嗎？此操作無法復原。')) {
+        return;
+    }
+
+    try {
+        await deleteCustomer(currentCustomerId);
+        showCustomers();
+    } catch (error) {
+        console.error('Error deleting customer:', error);
+        alert('刪除失敗，請稍後再試');
+    }
+}

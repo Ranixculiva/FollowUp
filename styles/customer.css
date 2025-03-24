@@ -103,29 +103,33 @@
     z-index: 100;
 }
 
-.ios-back-btn {
+.ios-back-btn, .ios-save-btn, .ios-delete-btn {
     padding: 8px 12px;
-    color: var(--nav-button);
     background: none;
     border: none;
     font-size: 17px;
-    font-weight: 400;
     cursor: pointer;
+}
+
+.ios-back-btn {
+    color: var(--nav-button);
+    font-weight: 400;
     margin-right: 8px;
 }
 
 .ios-save-btn {
-    padding: 8px 12px;
     color: var(--nav-button);
-    background: none;
-    border: none;
-    font-size: 17px;
     font-weight: 600;
-    cursor: pointer;
     margin-left: auto;
+    margin-right: 8px;
 }
 
-.ios-back-btn:active, .ios-save-btn:active {
+.ios-delete-btn {
+    color: var(--error-color);
+    font-weight: 600;
+}
+
+.ios-back-btn:active, .ios-save-btn:active, .ios-delete-btn:active {
     opacity: 0.7;
 }
 
