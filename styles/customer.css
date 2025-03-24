@@ -257,3 +257,14 @@
 .save-btn:active, .back-btn:active {
     transform: scale(0.95);
 }
+
+.subsection-divider {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 24px 0;
+    width: 100%;
+}
+
+.subsection-divider:first-child {
+    margin-top: 0;
+}

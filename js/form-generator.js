@@ -76,9 +76,36 @@ class FormGenerator {
         const fieldsContainer = document.createElement('div');
         fieldsContainer.className = 'form-fields';
 
-        section.fields.forEach(field => {
-            fieldsContainer.appendChild(this.createFormField(field));
-        });
+        // Handle subsections if they exist
+        if (section.subsections) {
+            Object.entries(section.subsections).forEach(([subsectionId, subsection], index) => {
+                // Add divider before subsection (except for the first one)
+                if (index > 0) {
+                    const divider = document.createElement('hr');
+                    divider.className = 'subsection-divider';
+                    fieldsContainer.appendChild(divider);
+                }
+
+                // Create subsection fields
+                subsection.fields.forEach(field => {
+                    fieldsContainer.appendChild(this.createFormField(field));
+                });
+            });
+        }
+
+        // Handle regular fields if they exist
+        if (section.fields) {
+            // Add divider if we had subsections and now have regular fields
+            if (section.subsections && section.fields.length > 0) {
+                const divider = document.createElement('hr');
+                divider.className = 'subsection-divider';
+                fieldsContainer.appendChild(divider);
+            }
+
+            section.fields.forEach(field => {
+                fieldsContainer.appendChild(this.createFormField(field));
+            });
+        }
 
         sectionElement.appendChild(fieldsContainer);
 
@@ -104,21 +131,44 @@ class FormGenerator {
 
     static loadData(data) {
         Object.entries(formConfig.sections).forEach(([sectionId, section]) => {
-            section.fields.forEach(field => {
-                if (field.type === 'checkbox-group') {
-                    field.options.forEach(option => {
-                        const checkbox = document.getElementById(option.id);
-                        if (checkbox) {
-                            checkbox.checked = data[option.id] || false;
+            // Handle subsections if they exist
+            if (section.subsections) {
+                Object.values(section.subsections).forEach(subsection => {
+                    subsection.fields.forEach(field => {
+                        const element = document.getElementById(field.id);
+                        if (element) {
+                            if (field.type === 'checkbox') {
+                                element.checked = data[field.id] || false;
+                            } else {
+                                element.value = data[field.id] || '';
+                            }
                         }
                     });
-                } else {
-                    const element = document.getElementById(field.id);
-                    if (element) {
-                        element.value = data[field.id] || '';
+                });
+            }
+
+            // Handle regular fields
+            if (section.fields) {
+                section.fields.forEach(field => {
+                    if (field.type === 'checkbox-group') {
+                        field.options.forEach(option => {
+                            const checkbox = document.getElementById(option.id);
+                            if (checkbox) {
+                                checkbox.checked = data[option.id] || false;
+                            }
+                        });
+                    } else {
+                        const element = document.getElementById(field.id);
+                        if (element) {
+                            if (field.type === 'checkbox') {
+                                element.checked = data[field.id] || false;
+                            } else {
+                                element.value = data[field.id] || '';
+                            }
+                        }
                     }
-                }
-            });
+                });
+            }
         });
     }
 
@@ -126,21 +176,44 @@ class FormGenerator {
         const data = {};
         
         Object.entries(formConfig.sections).forEach(([sectionId, section]) => {
-            section.fields.forEach(field => {
-                if (field.type === 'checkbox-group') {
-                    field.options.forEach(option => {
-                        const checkbox = document.getElementById(option.id);
-                        if (checkbox) {
-                            data[option.id] = checkbox.checked;
+            // Handle subsections if they exist
+            if (section.subsections) {
+                Object.values(section.subsections).forEach(subsection => {
+                    subsection.fields.forEach(field => {
+                        const element = document.getElementById(field.id);
+                        if (element) {
+                            if (field.type === 'checkbox') {
+                                data[field.id] = element.checked;
+                            } else {
+                                data[field.id] = element.value;
+                            }
                         }
                     });
-                } else {
-                    const element = document.getElementById(field.id);
-                    if (element) {
-                        data[field.id] = element.value;
+                });
+            }
+
+            // Handle regular fields
+            if (section.fields) {
+                section.fields.forEach(field => {
+                    if (field.type === 'checkbox-group') {
+                        field.options.forEach(option => {
+                            const checkbox = document.getElementById(option.id);
+                            if (checkbox) {
+                                data[option.id] = checkbox.checked;
+                            }
+                        });
+                    } else {
+                        const element = document.getElementById(field.id);
+                        if (element) {
+                            if (field.type === 'checkbox') {
+                                data[field.id] = element.checked;
+                            } else {
+                                data[field.id] = element.value;
+                            }
+                        }
                     }
-                }
-            });
+                });
+            }
         });
 
         return data;
@@ -150,24 +223,41 @@ class FormGenerator {
         const errors = [];
         
         Object.entries(formConfig.sections).forEach(([sectionId, section]) => {
-            section.fields.forEach(field => {
-                if (field.required) {
-                    if (field.type === 'checkbox-group') {
-                        const hasChecked = field.options.some(option => {
-                            const checkbox = document.getElementById(option.id);
-                            return checkbox && checkbox.checked;
-                        });
-                        if (!hasChecked) {
-                            errors.push(`${field.label}為必填欄位`);
+            // Handle subsections if they exist
+            if (section.subsections) {
+                Object.values(section.subsections).forEach(subsection => {
+                    subsection.fields.forEach(field => {
+                        if (field.required) {
+                            const element = document.getElementById(field.id);
+                            if (!element || !element.value.trim()) {
+                                errors.push(`${field.label}為必填欄位`);
+                            }
                         }
-                    } else {
-                        const element = document.getElementById(field.id);
-                        if (!element || !element.value.trim()) {
-                            errors.push(`${field.label}為必填欄位`);
+                    });
+                });
+            }
+
+            // Handle regular fields
+            if (section.fields) {
+                section.fields.forEach(field => {
+                    if (field.required) {
+                        if (field.type === 'checkbox-group') {
+                            const hasChecked = field.options.some(option => {
+                                const checkbox = document.getElementById(option.id);
+                                return checkbox && checkbox.checked;
+                            });
+                            if (!hasChecked) {
+                                errors.push(`${field.label}為必填欄位`);
+                            }
+                        } else {
+                            const element = document.getElementById(field.id);
+                            if (!element || !element.value.trim()) {
+                                errors.push(`${field.label}為必填欄位`);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         });
 
         return errors;
