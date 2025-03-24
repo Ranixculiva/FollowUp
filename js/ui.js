@@ -275,8 +275,9 @@ function displayFollowups(followups) {
 }
 
 // Show customers list view
-function showCustomers() {
+async function showCustomers() {
     document.getElementById('customerDetail').classList.remove('active');
+    await refreshCustomerList();
 }
 
 // Show followups view
@@ -294,7 +295,7 @@ async function showFollowUps() {
     customerList.innerHTML = '';
 
     // Create a card for each date
-    Object.entries(followupsByDate).forEach(([date, dateFollowups]) => {
+    for (const [date, dateFollowups] of Object.entries(followupsByDate)) {
         const card = document.createElement('div');
         card.className = 'customer-card';
 
@@ -305,21 +306,35 @@ async function showFollowUps() {
         const followupsList = document.createElement('div');
         followupsList.className = 'customer-info';
 
-        dateFollowups.forEach(async followup => {
-            const customer = await getCustomer(followup.customerId);
+        // Process all followups for this date
+        const followupItems = await Promise.all(dateFollowups.map(async followup => {
             const followupItem = document.createElement('div');
             followupItem.style.marginBottom = '8px';
+            
+            let customerName = '未命名';
+            if (followup.customerId) {
+                try {
+                    const customer = await getCustomer(followup.customerId);
+                    if (customer && customer.name) {
+                        customerName = customer.name;
+                    }
+                } catch (error) {
+                    console.warn('Error fetching customer:', error);
+                }
+            }
+            
             followupItem.innerHTML = `
-                <strong>${customer?.name || '未命名'}</strong>: ${followup.plan}
+                <strong>${customerName}</strong>: ${followup.plan}
                 ${followup.feedback ? `<div class="timeline-feedback">${followup.feedback}</div>` : ''}
             `;
-            followupsList.appendChild(followupItem);
-        });
+            return followupItem;
+        }));
 
+        followupsList.append(...followupItems);
         card.appendChild(dateHeader);
         card.appendChild(followupsList);
         customerList.appendChild(card);
-    });
+    }
 }
 
 // Tab switching
