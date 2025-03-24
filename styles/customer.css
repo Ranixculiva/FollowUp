@@ -1,3 +1,23 @@
+:root {
+    --nav-bg: #f8f9fa;
+    --nav-border: #dee2e6;
+    --nav-text: #000000;
+    --nav-text-secondary: #666666;
+    --nav-button: #007AFF;
+    --nav-button-active: rgba(0, 122, 255, 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --nav-bg: #1c1c1e;
+        --nav-border: #2c2c2e;
+        --nav-text: #ffffff;
+        --nav-text-secondary: #8e8e93;
+        --nav-button: #0A84FF;
+        --nav-button-active: rgba(10, 132, 255, 0.7);
+    }
+}
+
 .search-bar {
     width: 100%;
     padding: 0.8rem;
@@ -74,19 +94,53 @@
 
 .form-tabs {
     display: flex;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #ddd;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--nav-bg);
+    border-bottom: 1px solid var(--nav-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.ios-back-btn {
+    padding: 8px 12px;
+    color: var(--nav-button);
+    background: none;
+    border: none;
+    font-size: 17px;
+    font-weight: 400;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.ios-save-btn {
+    padding: 8px 12px;
+    color: var(--nav-button);
+    background: none;
+    border: none;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.ios-back-btn:active, .ios-save-btn:active {
+    opacity: 0.7;
 }
 
 .form-tab {
-    padding: 0.8rem 1rem;
+    flex: 1;
+    padding: 10px;
+    text-align: center;
     cursor: pointer;
-    color: var(--text-color);
-    border-bottom: 2px solid transparent;
+    color: var(--nav-text);
+    transition: background-color 0.2s;
 }
 
 .form-tab.active {
-    border-bottom: 2px solid var(--primary-color);
+    color: var(--nav-button);
+    border-bottom: 2px solid var(--nav-button);
 }
 
 .form-section {
@@ -197,16 +251,36 @@
     color: var(--text-primary);
 }
 
-.save-btn {
+.button-container {
     position: fixed;
     bottom: 5rem;
     right: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.save-btn, .back-btn {
     padding: 1rem;
-    background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 50%;
     width: 60px;
     height: 60px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.save-btn {
+    background-color: var(--primary-color);
+}
+
+.back-btn {
+    background-color: var(--danger-color, #dc3545);
+}
+
+.save-btn:active, .back-btn:active {
+    transform: scale(0.95);
 }

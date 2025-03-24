@@ -1,12 +1,21 @@
 // UI State
 let currentCustomerId = null;
 let isEditing = false;
+let hasUnsavedChanges = false;
 
 // Initialize UI
 document.addEventListener('DOMContentLoaded', async () => {
     // Set up search handler
     const searchBar = document.querySelector('.search-bar');
     searchBar.addEventListener('input', debounce(handleSearch, 300));
+
+    // Set up form change tracking
+    const formInputs = document.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            hasUnsavedChanges = true;
+        });
+    });
 
     // Load initial customer list
     await refreshCustomerList();
@@ -71,6 +80,7 @@ function calculateFormScore(customer) {
 async function showCustomerDetail(customerId) {
     currentCustomerId = customerId;
     isEditing = true;
+    hasUnsavedChanges = false;
 
     const customer = await getCustomer(customerId);
     const detailView = document.getElementById('customerDetail');
@@ -102,6 +112,7 @@ async function showCustomerDetail(customerId) {
 function showAddCustomer() {
     currentCustomerId = null;
     isEditing = false;
+    hasUnsavedChanges = false;
 
     // Clear all fields
     const inputs = document.querySelectorAll('input, select, textarea');
@@ -120,6 +131,18 @@ function showAddCustomer() {
     const detailView = document.getElementById('customerDetail');
     detailView.classList.add('active');
     showTab('basic');
+}
+
+// Handle back button
+function handleBack() {
+    if (hasUnsavedChanges) {
+        if (confirm('您有未儲存的更改，確定要離開嗎？')) {
+            hasUnsavedChanges = false;
+            showCustomers();
+        }
+    } else {
+        showCustomers();
+    }
 }
 
 // Save customer data
@@ -168,6 +191,9 @@ async function saveCustomer() {
                 feedback: followupFeedback
             });
         }
+
+        // Reset unsaved changes flag
+        hasUnsavedChanges = false;
 
         // Refresh UI
         await refreshCustomerList();

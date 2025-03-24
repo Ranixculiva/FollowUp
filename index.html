@@ -23,9 +23,11 @@
 
     <div id="customerDetail" class="detail-view">
         <div class="form-tabs">
+            <button class="ios-back-btn" onclick="handleBack()">返回</button>
             <div class="form-tab active" onclick="showTab('basic')">基本資料</div>
             <div class="form-tab" onclick="showTab('form')">FORM評估</div>
             <div class="form-tab" onclick="showTab('followup')">跟進計劃</div>
+            <button class="ios-save-btn" onclick="saveCustomer()">儲存</button>
         </div>
 
         <div id="basicSection" class="form-section active">
@@ -174,8 +176,6 @@
                 <!-- Timeline items will be inserted here -->
             </div>
         </div>
-
-        <button class="save-btn" onclick="saveCustomer()">💾</button>
     </div>
 
     <nav class="nav-bottom">
