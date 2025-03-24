@@ -5,20 +5,29 @@ let hasUnsavedChanges = false;
 
 // Initialize UI
 document.addEventListener('DOMContentLoaded', async () => {
-    // Set up search handler
-    const searchBar = document.querySelector('.search-bar');
-    searchBar.addEventListener('input', debounce(handleSearch, 300));
+    try {
+        // Initialize database first
+        await initDB();
+        
+        // Set up search handler
+        const searchBar = document.querySelector('.search-bar');
+        searchBar.addEventListener('input', debounce(handleSearch, 300));
 
-    // Set up form change tracking
-    const formInputs = document.querySelectorAll('input, select, textarea');
-    formInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            hasUnsavedChanges = true;
+        // Set up form change tracking
+        const formInputs = document.querySelectorAll('input, select, textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('change', () => {
+                hasUnsavedChanges = true;
+            });
         });
-    });
 
-    // Load initial customer list
-    await refreshCustomerList();
+        // Load initial customer list
+        await refreshCustomerList();
+    } catch (error) {
+        console.error('Error initializing application:', error);
+        // Show error to user
+        alert('Error initializing application. Please refresh the page.');
+    }
 });
 
 // Debounce function for search
