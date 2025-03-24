@@ -10,6 +10,7 @@
     <title>客戶管理系統</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/customer.css">
 </head>
@@ -17,7 +18,13 @@
     <div class="container">
         <div class="search-container">
             <input type="text" class="search-bar" placeholder="搜尋客戶...">
-            <button class="report-button" onclick="showReportDialog()">列印報表</button>
+            <button class="export-button" onclick="exportToJSON()">
+                <span class="material-icons">data_object</span>
+            </button>
+            <button class="import-button" onclick="document.getElementById('fileInput').click()">
+                <span class="material-icons">upload_file</span>
+            </button>
+            <input type="file" id="fileInput" class="file-input" accept=".json,.csv" onchange="handleFileImport(event)">
         </div>
         <div id="customerList" class="customer-list"></div>
     </div>

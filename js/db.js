@@ -101,6 +101,18 @@ const deleteCustomer = (id) => {
     });
 };
 
+// Clear all customers from the database
+const clearAllCustomers = () => {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['customers'], 'readwrite');
+        const store = transaction.objectStore('customers');
+        const request = store.clear();
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject('Error clearing customers');
+    });
+};
+
 // Search Operations
 const searchCustomers = async (query) => {
     const transaction = db.transaction(['customers'], 'readonly');
@@ -178,3 +190,14 @@ const getAllFollowups = () => {
 
 // Initialize database when the script loads
 initDB().catch(console.error);
+
+// Export functions to global scope
+window.initDB = initDB;
+window.addCustomer = addCustomer;
+window.updateCustomer = updateCustomer;
+window.getCustomer = getCustomer;
+window.getAllCustomers = getAllCustomers;
+window.deleteCustomer = deleteCustomer;
+window.clearAllCustomers = clearAllCustomers;
+window.searchCustomers = searchCustomers;
+window.getCustomerFollowups = getCustomerFollowups;

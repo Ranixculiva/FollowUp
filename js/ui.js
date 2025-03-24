@@ -18,12 +18,11 @@ async function initializeUI() {
         FormGenerator.generateForm('customerForm');
         
         // Add Step2 filter button
-        const searchContainer = document.querySelector('.container');
         const filterButton = document.createElement('button');
         filterButton.className = 'filter-button';
         filterButton.textContent = '只顯示 Step 2 客戶';
         filterButton.onclick = toggleStep2Filter;
-        searchContainer.insertBefore(filterButton, document.querySelector('.customer-list'));
+        document.querySelector('.container').insertBefore(filterButton, document.querySelector('.customer-list'));
         
         // Set up search handler
         const searchBar = document.querySelector('.search-bar');
@@ -75,8 +74,7 @@ async function initializeUI() {
         await refreshCustomerList();
     } catch (error) {
         console.error('Error initializing application:', error);
-        // Show error to user
-        alert('Error initializing application. Please refresh the page.');
+        alert('初始化失敗，請重新整理頁面');
     }
 }
 
@@ -305,22 +303,22 @@ async function showFollowUps() {
         // Create cards for each date
         sortedDates.forEach(date => {
             const followups = followupsByDate.get(date);
-            const card = document.createElement('div');
-            card.className = 'customer-card';
+        const card = document.createElement('div');
+        card.className = 'customer-card';
 
-            const dateHeader = document.createElement('div');
-            dateHeader.className = 'customer-name';
-            dateHeader.textContent = date;
+        const dateHeader = document.createElement('div');
+        dateHeader.className = 'customer-name';
+        dateHeader.textContent = date;
 
-            const followupsList = document.createElement('div');
-            followupsList.className = 'customer-info';
+        const followupsList = document.createElement('div');
+        followupsList.className = 'customer-info';
 
             followups.forEach(followup => {
-                const followupItem = document.createElement('div');
+            const followupItem = document.createElement('div');
                 followupItem.className = 'followup-item';
-                followupItem.style.marginBottom = '8px';
+            followupItem.style.marginBottom = '8px';
                 followupItem.style.cursor = 'pointer';
-                followupItem.innerHTML = `
+            followupItem.innerHTML = `
                     <strong>${followup.customerName}</strong>: ${followup.followupPlan}
                     ${followup.followupFeedback ? `<div class="timeline-feedback">${followup.followupFeedback}</div>` : ''}
                 `;
@@ -332,13 +330,13 @@ async function showFollowUps() {
                     setTimeout(() => showTab('followup'), 100);
                 });
 
-                followupsList.appendChild(followupItem);
-            });
-
-            card.appendChild(dateHeader);
-            card.appendChild(followupsList);
-            customerList.appendChild(card);
+            followupsList.appendChild(followupItem);
         });
+
+        card.appendChild(dateHeader);
+        card.appendChild(followupsList);
+        customerList.appendChild(card);
+    });
     } catch (error) {
         console.error('Error loading followups:', error);
         alert('載入跟進計劃失敗，請稍後再試');
@@ -793,4 +791,207 @@ function getSteamLabel(field, value) {
 
     const option = options.find(opt => opt.value === value.toString());
     return option ? option.label : value;
+}
+
+// Export data to CSV format
+async function exportToCSV() {
+    try {
+        const customers = await getAllCustomers();
+        if (customers.length === 0) {
+            alert('沒有客戶資料可供匯出');
+            return;
+        }
+
+        // Define CSV headers based on basic customer information
+        const headers = [
+            'ID', '姓名', '電話', 'Line', 'FB', 'IG',
+            '年齡', '性別', '職業', '地址', '如何認識',
+            'Step2', '顏色評級', '最近聯繫日期'
+        ];
+
+        // Convert customers to CSV rows
+        const rows = customers.map(customer => [
+            customer.id,
+            customer.name || '',
+            customer.phone || '',
+            customer.line || '',
+            customer.fb || '',
+            customer.ig || '',
+            customer.age || '',
+            customer.gender || '',
+            customer.occupation || '',
+            customer.address || '',
+            customer.howMet || '',
+            customer.isStep2 ? '是' : '否',
+            customer.colorRating || '',
+            customer.lastInviteDate || ''
+        ]);
+
+        // Create CSV content
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => 
+                typeof cell === 'string' ? `"${cell.replace(/"/g, '""')}"` : cell
+            ).join(','))
+        ].join('\n');
+
+        // Create and trigger download
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const date = new Date().toISOString().split('T')[0];
+        a.href = url;
+        a.download = `customers_${date}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert('CSV 匯出成功！');
+    } catch (error) {
+        console.error('匯出 CSV 時發生錯誤：', error);
+        alert('匯出失敗，請稍後再試');
+    }
+}
+
+// Export data to JSON format
+async function exportToJSON() {
+    try {
+        const customers = await getAllCustomers();
+        if (customers.length === 0) {
+            alert('沒有客戶資料可供匯出');
+            return;
+        }
+
+        const jsonString = JSON.stringify(customers, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const date = new Date().toISOString().split('T')[0];
+        a.href = url;
+        a.download = `customers_${date}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert('JSON 匯出成功！');
+    } catch (error) {
+        console.error('匯出 JSON 時發生錯誤：', error);
+        alert('匯出失敗，請稍後再試');
+    }
+}
+
+// Handle file import
+async function handleFileImport(event) {
+    try {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const confirmImport = confirm('匯入將會覆蓋現有資料，確定要繼續嗎？');
+        if (!confirmImport) {
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                let customers;
+                
+                if (file.name.endsWith('.json')) {
+                    // Handle JSON import
+                    customers = JSON.parse(e.target.result);
+                    if (!Array.isArray(customers)) {
+                        throw new Error('無效的 JSON 格式');
+                    }
+                } else if (file.name.endsWith('.csv')) {
+                    // Handle CSV import
+                    customers = parseCSV(e.target.result);
+                } else {
+                    throw new Error('不支援的檔案格式');
+                }
+
+                // Clear existing data
+                await clearAllCustomers();
+
+                // Import new data
+                for (const customer of customers) {
+                    await addCustomer(customer);
+                }
+
+                alert('資料匯入成功！');
+                location.reload();
+            } catch (error) {
+                console.error('解析檔案時發生錯誤：', error);
+                alert('檔案格式錯誤，請確保匯入正確的備份檔案');
+            }
+        };
+
+        if (file.name.endsWith('.csv')) {
+            reader.readAsText(file, 'UTF-8');
+        } else {
+            reader.readAsText(file);
+        }
+    } catch (error) {
+        console.error('匯入資料時發生錯誤：', error);
+        alert('匯入失敗，請稍後再試');
+    }
+    event.target.value = '';
+}
+
+// Parse CSV content
+function parseCSV(csvContent) {
+    try {
+        const lines = csvContent.split('\n');
+        const headers = lines[0].split(',').map(header => 
+            header.trim().replace(/^"/, '').replace(/"$/, '')
+        );
+
+        return lines.slice(1).filter(line => line.trim()).map(line => {
+            const values = line.split(',').map(value => 
+                value.trim().replace(/^"/, '').replace(/"$/, '')
+            );
+            
+            const customer = {};
+            headers.forEach((header, index) => {
+                let value = values[index] || '';
+                
+                // Convert specific fields
+                if (header === 'Step2') {
+                    value = value === '是';
+                } else if (header === '年齡') {
+                    value = value ? parseInt(value) : null;
+                }
+                
+                // Map CSV headers to customer properties
+                const propertyMap = {
+                    'ID': 'id',
+                    '姓名': 'name',
+                    '電話': 'phone',
+                    'Line': 'line',
+                    'FB': 'fb',
+                    'IG': 'ig',
+                    '年齡': 'age',
+                    '性別': 'gender',
+                    '職業': 'occupation',
+                    '地址': 'address',
+                    '如何認識': 'howMet',
+                    'Step2': 'isStep2',
+                    '顏色評級': 'colorRating',
+                    '最近聯繫日期': 'lastInviteDate'
+                };
+
+                const propertyName = propertyMap[header];
+                if (propertyName) {
+                    customer[propertyName] = value;
+                }
+            });
+
+            return customer;
+        });
+    } catch (error) {
+        console.error('解析 CSV 時發生錯誤：', error);
+        throw new Error('CSV 格式錯誤');
+    }
 }
