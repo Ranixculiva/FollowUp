@@ -69,28 +69,59 @@ class Customer {
     generateProperties(data) {
         // Process each section in the form config
         Object.entries(formConfig.sections).forEach(([sectionId, section]) => {
-            section.fields.forEach(field => {
-                // Handle different field types
-                switch (field.type) {
-                    case 'checkbox-group':
-                        // For checkbox groups, create boolean properties for each option
-                        field.options.forEach(option => {
-                            this[option.id] = data[option.id] || false;
-                        });
-                        break;
-                    case 'date':
-                        // For date fields, ensure proper date format
-                        this[field.id] = data[field.id] || new Date().toISOString().split('T')[0];
-                        break;
-                    case 'select':
-                    case 'text':
-                    case 'number':
-                    case 'textarea':
-                    default:
-                        // For other fields, use the field value or empty string/number
-                        this[field.id] = data[field.id] || (field.type === 'number' ? 0 : '');
-                }
-            });
+            // Handle list type sections
+            if (section.type === 'list') {
+                this[sectionId] = data[sectionId] || [];
+                return;
+            }
+
+            // Handle subsections if they exist
+            if (section.subsections) {
+                Object.values(section.subsections).forEach(subsection => {
+                    subsection.fields.forEach(field => {
+                        // Handle different field types
+                        switch (field.type) {
+                            case 'checkbox':
+                                this[field.id] = data[field.id] || false;
+                                break;
+                            case 'date':
+                                this[field.id] = data[field.id] || new Date().toISOString().split('T')[0];
+                                break;
+                            case 'number':
+                                this[field.id] = data[field.id] || 0;
+                                break;
+                            default:
+                                this[field.id] = data[field.id] || '';
+                        }
+                    });
+                });
+            }
+
+            // Handle regular fields if they exist
+            if (section.fields) {
+                section.fields.forEach(field => {
+                    // Handle different field types
+                    switch (field.type) {
+                        case 'checkbox-group':
+                            // For checkbox groups, create boolean properties for each option
+                            field.options.forEach(option => {
+                                this[option.id] = data[option.id] || false;
+                            });
+                            break;
+                        case 'checkbox':
+                            this[field.id] = data[field.id] || false;
+                            break;
+                        case 'date':
+                            this[field.id] = data[field.id] || new Date().toISOString().split('T')[0];
+                            break;
+                        case 'number':
+                            this[field.id] = data[field.id] || 0;
+                            break;
+                        default:
+                            this[field.id] = data[field.id] || '';
+                    }
+                });
+            }
         });
     }
 
@@ -122,23 +153,64 @@ class Customer {
         
         // Process each section in the form config
         Object.entries(formConfig.sections).forEach(([sectionId, section]) => {
-            section.fields.forEach(field => {
-                // Check required fields
-                if (field.required) {
-                    if (field.type === 'checkbox-group') {
-                        const hasChecked = field.options.some(option => this[option.id]);
-                        if (!hasChecked) {
-                            errors.push(`${field.label}為必填欄位`);
-                        }
-                    } else if (field.type === 'date') {
-                        if (!this[field.id] || !this.isValidDate(this[field.id])) {
-                            errors.push(`${field.label}為必填欄位`);
-                        }
-                    } else if (!this[field.id] || (typeof this[field.id] === 'string' && !this[field.id].trim())) {
-                        errors.push(`${field.label}為必填欄位`);
-                    }
+            // Handle list type sections
+            if (section.type === 'list') {
+                if (Array.isArray(this[sectionId])) {
+                    this[sectionId].forEach((item, index) => {
+                        section.itemFields.forEach(field => {
+                            if (field.required && (!item[field.id] || (typeof item[field.id] === 'string' && !item[field.id].trim()))) {
+                                errors.push(`第 ${index + 1} 個${section.title}的 ${field.label}為必填欄位`);
+                            }
+                        });
+                    });
                 }
-            });
+                return;
+            }
+
+            // Handle subsections if they exist
+            if (section.subsections) {
+                Object.values(section.subsections).forEach(subsection => {
+                    subsection.fields.forEach(field => {
+                        if (field.required) {
+                            if (field.type === 'checkbox') {
+                                if (!this[field.id]) {
+                                    errors.push(`${field.label}為必填欄位`);
+                                }
+                            } else if (field.type === 'date') {
+                                if (!this[field.id] || !this.isValidDate(this[field.id])) {
+                                    errors.push(`${field.label}為必填欄位`);
+                                }
+                            } else if (!this[field.id] || (typeof this[field.id] === 'string' && !this[field.id].trim())) {
+                                errors.push(`${field.label}為必填欄位`);
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Handle regular fields if they exist
+            if (section.fields) {
+                section.fields.forEach(field => {
+                    if (field.required) {
+                        if (field.type === 'checkbox-group') {
+                            const hasChecked = field.options.some(option => this[option.id]);
+                            if (!hasChecked) {
+                                errors.push(`${field.label}為必填欄位`);
+                            }
+                        } else if (field.type === 'checkbox') {
+                            if (!this[field.id]) {
+                                errors.push(`${field.label}為必填欄位`);
+                            }
+                        } else if (field.type === 'date') {
+                            if (!this[field.id] || !this.isValidDate(this[field.id])) {
+                                errors.push(`${field.label}為必填欄位`);
+                            }
+                        } else if (!this[field.id] || (typeof this[field.id] === 'string' && !this[field.id].trim())) {
+                            errors.push(`${field.label}為必填欄位`);
+                        }
+                    }
+                });
+            }
         });
 
         return errors;

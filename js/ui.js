@@ -109,20 +109,8 @@ async function showCustomerDetail(customerId) {
     const customer = await getCustomer(customerId);
     const detailView = document.getElementById('customerDetail');
     
-    // Fill in basic info
-    Object.keys(customer).forEach(key => {
-        const element = document.getElementById(key);
-        if (element) {
-            if (element.type === 'checkbox') {
-                element.checked = customer[key];
-            } else {
-                element.value = customer[key];
-            }
-        }
-    });
-
-    // Load followups
-    await refreshFollowups(customerId);
+    // Load all customer data using FormGenerator
+    FormGenerator.loadData(customer);
 
     // Show detail view
     detailView.classList.add('active');
@@ -135,21 +123,8 @@ function showAddCustomer() {
     isEditing = false;
     hasUnsavedChanges = false;
 
-    // Clear all fields
-    const inputs = document.querySelectorAll('input, select, textarea');
-    inputs.forEach(input => {
-        if (input.type === 'checkbox') {
-            input.checked = false;
-        } else {
-            input.value = '';
-        }
-    });
-
-    // Clear followups if timeline exists
-    const timeline = document.getElementById('followupTimeline');
-    if (timeline) {
-        timeline.innerHTML = '';
-    }
+    // Clear form using FormGenerator
+    FormGenerator.loadData({});
 
     // Show detail view
     const detailView = document.getElementById('customerDetail');
@@ -196,28 +171,6 @@ async function saveCustomer() {
             await updateCustomer(currentCustomerId, customer);
         } else {
             await addCustomer(customer);
-        }
-
-        // Save followup if entered
-        const followupPlan = document.getElementById('followupPlan')?.value;
-        const followupDate = document.getElementById('followupDate')?.value;
-        const followupFeedback = document.getElementById('followupFeedback')?.value;
-
-        if (followupPlan && followupDate) {
-            const followup = new Followup({
-                customerId: currentCustomerId,
-                plan: followupPlan,
-                date: followupDate,
-                feedback: followupFeedback
-            });
-
-            const followupErrors = followup.validate();
-            if (followupErrors.length > 0) {
-                alert(followupErrors.join('\n'));
-                return;
-            }
-
-            await addFollowup(followup);
         }
 
         // Reset unsaved changes flag
@@ -282,58 +235,64 @@ async function showCustomers() {
 
 // Show followups view
 async function showFollowUps() {
-    const followups = await getAllFollowups();
-    // Group followups by date
-    const followupsByDate = followups.reduce((acc, followup) => {
-        const date = new Date(followup.date).toLocaleDateString();
-        if (!acc[date]) acc[date] = [];
-        acc[date].push(followup);
-        return acc;
-    }, {});
-
     const customerList = document.getElementById('customerList');
     customerList.innerHTML = '';
 
-    // Create a card for each date
-    for (const [date, dateFollowups] of Object.entries(followupsByDate)) {
-        const card = document.createElement('div');
-        card.className = 'customer-card';
+    try {
+        const customers = await getAllCustomers();
+        const followupsByDate = new Map();
 
-        const dateHeader = document.createElement('div');
-        dateHeader.className = 'customer-name';
-        dateHeader.textContent = date;
-
-        const followupsList = document.createElement('div');
-        followupsList.className = 'customer-info';
-
-        // Process all followups for this date
-        const followupItems = await Promise.all(dateFollowups.map(async followup => {
-            const followupItem = document.createElement('div');
-            followupItem.style.marginBottom = '8px';
-            
-            let customerName = '未命名';
-            if (followup.customerId) {
-                try {
-                    const customer = await getCustomer(followup.customerId);
-                    if (customer && customer.name) {
-                        customerName = customer.name;
+        // Group followups by date
+        customers.forEach(customer => {
+            if (customer.followup && Array.isArray(customer.followup)) {
+                customer.followup.forEach(followup => {
+                    const date = new Date(followup.followupDate).toLocaleDateString();
+                    if (!followupsByDate.has(date)) {
+                        followupsByDate.set(date, []);
                     }
-                } catch (error) {
-                    console.warn('Error fetching customer:', error);
-                }
+                    followupsByDate.get(date).push({
+                        customerName: customer.name || '未命名',
+                        ...followup
+                    });
+                });
             }
-            
-            followupItem.innerHTML = `
-                <strong>${customerName}</strong>: ${followup.plan}
-                ${followup.feedback ? `<div class="timeline-feedback">${followup.feedback}</div>` : ''}
-            `;
-            return followupItem;
-        }));
+        });
 
-        followupsList.append(...followupItems);
-        card.appendChild(dateHeader);
-        card.appendChild(followupsList);
-        customerList.appendChild(card);
+        // Sort dates in ascending order
+        const sortedDates = Array.from(followupsByDate.keys()).sort((a, b) => 
+            new Date(a) - new Date(b)
+        );
+
+        // Create cards for each date
+        sortedDates.forEach(date => {
+            const followups = followupsByDate.get(date);
+            const card = document.createElement('div');
+            card.className = 'customer-card';
+
+            const dateHeader = document.createElement('div');
+            dateHeader.className = 'customer-name';
+            dateHeader.textContent = date;
+
+            const followupsList = document.createElement('div');
+            followupsList.className = 'customer-info';
+
+            followups.forEach(followup => {
+                const followupItem = document.createElement('div');
+                followupItem.style.marginBottom = '8px';
+                followupItem.innerHTML = `
+                    <strong>${followup.customerName}</strong>: ${followup.followupPlan}
+                    ${followup.followupFeedback ? `<div class="timeline-feedback">${followup.followupFeedback}</div>` : ''}
+                `;
+                followupsList.appendChild(followupItem);
+            });
+
+            card.appendChild(dateHeader);
+            card.appendChild(followupsList);
+            customerList.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error loading followups:', error);
+        alert('載入跟進計劃失敗，請稍後再試');
     }
 }
 

@@ -5,6 +5,13 @@
     --nav-text-secondary: #666666;
     --nav-button: #007AFF;
     --nav-button-active: rgba(0, 122, 255, 0.7);
+    --form-list-bg: #f8f9fa;
+    --form-list-border: #dee2e6;
+    --form-list-shadow: rgba(0, 0, 0, 0.05);
+    --delete-btn-bg: #dc3545;
+    --delete-btn-hover: #c82333;
+    --add-btn-bg: #007bff;
+    --add-btn-hover: #0056b3;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,6 +22,13 @@
         --nav-text-secondary: #8e8e93;
         --nav-button: #0A84FF;
         --nav-button-active: rgba(10, 132, 255, 0.7);
+        --form-list-bg: #2c2c2e;
+        --form-list-border: #3c3c3e;
+        --form-list-shadow: rgba(0, 0, 0, 0.2);
+        --delete-btn-bg: #dc3545;
+        --delete-btn-hover: #bd2130;
+        --add-btn-bg: #0A84FF;
+        --add-btn-hover: #0062cc;
     }
 }
 
@@ -92,15 +106,41 @@
     color: var(--text-color);
 }
 
-.form-tabs {
-    display: flex;
-    align-items: center;
-    padding: 8px 16px;
-    background: var(--nav-bg);
-    border-bottom: 1px solid var(--nav-border);
+/* Form header styles */
+.form-header {
     position: sticky;
     top: 0;
     z-index: 100;
+    background: var(--nav-bg);
+    border-bottom: 1px solid var(--nav-border);
+}
+
+.form-buttons {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--nav-border);
+}
+
+.form-tabs {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.form-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.form-tabs-container {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    min-width: min-content;
 }
 
 .ios-back-btn, .ios-save-btn, .ios-delete-btn {
@@ -114,13 +154,12 @@
 .ios-back-btn {
     color: var(--nav-button);
     font-weight: 400;
-    margin-right: 8px;
+    margin-right: auto;
 }
 
 .ios-save-btn {
     color: var(--nav-button);
     font-weight: 600;
-    margin-left: auto;
     margin-right: 8px;
 }
 
@@ -134,12 +173,13 @@
 }
 
 .form-tab {
-    flex: 1;
-    padding: 10px;
+    padding: 10px 16px;
     text-align: center;
     cursor: pointer;
     color: var(--nav-text);
     transition: background-color 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .form-tab.active {
@@ -287,4 +327,82 @@
 
 .subsection-divider:first-child {
     margin-top: 0;
+}
+
+/* List type form styles */
+.form-list {
+    margin: 20px 0;
+}
+
+.form-list-item {
+    position: relative;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: var(--form-list-bg);
+    border: 1px solid var(--form-list-border);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--form-list-shadow);
+}
+
+.form-list-item .delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background-color: var(--delete-btn-bg);
+    color: white;
+    border-radius: 50%;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.form-list-item .delete-btn:hover {
+    background-color: var(--delete-btn-hover);
+}
+
+.add-list-item-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: var(--add-btn-bg);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-list-item-btn:hover {
+    background-color: var(--add-btn-hover);
+}
+
+.form-list-item .form-field {
+    margin-bottom: 15px;
+}
+
+.form-list-item .form-field:last-child {
+    margin-bottom: 0;
+}
+
+.form-list-item textarea {
+    min-height: 80px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--nav-border);
+}
+
+.form-list-item input[type="date"] {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--nav-border);
 }

@@ -244,7 +244,9 @@ const formConfig = {
         },
         followup: {
             title: '跟進計劃',
-            fields: [
+            type: 'list',
+            addButtonText: '新增跟進計劃',
+            itemFields: [
                 {
                     id: 'followupPlan',
                     label: '跟進計劃',
