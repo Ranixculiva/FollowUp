@@ -78,6 +78,10 @@ class Customer {
                             this[option.id] = data[option.id] || false;
                         });
                         break;
+                    case 'date':
+                        // For date fields, ensure proper date format
+                        this[field.id] = data[field.id] || new Date().toISOString().split('T')[0];
+                        break;
                     case 'select':
                     case 'text':
                     case 'number':
@@ -126,6 +130,10 @@ class Customer {
                         if (!hasChecked) {
                             errors.push(`${field.label}為必填欄位`);
                         }
+                    } else if (field.type === 'date') {
+                        if (!this[field.id] || !this.isValidDate(this[field.id])) {
+                            errors.push(`${field.label}為必填欄位`);
+                        }
                     } else if (!this[field.id] || (typeof this[field.id] === 'string' && !this[field.id].trim())) {
                         errors.push(`${field.label}為必填欄位`);
                     }
@@ -134,6 +142,12 @@ class Customer {
         });
 
         return errors;
+    }
+
+    // Validate date format
+    isValidDate(dateString) {
+        const date = new Date(dateString);
+        return date instanceof Date && !isNaN(date);
     }
 
     // Create a summary of the customer
