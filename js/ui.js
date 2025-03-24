@@ -24,11 +24,14 @@ async function initializeUI() {
             console.warn('Search bar element not found. Search functionality will be disabled.');
         }
 
-        // Set up form change tracking
+        // Set up form change tracking and STEAM score calculation
         const formInputs = document.querySelectorAll('input, select, textarea');
         formInputs.forEach(input => {
             input.addEventListener('change', () => {
                 hasUnsavedChanges = true;
+                if (input.id.startsWith('steam') || input.id === 'onlineSales' || input.id === 'connections') {
+                    calculateSteamScore();
+                }
             });
         });
 
@@ -426,5 +429,31 @@ async function handleDeleteCustomer() {
     } catch (error) {
         console.error('Error deleting customer:', error);
         alert('刪除失敗，請稍後再試');
+    }
+}
+
+// Calculate STEAM score
+function calculateSteamScore() {
+    const steamFields = [
+        'steamS',
+        'steamT',
+        'steamE',
+        'steamA',
+        'steamM',
+        'onlineSales',
+        'connections'
+    ];
+
+    let totalScore = 0;
+    steamFields.forEach(field => {
+        const select = document.getElementById(field);
+        if (select && select.value) {
+            totalScore += parseInt(select.value);
+        }
+    });
+
+    const totalScoreInput = document.getElementById('totalScore');
+    if (totalScoreInput) {
+        totalScoreInput.value = totalScore;
     }
 }

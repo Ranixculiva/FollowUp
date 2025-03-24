@@ -61,6 +61,106 @@ const formConfig = {
                 }
             ]
         },
+        steam: {
+            title: 'STEAM評估',
+            fields: [
+                {
+                    id: 'listOwner',
+                    label: 'List Owner',
+                    type: 'text',
+                    required: false
+                },
+                {
+                    id: 'joinDate',
+                    label: '加入名單日期',
+                    type: 'date',
+                    required: false
+                },
+                {
+                    id: 'steamS',
+                    label: 'S (有銷售服務經驗)',
+                    type: 'select',
+                    options: [
+                        { value: '0', label: '0 - 沒有' },
+                        { value: '3', label: '3 - 接觸過' },
+                        { value: '5', label: '5 - 專業' }
+                    ],
+                    required: false
+                },
+                {
+                    id: 'steamT',
+                    label: 'T (指導教練或輔導員)',
+                    type: 'select',
+                    options: [
+                        { value: '0', label: '0 - 沒有' },
+                        { value: '3', label: '3 - 接觸過' },
+                        { value: '5', label: '5 - 專業' }
+                    ],
+                    required: false
+                },
+                {
+                    id: 'steamE',
+                    label: 'E (創業家或事業經驗)',
+                    type: 'select',
+                    options: [
+                        { value: '0', label: '0 - 沒有' },
+                        { value: '3', label: '3 - 曾經或剛起步' },
+                        { value: '5', label: '5 - 正在創業或有自己生意' }
+                    ],
+                    required: false
+                },
+                {
+                    id: 'steamA',
+                    label: 'A (態度積極並具個人魅力)',
+                    type: 'select',
+                    options: [
+                        { value: '0', label: '0 - 安於現狀' },
+                        { value: '3', label: '3 - 願意改變' },
+                        { value: '5', label: '5 - 態度積極勇於嘗試' }
+                    ],
+                    required: false
+                },
+                {
+                    id: 'steamM',
+                    label: 'M (個人收入及希望達到收入目標)',
+                    type: 'select',
+                    options: [
+                        { value: '0', label: '0 - 暫無收入需求，安於現狀' },
+                        { value: '3', label: '3 - 收入不穩定或急需增加收入' },
+                        { value: '5', label: '5 - 收入穩定，想創造額外收入' }
+                    ],
+                    required: false
+                },
+                {
+                    id: 'onlineSales',
+                    label: '網路銷售經驗',
+                    type: 'select',
+                    options: [
+                        { value: '0', label: '0 - 沒有' },
+                        { value: '3', label: '3 - 接觸過' },
+                        { value: '5', label: '5 - 專業' }
+                    ],
+                    required: false
+                },
+                {
+                    id: 'connections',
+                    label: '人脈關係',
+                    type: 'select',
+                    options: [
+                        { value: '0', label: '0 - 除了少數家人沒有太多社交' },
+                        { value: '3', label: '3 - 交友圈侷限特定族群但願意交朋友' },
+                        { value: '5', label: '5 - 廣結善緣/家族龐大/花蝴蝶等級' }
+                    ],
+                    required: false
+                },
+                {
+                    id: 'totalScore',
+                    label: '總分',
+                    type: 'number',
+                    readonly: true
+                }
+            ]
+        },
         formhd: {
             title: 'FORMHD評估',
             subsections: {
