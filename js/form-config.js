@@ -264,7 +264,7 @@ const formConfig = {
                     id: 'followupDate',
                     label: '執行日期',
                     type: 'date',
-                    required: true
+                    required: false
                 },
                 {
                     id: 'followupFeedback',
