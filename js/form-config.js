@@ -242,6 +242,78 @@ const formConfig = {
                 }
             ]
         },
+        evaluation: {
+            title: '客戶評估',
+            fields: [
+                {
+                    id: 'hasCard',
+                    label: '是否持有信用卡',
+                    type: 'checkbox',
+                    required: false
+                },
+                {
+                    id: 'joinFee',
+                    label: '加盟金',
+                    type: 'textarea',
+                    rows: 3,
+                    required: false
+                },
+                {
+                    id: 'maKnowledge',
+                    label: '對美安的認知',
+                    type: 'textarea',
+                    rows: 3,
+                    required: false
+                },
+                {
+                    id: 'questions',
+                    label: '興趣/疑惑/異議問題',
+                    type: 'textarea',
+                    rows: 3,
+                    required: false
+                },
+                {
+                    id: 'discussedMA',
+                    label: '是否談過美安概念',
+                    type: 'checkbox',
+                    required: false
+                },
+                {
+                    id: 'features',
+                    label: '已介紹功能',
+                    type: 'checkbox-group',
+                    options: [
+                        { id: 'featureWebsite', label: '網站導覽' },
+                        { id: 'featureConsumption', label: '消費轉移' },
+                        { id: 'featureAnnuity', label: '購物年金' },
+                        { id: 'featurePlatform', label: '五贏平台' },
+                        { id: 'featureMPCP', label: 'ＭＰＣＰ' }
+                    ]
+                },
+                {
+                    id: 'triedProduct',
+                    label: '是否試用產品',
+                    type: 'checkbox',
+                    required: false
+                },
+                {
+                    id: 'usingProduct',
+                    label: '是否使用產品',
+                    type: 'checkbox',
+                    required: false
+                },
+                {
+                    id: 'customerNeeds',
+                    label: '對方需求',
+                    type: 'checkbox-group',
+                    options: [
+                        { id: 'needVIP', label: '成為優惠顧客' },
+                        { id: 'needGroupBuy', label: '揪團購物' },
+                        { id: 'needHealth', label: '身體健康' }
+                    ]
+                }
+            ]
+        },
         followup: {
             title: '跟進計劃',
             type: 'list',
