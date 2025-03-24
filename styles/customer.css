@@ -1,0 +1,94 @@
+.search-bar {
+    width: 100%;
+    padding: 0.8rem;
+    margin: 1rem 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.customer-list {
+    margin-bottom: 4rem;
+}
+
+.customer-card {
+    background-color: var(--background-color);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.detail-view {
+    padding: 1rem;
+    margin-bottom: 4rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.form-tabs {
+    display: flex;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.form-tab {
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    color: var(--text-color);
+    border-bottom: 2px solid transparent;
+}
+
+.form-tab.active {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.form-section {
+    display: none;
+}
+
+.form-section.active {
+    display: block;
+}
+
+.timeline {
+    margin-top: 1rem;
+}
+
+.timeline-item {
+    padding: 1rem;
+    border-left: 2px solid var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.save-btn {
+    position: fixed;
+    bottom: 5rem;
+    right: 1rem;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+}
