@@ -199,33 +199,6 @@
     border-left: 3px solid var(--success-color);
 }
 
-/* Form evaluation styles */
-.form-score {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.score-item {
-    background-color: var(--bg-secondary);
-    border-radius: 8px;
-    padding: 12px;
-    text-align: center;
-}
-
-.score-label {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
-}
-
-.score-value {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--accent-color);
-}
-
 /* Customer profile grid */
 .profile-grid {
     display: grid;

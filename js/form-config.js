@@ -58,90 +58,143 @@ const formConfig = {
                     id: 'personality',
                     label: '人格特質',
                     type: 'text'
-                },
-                {
-                    id: 'familyStatus',
-                    label: '家庭狀況',
-                    type: 'text'
-                },
-                {
-                    id: 'children',
-                    label: '子女數量/年齡',
-                    type: 'text'
-                },
-                {
-                    id: 'occupation',
-                    label: '職業/收入/上班型態/時間',
-                    type: 'text'
-                },
-                {
-                    id: 'leisure',
-                    label: '休閒娛樂',
-                    type: 'text'
-                },
-                {
-                    id: 'financialStatus',
-                    label: '財務狀況',
-                    type: 'text'
-                },
-                {
-                    id: 'healthStatus',
-                    label: '健康狀況',
-                    type: 'text'
-                },
-                {
-                    id: 'futureExpectations',
-                    label: '對未來的期待',
-                    type: 'text'
                 }
             ]
         },
-        form: {
-            title: 'FORM評估',
+        formhd: {
+            title: 'FORMHD評估',
             fields: [
                 {
                     id: 'formF',
-                    label: 'F (家庭狀況)',
-                    type: 'select',
-                    options: [
-                        { value: '0', label: '沒有' },
-                        { value: '3', label: '接觸過' },
-                        { value: '5', label: '專業' }
-                    ],
-                    required: true
+                    label: 'F - 家庭狀況',
+                    type: 'text',
+                    required: true,
+                    placeholder: '請輸入家庭狀況'
+                },
+                {
+                    id: 'formFSpouse',
+                    label: '另一半職業',
+                    type: 'text',
+                    required: false
+                },
+                {
+                    id: 'formFChildren',
+                    label: '子女數量/年齡',
+                    type: 'text',
+                    required: false
+                },
+                {
+                    id: 'formFEducation',
+                    label: '就學/就業',
+                    type: 'text',
+                    required: false
+                },
+                {
+                    id: 'formFFamily',
+                    label: '家中成員/寵物',
+                    type: 'text',
+                    required: false
+                },
+                {
+                    id: 'formFShopping',
+                    label: '喜歡線上購物',
+                    type: 'checkbox',
+                    required: false
+                },
+                {
+                    id: 'formFSaving',
+                    label: '喜歡省錢',
+                    type: 'checkbox',
+                    required: false
+                },
+                {
+                    id: 'formFNeedMoney',
+                    label: '需要錢嗎',
+                    type: 'checkbox',
+                    required: false
                 },
                 {
                     id: 'formO',
-                    label: 'O (職業收入)',
-                    type: 'select',
-                    options: [
-                        { value: '0', label: '暫無收入需求' },
-                        { value: '3', label: '收入不穩定或不滿意' },
-                        { value: '5', label: '專業' }
-                    ],
-                    required: true
+                    label: 'O - 職業',
+                    type: 'text',
+                    required: true,
+                    placeholder: '請輸入職業'
+                },
+                {
+                    id: 'formOIncome',
+                    label: '收入',
+                    type: 'text',
+                    required: false
+                },
+                {
+                    id: 'formOWorkType',
+                    label: '上班型態',
+                    type: 'text',
+                    required: false
+                },
+                {
+                    id: 'formOTime',
+                    label: '時間',
+                    type: 'text',
+                    required: false
                 },
                 {
                     id: 'formR',
-                    label: 'R (人際關係)',
-                    type: 'select',
-                    options: [
-                        { value: '0', label: '沒有' },
-                        { value: '3', label: '接觸過' },
-                        { value: '5', label: '專業' }
-                    ],
-                    required: true
+                    label: 'R - 休閒娛樂',
+                    type: 'text',
+                    required: true,
+                    placeholder: '請輸入休閒娛樂'
+                },
+                {
+                    id: 'formRDrink',
+                    label: '喜歡喝茶/咖啡',
+                    type: 'checkbox',
+                    required: false
+                },
+                {
+                    id: 'formRMakeup',
+                    label: '喜歡化妝',
+                    type: 'checkbox',
+                    required: false
                 },
                 {
                     id: 'formM',
-                    label: 'M (管理能力)',
-                    type: 'select',
-                    options: [
-                        { value: '0', label: '沒有' },
-                        { value: '3', label: '接觸過' },
-                        { value: '5', label: '專業' }
-                    ],
-                    required: true
+                    label: 'M - 財務狀況',
+                    type: 'text',
+                    required: true,
+                    placeholder: '請輸入財務狀況'
+                },
+                {
+                    id: 'formMNoTime',
+                    label: '賺很多錢沒時間花',
+                    type: 'checkbox',
+                    required: false
+                },
+                {
+                    id: 'formH',
+                    label: 'H - 健康狀況',
+                    type: 'text',
+                    required: false,
+                    placeholder: '請輸入健康狀況'
+                },
+                {
+                    id: 'formHExercise',
+                    label: '運動狀況',
+                    type: 'text',
+                    required: false
+                },
+                {
+                    id: 'formHWeight',
+                    label: '需要減重',
+                    type: 'checkbox',
+                    required: false
+                },
+                {
+                    id: 'formD',
+                    label: 'D - 對未來的期待',
+                    type: 'text',
+                    required: false,
+                    placeholder: '請輸入對未來的期待'
                 },
                 {
                     id: 'needs',

@@ -73,32 +73,6 @@ class FormGenerator {
         title.textContent = section.title;
         sectionElement.appendChild(title);
 
-        // Add form score display for the form section
-        if (sectionId === 'form') {
-            const scoreDisplay = document.createElement('div');
-            scoreDisplay.className = 'form-score';
-            
-            ['F', 'O', 'R', 'M'].forEach(letter => {
-                const scoreItem = document.createElement('div');
-                scoreItem.className = 'score-item';
-                
-                const scoreLabel = document.createElement('div');
-                scoreLabel.className = 'score-label';
-                scoreLabel.textContent = letter;
-                
-                const scoreValue = document.createElement('div');
-                scoreValue.className = 'score-value';
-                scoreValue.id = `form${letter}Score`;
-                scoreValue.textContent = '0';
-                
-                scoreItem.appendChild(scoreLabel);
-                scoreItem.appendChild(scoreValue);
-                scoreDisplay.appendChild(scoreItem);
-            });
-            
-            sectionElement.appendChild(scoreDisplay);
-        }
-
         const fieldsContainer = document.createElement('div');
         fieldsContainer.className = 'form-fields';
 

@@ -94,7 +94,7 @@ function displayCustomers(customers) {
     customers.forEach(customer => {
         const card = createCustomerCard(customer);
         card.addEventListener('click', () => {
-            loadCustomerData(customer);
+            showCustomerDetail(customer.id);
         });
         customerList.appendChild(card);
     });
@@ -372,19 +372,29 @@ function getFormData() {
         gender: document.getElementById('gender').value,
         howMet: document.getElementById('howMet').value,
         personality: document.getElementById('personality').value,
-        familyStatus: document.getElementById('familyStatus').value,
-        children: document.getElementById('children').value,
-        occupation: document.getElementById('occupation').value,
-        leisure: document.getElementById('leisure').value,
-        financialStatus: document.getElementById('financialStatus').value,
-        healthStatus: document.getElementById('healthStatus').value,
-        futureExpectations: document.getElementById('futureExpectations').value,
         
-        // FORM evaluation
+        // FORMHD evaluation
         formF: document.getElementById('formF').value,
+        formFSpouse: document.getElementById('formFSpouse').value,
+        formFChildren: document.getElementById('formFChildren').value,
+        formFEducation: document.getElementById('formFEducation').value,
+        formFFamily: document.getElementById('formFFamily').value,
+        formFShopping: document.getElementById('formFShopping').checked,
+        formFSaving: document.getElementById('formFSaving').checked,
+        formFNeedMoney: document.getElementById('formFNeedMoney').checked,
         formO: document.getElementById('formO').value,
+        formOIncome: document.getElementById('formOIncome').value,
+        formOWorkType: document.getElementById('formOWorkType').value,
+        formOTime: document.getElementById('formOTime').value,
         formR: document.getElementById('formR').value,
+        formRDrink: document.getElementById('formRDrink').checked,
+        formRMakeup: document.getElementById('formRMakeup').checked,
         formM: document.getElementById('formM').value,
+        formMNoTime: document.getElementById('formMNoTime').checked,
+        formH: document.getElementById('formH').value,
+        formHExercise: document.getElementById('formHExercise').value,
+        formHWeight: document.getElementById('formHWeight').checked,
+        formD: document.getElementById('formD').value,
 
         // Needs analysis
         needWeightLoss: document.getElementById('needWeightLoss').checked,
