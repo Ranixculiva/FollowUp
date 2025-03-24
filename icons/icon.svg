@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background circle -->
+    <circle cx="256" cy="256" r="240" fill="#4a90e2" opacity="0.1"/>
+    
+    <!-- Main circle representing customer/relationship -->
+    <circle cx="256" cy="256" r="160" fill="#4a90e2" opacity="0.2"/>
+    
+    <!-- Progress arrow -->
+    <path d="M256 96 L256 416 M256 96 L384 224 M256 96 L128 224" 
+          stroke="#4a90e2" 
+          stroke-width="32" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+    
+    <!-- Data points -->
+    <circle cx="256" cy="96" r="16" fill="#4a90e2"/>
+    <circle cx="384" cy="224" r="16" fill="#4a90e2"/>
+    <circle cx="128" cy="224" r="16" fill="#4a90e2"/>
+    <circle cx="256" cy="416" r="16" fill="#4a90e2"/>
+</svg> 
