@@ -359,52 +359,6 @@ function loadCustomerData(customer) {
     FormGenerator.loadData(customer);
 }
 
-// Get form data
-function getFormData() {
-    return {
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-        line: document.getElementById('line').value,
-        fb: document.getElementById('fb').value,
-        ig: document.getElementById('ig').value,
-        address: document.getElementById('address').value,
-        age: document.getElementById('age').value,
-        gender: document.getElementById('gender').value,
-        howMet: document.getElementById('howMet').value,
-        personality: document.getElementById('personality').value,
-        
-        // FORMHD evaluation
-        formF: document.getElementById('formF').value,
-        formFSpouse: document.getElementById('formFSpouse').value,
-        formFChildren: document.getElementById('formFChildren').value,
-        formFEducation: document.getElementById('formFEducation').value,
-        formFFamily: document.getElementById('formFFamily').value,
-        formFShopping: document.getElementById('formFShopping').checked,
-        formFSaving: document.getElementById('formFSaving').checked,
-        formFNeedMoney: document.getElementById('formFNeedMoney').checked,
-        formO: document.getElementById('formO').value,
-        formOIncome: document.getElementById('formOIncome').value,
-        formOWorkType: document.getElementById('formOWorkType').value,
-        formOTime: document.getElementById('formOTime').value,
-        formR: document.getElementById('formR').value,
-        formRDrink: document.getElementById('formRDrink').checked,
-        formRMakeup: document.getElementById('formRMakeup').checked,
-        formM: document.getElementById('formM').value,
-        formMNoTime: document.getElementById('formMNoTime').checked,
-        formH: document.getElementById('formH').value,
-        formHExercise: document.getElementById('formHExercise').value,
-        formHWeight: document.getElementById('formHWeight').checked,
-        formD: document.getElementById('formD').value,
-
-        // Needs analysis
-        needWeightLoss: document.getElementById('needWeightLoss').checked,
-        needSkincare: document.getElementById('needSkincare').checked,
-        needHealth: document.getElementById('needHealth').checked,
-        needIncome: document.getElementById('needIncome').checked,
-        needPassiveIncome: document.getElementById('needPassiveIncome').checked
-    };
-}
-
 // Display customer card
 function createCustomerCard(customer) {
     const card = document.createElement('div');

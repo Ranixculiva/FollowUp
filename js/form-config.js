@@ -71,7 +71,7 @@ const formConfig = {
                             id: 'formF',
                             label: 'F - 家庭狀況',
                             type: 'text',
-                            required: true,
+                            required: false,
                             placeholder: '請輸入家庭狀況'
                         },
                         {
@@ -123,9 +123,9 @@ const formConfig = {
                     fields: [
                         {
                             id: 'formO',
-                            label: 'O - 職業',
+                            label: '職業',
                             type: 'text',
-                            required: true,
+                            required: false,
                             placeholder: '請輸入職業'
                         },
                         {
@@ -153,9 +153,9 @@ const formConfig = {
                     fields: [
                         {
                             id: 'formR',
-                            label: 'R - 休閒娛樂',
+                            label: '休閒娛樂',
                             type: 'text',
-                            required: true,
+                            required: false,
                             placeholder: '請輸入休閒娛樂'
                         },
                         {
@@ -177,9 +177,9 @@ const formConfig = {
                     fields: [
                         {
                             id: 'formM',
-                            label: 'M - 財務狀況',
+                            label: '財務狀況',
                             type: 'text',
-                            required: true,
+                            required: false,
                             placeholder: '請輸入財務狀況'
                         },
                         {
@@ -195,7 +195,7 @@ const formConfig = {
                     fields: [
                         {
                             id: 'formH',
-                            label: 'H - 健康狀況',
+                            label: '健康狀況',
                             type: 'text',
                             required: false,
                             placeholder: '請輸入健康狀況'

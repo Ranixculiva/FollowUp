@@ -86,6 +86,12 @@ class FormGenerator {
                     fieldsContainer.appendChild(divider);
                 }
 
+                // Add subsection title
+                const subsectionTitle = document.createElement('h3');
+                subsectionTitle.className = 'subsection-title';
+                subsectionTitle.textContent = subsection.title;
+                fieldsContainer.appendChild(subsectionTitle);
+
                 // Create subsection fields
                 subsection.fields.forEach(field => {
                     fieldsContainer.appendChild(this.createFormField(field));
