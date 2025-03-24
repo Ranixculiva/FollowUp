@@ -456,7 +456,7 @@ async function handleFormSubmit(event) {
     const customer = new Customer(formData);
     
     try {
-        await db.addCustomer(customer);
+        await addCustomer(customer);
         loadCustomers();
         event.target.reset();
     } catch (error) {
@@ -467,19 +467,20 @@ async function handleFormSubmit(event) {
 // Load all customers
 async function loadCustomers() {
     try {
-        const customers = await db.getAllCustomers();
+        const customers = await getAllCustomers();
         const container = document.getElementById('customerList');
         container.innerHTML = '';
         
         customers.forEach(customer => {
             const card = createCustomerCard(customer);
             card.addEventListener('click', () => {
-                loadCustomerData(customer);
+                showCustomerDetail(customer.id);
             });
             container.appendChild(card);
         });
     } catch (error) {
-        alert('Error loading customers: ' + error.message);
+        console.error('Error loading customers:', error);
+        alert('載入客戶資料失敗，請稍後再試');
     }
 }
 
@@ -910,17 +911,17 @@ async function handleFileImport(event) {
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
-                let customers;
+                let importedCustomers;
                 
                 if (file.name.endsWith('.json')) {
                     // Handle JSON import
-                    customers = JSON.parse(e.target.result);
-                    if (!Array.isArray(customers)) {
+                    importedCustomers = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedCustomers)) {
                         throw new Error('無效的 JSON 格式');
                     }
                 } else if (file.name.endsWith('.csv')) {
                     // Handle CSV import
-                    customers = parseCSV(e.target.result);
+                    importedCustomers = parseCSV(e.target.result);
                 } else {
                     throw new Error('不支援的檔案格式');
                 }
@@ -928,13 +929,13 @@ async function handleFileImport(event) {
                 // Clear existing data
                 await clearAllCustomers();
 
-                // Import new data
-                for (const customer of customers) {
+                // Import all customers
+                for (const customer of importedCustomers) {
                     await addCustomer(customer);
                 }
 
                 alert('資料匯入成功！');
-                location.reload();
+                loadCustomers();
             } catch (error) {
                 console.error('解析檔案時發生錯誤：', error);
                 alert('檔案格式錯誤，請確保匯入正確的備份檔案');
