@@ -4,14 +4,25 @@ let isEditing = false;
 let hasUnsavedChanges = false;
 
 // Initialize UI
-document.addEventListener('DOMContentLoaded', async () => {
+async function initializeUI() {
     try {
         // Initialize database first
         await initDB();
         
+        // Initialize form
+        const formContainer = document.getElementById('customerForm');
+        if (!formContainer) {
+            throw new Error('Customer form container not found');
+        }
+        FormGenerator.generateForm('customerForm');
+        
         // Set up search handler
         const searchBar = document.querySelector('.search-bar');
-        searchBar.addEventListener('input', debounce(handleSearch, 300));
+        if (searchBar) {
+            searchBar.addEventListener('input', debounce(handleSearch, 300));
+        } else {
+            console.warn('Search bar element not found. Search functionality will be disabled.');
+        }
 
         // Set up form change tracking
         const formInputs = document.querySelectorAll('input, select, textarea');
@@ -21,6 +32,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
 
+        // Add event listeners
+        const addCustomerLink = document.querySelector('.nav-item[onclick="showAddCustomer()"]');
+        if (addCustomerLink) {
+            addCustomerLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showAddCustomer();
+            });
+        } else {
+            console.warn('Add customer link not found. Add customer functionality will be disabled.');
+        }
+
+        const customerForm = document.getElementById('customerForm');
+        if (customerForm) {
+            customerForm.addEventListener('submit', handleFormSubmit);
+        } else {
+            console.warn('Customer form not found. Form submission will be disabled.');
+        }
+
         // Load initial customer list
         await refreshCustomerList();
     } catch (error) {
@@ -28,7 +57,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Show error to user
         alert('Error initializing application. Please refresh the page.');
     }
-});
+}
+
+// Start initialization when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeUI);
+} else {
+    initializeUI();
+}
 
 // Debounce function for search
 function debounce(func, wait) {
@@ -56,33 +92,12 @@ function displayCustomers(customers) {
     customerList.innerHTML = '';
 
     customers.forEach(customer => {
-        const card = document.createElement('div');
-        card.className = 'customer-card';
-        card.onclick = () => showCustomerDetail(customer.id);
-
-        const name = document.createElement('div');
-        name.className = 'customer-name';
-        name.textContent = customer.name || '未命名';
-
-        const info = document.createElement('div');
-        info.className = 'customer-info';
-        info.textContent = [
-            customer.contact,
-            customer.address,
-            `FORM分數: ${calculateFormScore(customer)}`
-        ].filter(Boolean).join(' | ');
-
-        card.appendChild(name);
-        card.appendChild(info);
+        const card = createCustomerCard(customer);
+        card.addEventListener('click', () => {
+            loadCustomerData(customer);
+        });
         customerList.appendChild(card);
     });
-}
-
-// Calculate FORM score
-function calculateFormScore(customer) {
-    const scores = ['formF', 'formO', 'formR', 'formM']
-        .map(key => parseInt(customer[key] || 0));
-    return scores.reduce((a, b) => a + b, 0);
 }
 
 // Show customer detail view
@@ -105,9 +120,6 @@ async function showCustomerDetail(customerId) {
             }
         }
     });
-
-    // Update FORM scores
-    updateScore();
 
     // Load followups
     await refreshFollowups(customerId);
@@ -133,8 +145,11 @@ function showAddCustomer() {
         }
     });
 
-    // Clear followups
-    document.getElementById('followupTimeline').innerHTML = '';
+    // Clear followups if timeline exists
+    const timeline = document.getElementById('followupTimeline');
+    if (timeline) {
+        timeline.innerHTML = '';
+    }
 
     // Show detail view
     const detailView = document.getElementById('customerDetail');
@@ -156,49 +171,53 @@ function handleBack() {
 
 // Save customer data
 async function saveCustomer() {
-    const customerData = {
-        name: document.getElementById('name').value,
-        contact: document.getElementById('contact').value,
-        address: document.getElementById('address').value,
-        ageGender: document.getElementById('ageGender').value,
-        howMet: document.getElementById('howMet').value,
-        familyStatus: document.getElementById('familyStatus').value,
-        children: document.getElementById('children').value,
-        occupation: document.getElementById('occupation').value,
-        leisure: document.getElementById('leisure').value,
-        financialStatus: document.getElementById('financialStatus').value,
-        healthStatus: document.getElementById('healthStatus').value,
-        futureExpectations: document.getElementById('futureExpectations').value,
-        formF: document.getElementById('formF').value,
-        formO: document.getElementById('formO').value,
-        formR: document.getElementById('formR').value,
-        formM: document.getElementById('formM').value,
-        needWeightLoss: document.getElementById('needWeightLoss').checked,
-        needSkincare: document.getElementById('needSkincare').checked,
-        needHealth: document.getElementById('needHealth').checked,
-        needIncome: document.getElementById('needIncome').checked,
-        needPassiveIncome: document.getElementById('needPassiveIncome').checked
-    };
-
     try {
+        // Validate form
+        const errors = FormGenerator.validateForm();
+        if (errors.length > 0) {
+            alert(errors.join('\n'));
+            return;
+        }
+
+        // Get form data using FormGenerator
+        const formData = FormGenerator.getFormData();
+        
+        // Create customer object
+        const customer = new Customer(formData);
+        
+        // Validate customer data
+        const validationErrors = customer.validate();
+        if (validationErrors.length > 0) {
+            alert(validationErrors.join('\n'));
+            return;
+        }
+
         if (isEditing) {
-            await updateCustomer(currentCustomerId, customerData);
+            await updateCustomer(currentCustomerId, customer);
         } else {
-            await addCustomer(customerData);
+            await addCustomer(customer);
         }
 
         // Save followup if entered
-        const followupPlan = document.getElementById('followupPlan').value;
-        const followupDate = document.getElementById('followupDate').value;
-        const followupFeedback = document.getElementById('followupFeedback').value;
+        const followupPlan = document.getElementById('followupPlan')?.value;
+        const followupDate = document.getElementById('followupDate')?.value;
+        const followupFeedback = document.getElementById('followupFeedback')?.value;
 
         if (followupPlan && followupDate) {
-            await addFollowup({
+            const followup = new Followup({
                 customerId: currentCustomerId,
                 plan: followupPlan,
                 date: followupDate,
                 feedback: followupFeedback
             });
+
+            const followupErrors = followup.validate();
+            if (followupErrors.length > 0) {
+                alert(followupErrors.join('\n'));
+                return;
+            }
+
+            await addFollowup(followup);
         }
 
         // Reset unsaved changes flag
@@ -320,46 +339,9 @@ function showTab(tabName) {
     document.querySelector(`.form-tab[onclick="showTab('${tabName}')"]`).classList.add('active');
 }
 
-// Update FORM scores
-function updateScore() {
-    ['F', 'O', 'R', 'M'].forEach(letter => {
-        const score = document.getElementById(`form${letter}`).value;
-        document.getElementById(`form${letter}Score`).textContent = score;
-    });
-}
-
 // Load customer data into form
 function loadCustomerData(customer) {
-    document.getElementById('name').value = customer.name || '';
-    document.getElementById('phone').value = customer.phone || '';
-    document.getElementById('line').value = customer.line || '';
-    document.getElementById('fb').value = customer.fb || '';
-    document.getElementById('ig').value = customer.ig || '';
-    document.getElementById('address').value = customer.address || '';
-    document.getElementById('age').value = customer.age || '';
-    document.getElementById('gender').value = customer.gender || '';
-    document.getElementById('howMet').value = customer.howMet || '';
-    document.getElementById('personality').value = customer.personality || '';
-    document.getElementById('familyStatus').value = customer.familyStatus || '';
-    document.getElementById('children').value = customer.children || '';
-    document.getElementById('occupation').value = customer.occupation || '';
-    document.getElementById('leisure').value = customer.leisure || '';
-    document.getElementById('financialStatus').value = customer.financialStatus || '';
-    document.getElementById('healthStatus').value = customer.healthStatus || '';
-    document.getElementById('futureExpectations').value = customer.futureExpectations || '';
-    
-    // FORM evaluation
-    document.getElementById('formF').value = customer.formF || '0';
-    document.getElementById('formO').value = customer.formO || '0';
-    document.getElementById('formR').value = customer.formR || '0';
-    document.getElementById('formM').value = customer.formM || '0';
-
-    // Needs analysis
-    document.getElementById('needWeightLoss').checked = customer.needWeightLoss || false;
-    document.getElementById('needSkincare').checked = customer.needSkincare || false;
-    document.getElementById('needHealth').checked = customer.needHealth || false;
-    document.getElementById('needIncome').checked = customer.needIncome || false;
-    document.getElementById('needPassiveIncome').checked = customer.needPassiveIncome || false;
+    FormGenerator.loadData(customer);
 }
 
 // Get form data
@@ -402,15 +384,72 @@ function getFormData() {
 function createCustomerCard(customer) {
     const card = document.createElement('div');
     card.className = 'customer-card';
-    card.onclick = () => showCustomerDetail(customer.id);
-
+    
+    const name = document.createElement('h3');
+    name.textContent = customer.name;
+    card.appendChild(name);
+    
+    // Get first available contact method
     const contact = customer.phone || customer.line || customer.fb || customer.ig;
-    card.innerHTML = `
-        <div class="customer-name">${customer.name}</div>
-        <div class="customer-contact">${contact || '無聯絡方式'}</div>
-        <div class="customer-address">${customer.address || '無地址'}</div>
-        <div class="customer-form-score">FORM: ${customer.calculateFormScore()}</div>
-    `;
-
+    if (contact) {
+        const contactInfo = document.createElement('p');
+        contactInfo.textContent = contact;
+        card.appendChild(contactInfo);
+    }
+    
+    const address = document.createElement('p');
+    address.textContent = customer.address;
+    card.appendChild(address);
+    
     return card;
+}
+
+// Handle form submission
+async function handleFormSubmit(event) {
+    event.preventDefault();
+    
+    // Validate form
+    const errors = FormGenerator.validateForm();
+    if (errors.length > 0) {
+        alert(errors.join('\n'));
+        return;
+    }
+    
+    // Get form data
+    const formData = FormGenerator.getFormData();
+    
+    // Create customer
+    const customer = new Customer(formData);
+    
+    try {
+        await db.addCustomer(customer);
+        loadCustomers();
+        event.target.reset();
+    } catch (error) {
+        alert('Error adding customer: ' + error.message);
+    }
+}
+
+// Load all customers
+async function loadCustomers() {
+    try {
+        const customers = await db.getAllCustomers();
+        const container = document.getElementById('customerList');
+        container.innerHTML = '';
+        
+        customers.forEach(customer => {
+            const card = createCustomerCard(customer);
+            card.addEventListener('click', () => {
+                loadCustomerData(customer);
+            });
+            container.appendChild(card);
+        });
+    } catch (error) {
+        alert('Error loading customers: ' + error.message);
+    }
+}
+
+// Handle add customer button click
+function handleAddCustomer() {
+    document.getElementById('customerForm').reset();
 }
