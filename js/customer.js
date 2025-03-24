@@ -8,16 +8,6 @@ function getCustomers(callback) {
     };
 }
 
-function getCustomer(id, callback) {
-    const transaction = db.transaction(["customers"], "readonly");
-    const store = transaction.objectStore("customers");
-    const request = store.get(id);
-
-    request.onsuccess = () => {
-        callback(request.result);
-    };
-}
-
 function saveCustomer(customer, followup, callback) {
     const transaction = db.transaction(["customers"], "readwrite");
     const store = transaction.objectStore("customers");
