@@ -109,6 +109,9 @@ async function showCustomerDetail(customerId) {
     const customer = await getCustomer(customerId);
     const detailView = document.getElementById('customerDetail');
     
+    // Update customer title
+    document.querySelector('.customer-title').textContent = customer.name || '未命名客戶';
+    
     // Load all customer data using FormGenerator
     FormGenerator.loadData(customer);
 
@@ -122,6 +125,9 @@ function showAddCustomer() {
     currentCustomerId = null;
     isEditing = false;
     hasUnsavedChanges = false;
+
+    // Clear customer title
+    document.querySelector('.customer-title').textContent = '新增客戶';
 
     // Clear form using FormGenerator
     FormGenerator.loadData({});
