@@ -406,3 +406,18 @@
     color: var(--text-primary);
     border-color: var(--nav-border);
 }
+
+/* Followup item styles */
+.followup-item {
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.followup-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.followup-item strong {
+    color: var(--primary-color);
+}

@@ -251,6 +251,7 @@ async function showFollowUps() {
                         followupsByDate.set(date, []);
                     }
                     followupsByDate.get(date).push({
+                        customerId: customer.id,
                         customerName: customer.name || '未命名',
                         ...followup
                     });
@@ -278,11 +279,21 @@ async function showFollowUps() {
 
             followups.forEach(followup => {
                 const followupItem = document.createElement('div');
+                followupItem.className = 'followup-item';
                 followupItem.style.marginBottom = '8px';
+                followupItem.style.cursor = 'pointer';
                 followupItem.innerHTML = `
                     <strong>${followup.customerName}</strong>: ${followup.followupPlan}
                     ${followup.followupFeedback ? `<div class="timeline-feedback">${followup.followupFeedback}</div>` : ''}
                 `;
+                
+                // Add click event to navigate to customer detail
+                followupItem.addEventListener('click', () => {
+                    showCustomerDetail(followup.customerId);
+                    // Switch to followup tab after a short delay to ensure form is loaded
+                    setTimeout(() => showTab('followup'), 100);
+                });
+
                 followupsList.appendChild(followupItem);
             });
 
