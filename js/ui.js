@@ -327,3 +327,90 @@ function updateScore() {
         document.getElementById(`form${letter}Score`).textContent = score;
     });
 }
+
+// Load customer data into form
+function loadCustomerData(customer) {
+    document.getElementById('name').value = customer.name || '';
+    document.getElementById('phone').value = customer.phone || '';
+    document.getElementById('line').value = customer.line || '';
+    document.getElementById('fb').value = customer.fb || '';
+    document.getElementById('ig').value = customer.ig || '';
+    document.getElementById('address').value = customer.address || '';
+    document.getElementById('age').value = customer.age || '';
+    document.getElementById('gender').value = customer.gender || '';
+    document.getElementById('howMet').value = customer.howMet || '';
+    document.getElementById('personality').value = customer.personality || '';
+    document.getElementById('familyStatus').value = customer.familyStatus || '';
+    document.getElementById('children').value = customer.children || '';
+    document.getElementById('occupation').value = customer.occupation || '';
+    document.getElementById('leisure').value = customer.leisure || '';
+    document.getElementById('financialStatus').value = customer.financialStatus || '';
+    document.getElementById('healthStatus').value = customer.healthStatus || '';
+    document.getElementById('futureExpectations').value = customer.futureExpectations || '';
+    
+    // FORM evaluation
+    document.getElementById('formF').value = customer.formF || '0';
+    document.getElementById('formO').value = customer.formO || '0';
+    document.getElementById('formR').value = customer.formR || '0';
+    document.getElementById('formM').value = customer.formM || '0';
+
+    // Needs analysis
+    document.getElementById('needWeightLoss').checked = customer.needWeightLoss || false;
+    document.getElementById('needSkincare').checked = customer.needSkincare || false;
+    document.getElementById('needHealth').checked = customer.needHealth || false;
+    document.getElementById('needIncome').checked = customer.needIncome || false;
+    document.getElementById('needPassiveIncome').checked = customer.needPassiveIncome || false;
+}
+
+// Get form data
+function getFormData() {
+    return {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        line: document.getElementById('line').value,
+        fb: document.getElementById('fb').value,
+        ig: document.getElementById('ig').value,
+        address: document.getElementById('address').value,
+        age: document.getElementById('age').value,
+        gender: document.getElementById('gender').value,
+        howMet: document.getElementById('howMet').value,
+        personality: document.getElementById('personality').value,
+        familyStatus: document.getElementById('familyStatus').value,
+        children: document.getElementById('children').value,
+        occupation: document.getElementById('occupation').value,
+        leisure: document.getElementById('leisure').value,
+        financialStatus: document.getElementById('financialStatus').value,
+        healthStatus: document.getElementById('healthStatus').value,
+        futureExpectations: document.getElementById('futureExpectations').value,
+        
+        // FORM evaluation
+        formF: document.getElementById('formF').value,
+        formO: document.getElementById('formO').value,
+        formR: document.getElementById('formR').value,
+        formM: document.getElementById('formM').value,
+
+        // Needs analysis
+        needWeightLoss: document.getElementById('needWeightLoss').checked,
+        needSkincare: document.getElementById('needSkincare').checked,
+        needHealth: document.getElementById('needHealth').checked,
+        needIncome: document.getElementById('needIncome').checked,
+        needPassiveIncome: document.getElementById('needPassiveIncome').checked
+    };
+}
+
+// Display customer card
+function createCustomerCard(customer) {
+    const card = document.createElement('div');
+    card.className = 'customer-card';
+    card.onclick = () => showCustomerDetail(customer.id);
+
+    const contact = customer.phone || customer.line || customer.fb || customer.ig;
+    card.innerHTML = `
+        <div class="customer-name">${customer.name}</div>
+        <div class="customer-contact">${contact || '無聯絡方式'}</div>
+        <div class="customer-address">${customer.address || '無地址'}</div>
+        <div class="customer-form-score">FORM: ${customer.calculateFormScore()}</div>
+    `;
+
+    return card;
+}

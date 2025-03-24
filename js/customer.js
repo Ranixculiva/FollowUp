@@ -46,10 +46,15 @@ class Customer {
     constructor(data = {}) {
         this.id = data.id;
         this.name = data.name || '';
-        this.contact = data.contact || '';
+        this.phone = data.phone || '';
+        this.line = data.line || '';
+        this.fb = data.fb || '';
+        this.ig = data.ig || '';
         this.address = data.address || '';
-        this.ageGender = data.ageGender || '';
+        this.age = data.age || '';
+        this.gender = data.gender || '';
         this.howMet = data.howMet || '';
+        this.personality = data.personality || '';
         this.familyStatus = data.familyStatus || '';
         this.children = data.children || '';
         this.occupation = data.occupation || '';
@@ -100,7 +105,9 @@ class Customer {
         
         // Required fields
         if (!this.name) errors.push('姓名為必填欄位');
-        if (!this.contact) errors.push('聯絡方式為必填欄位');
+        if (!this.phone && !this.line && !this.fb && !this.ig) {
+            errors.push('至少需要一種聯絡方式');
+        }
 
         // FORM score validation
         ['formF', 'formO', 'formR', 'formM'].forEach(key => {
@@ -117,7 +124,7 @@ class Customer {
     getSummary() {
         return {
             name: this.name,
-            contact: this.contact,
+            contact: this.phone || this.line || this.fb || this.ig,
             address: this.address,
             formScore: this.calculateFormScore(),
             needs: this.getPrimaryNeeds(),
