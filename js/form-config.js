@@ -37,7 +37,13 @@ const formConfig = {
                 {
                     id: 'age',
                     label: '年齡',
-                    type: 'number'
+                    type: 'number',
+                    min: 0,
+                    max: 120,
+                    highlight: {
+                        min: 30,
+                        max: 55
+                    }
                 },
                 {
                     id: 'gender',
@@ -58,6 +64,129 @@ const formConfig = {
                     id: 'personality',
                     label: '人格特質',
                     type: 'text'
+                }
+            ]
+        },
+        step2: {
+            title: 'Step 2 資料',
+            fields: [
+                {
+                    id: 'maritalStatus',
+                    label: '婚姻狀況',
+                    type: 'select',
+                    options: [
+                        { value: '', label: '請選擇' },
+                        { value: '已婚', label: '已婚' },
+                        { value: '單身', label: '單身' },
+                        { value: '離婚', label: '離婚' },
+                        { value: '喪偶', label: '喪偶' }
+                    ]
+                },
+                {
+                    id: 'annualIncome',
+                    label: '年收入',
+                    type: 'select',
+                    options: [
+                        { value: '', label: '請選擇' },
+                        { value: '50萬以下', label: '50萬以下' },
+                        { value: '50-100萬', label: '50-100萬' },
+                        { value: '100-150萬', label: '100-150萬' },
+                        { value: '150-200萬', label: '150-200萬' },
+                        { value: '200萬以上', label: '200萬以上' }
+                    ]
+                },
+                {
+                    id: 'moneyNeeds',
+                    label: '金錢需求',
+                    type: 'textarea',
+                    rows: 3
+                },
+                {
+                    id: 'relationship',
+                    label: '關係',
+                    type: 'text'
+                },
+                {
+                    id: 'relationshipCloseness',
+                    label: '關係親疏',
+                    type: 'select',
+                    options: [
+                        { value: '', label: '請選擇' },
+                        { value: '非常親近', label: '非常親近' },
+                        { value: '親近', label: '親近' },
+                        { value: '普通', label: '普通' },
+                        { value: '疏遠', label: '疏遠' },
+                        { value: '非常疏遠', label: '非常疏遠' }
+                    ]
+                },
+                {
+                    id: 'colorRating',
+                    label: '顏色評級',
+                    type: 'select',
+                    options: [
+                        { value: '', label: '請選擇' },
+                        { value: 'red', label: '紅色' },
+                        { value: 'yellow', label: '黃色' },
+                        { value: 'green', label: '綠色' }
+                    ]
+                },
+                {
+                    id: 'productInterest',
+                    label: '對產品興趣',
+                    type: 'select',
+                    options: [
+                        { value: '', label: '請選擇' },
+                        { value: '高', label: '高' },
+                        { value: '中', label: '中' },
+                        { value: '低', label: '低' },
+                        { value: '無', label: '無' }
+                    ]
+                },
+                {
+                    id: 'interests',
+                    label: '興趣',
+                    type: 'textarea',
+                    rows: 3
+                },
+                {
+                    id: 'health',
+                    label: '健康狀況',
+                    type: 'textarea',
+                    rows: 3
+                },
+                {
+                    id: 'dreams',
+                    label: '夢想',
+                    type: 'textarea',
+                    rows: 3
+                },
+                {
+                    id: 'lastInviteDate',
+                    label: '最近邀約日期',
+                    type: 'date'
+                },
+                {
+                    id: 'lastPresentationDate',
+                    label: '產品/事業展示日期',
+                    type: 'date'
+                },
+                {
+                    id: 'firstFollowUp',
+                    label: '第一次跟進',
+                    type: 'textarea',
+                    rows: 3
+                },
+                {
+                    id: 'secondFollowUp',
+                    label: '第二次跟進',
+                    type: 'textarea',
+                    rows: 3
+                },
+                {
+                    id: 'notes',
+                    label: '備注',
+                    type: 'textarea',
+                    rows: 3
                 }
             ]
         },
@@ -158,6 +287,12 @@ const formConfig = {
                     label: '總分',
                     type: 'number',
                     readonly: true
+                },
+                {
+                    id: 'isStep2',
+                    label: 'Step 2 客戶',
+                    type: 'checkbox',
+                    required: false
                 }
             ]
         },

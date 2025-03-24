@@ -49,11 +49,24 @@
 }
 
 .customer-card {
-    background-color: var(--bg-secondary);
-    border-radius: 12px;
+    position: relative;
     padding: 16px;
-    cursor: pointer;
-    transition: transform 0.2s;
+    margin: 8px 16px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.customer-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+.customer-card p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: var(--text-secondary);
 }
 
 .customer-card:active {
@@ -440,4 +453,66 @@
 
 .followup-item strong {
     color: var(--primary-color);
+}
+
+/* Step2 styles */
+.filter-button {
+    margin: 8px 16px;
+    padding: 8px 16px;
+    border: 1px solid var(--nav-button);
+    border-radius: 8px;
+    background: none;
+    color: var(--nav-button);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-button.active {
+    background: var(--nav-button);
+    color: white;
+}
+
+.step2-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    background-color: var(--nav-button);
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.highlight-age {
+    color: var(--nav-button);
+    font-weight: 600;
+}
+
+.color-rating {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+
+.color-rating.red {
+    background-color: #ff4444;
+}
+
+.color-rating.yellow {
+    background-color: #ffbb33;
+}
+
+.color-rating.green {
+    background-color: #00C851;
+}
+
+.last-contact {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
 }

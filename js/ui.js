@@ -2,6 +2,7 @@
 let currentCustomerId = null;
 let isEditing = false;
 let hasUnsavedChanges = false;
+let showOnlyStep2 = false;
 
 // Initialize UI
 async function initializeUI() {
@@ -15,6 +16,14 @@ async function initializeUI() {
             throw new Error('Customer form container not found');
         }
         FormGenerator.generateForm('customerForm');
+        
+        // Add Step2 filter button
+        const searchContainer = document.querySelector('.container');
+        const filterButton = document.createElement('button');
+        filterButton.className = 'filter-button';
+        filterButton.textContent = '只顯示 Step 2 客戶';
+        filterButton.onclick = toggleStep2Filter;
+        searchContainer.insertBefore(filterButton, document.querySelector('.customer-list'));
         
         // Set up search handler
         const searchBar = document.querySelector('.search-bar');
@@ -32,8 +41,17 @@ async function initializeUI() {
                 if (input.id.startsWith('steam') || input.id === 'onlineSales' || input.id === 'connections') {
                     calculateSteamScore();
                 }
+                if (input.id === 'isStep2') {
+                    toggleStep2TabVisibility(input.checked);
+                }
             });
         });
+
+        // Initial setup of Step2 tab visibility
+        const isStep2Input = document.getElementById('isStep2');
+        if (isStep2Input) {
+            toggleStep2TabVisibility(isStep2Input.checked);
+        }
 
         // Add event listeners
         const addCustomerLink = document.querySelector('.nav-item[onclick="showAddCustomer()"]');
@@ -94,6 +112,11 @@ function displayCustomers(customers) {
     const customerList = document.getElementById('customerList');
     customerList.innerHTML = '';
 
+    // Filter Step2 customers if needed
+    if (showOnlyStep2) {
+        customers = customers.filter(customer => customer.isStep2);
+    }
+
     customers.forEach(customer => {
         const card = createCustomerCard(customer);
         card.addEventListener('click', () => {
@@ -118,6 +141,9 @@ async function showCustomerDetail(customerId) {
     // Load all customer data using FormGenerator
     FormGenerator.loadData(customer);
 
+    // Update Step2 tab visibility based on loaded data
+    toggleStep2TabVisibility(customer.isStep2 || false);
+
     // Show detail view
     detailView.classList.add('active');
     showTab('basic');
@@ -134,6 +160,9 @@ function showAddCustomer() {
 
     // Clear form using FormGenerator
     FormGenerator.loadData({});
+
+    // Hide Step2 tab for new customers
+    toggleStep2TabVisibility(false);
 
     // Show detail view
     const detailView = document.getElementById('customerDetail');
@@ -343,9 +372,41 @@ function createCustomerCard(customer) {
     const card = document.createElement('div');
     card.className = 'customer-card';
     
+    // Add Step2 indicator if applicable
+    if (customer.isStep2) {
+        const step2Badge = document.createElement('div');
+        step2Badge.className = 'step2-badge';
+        step2Badge.textContent = 'Step 2';
+        card.appendChild(step2Badge);
+    }
+    
     const name = document.createElement('h3');
     name.textContent = customer.name;
     card.appendChild(name);
+    
+    // Add age with highlight if in range
+    if (customer.age) {
+        const age = document.createElement('p');
+        age.textContent = `${customer.age}歲`;
+        if (customer.age >= 30 && customer.age <= 55) {
+            age.className = 'highlight-age';
+        }
+        card.appendChild(age);
+    }
+    
+    // Add occupation if available
+    if (customer.occupation) {
+        const occupation = document.createElement('p');
+        occupation.textContent = customer.occupation;
+        card.appendChild(occupation);
+    }
+    
+    // Add color rating if available
+    if (customer.colorRating) {
+        const colorRating = document.createElement('div');
+        colorRating.className = `color-rating ${customer.colorRating}`;
+        card.appendChild(colorRating);
+    }
     
     // Get first available contact method
     const contact = customer.phone || customer.line || customer.fb || customer.ig;
@@ -355,9 +416,13 @@ function createCustomerCard(customer) {
         card.appendChild(contactInfo);
     }
     
-    const address = document.createElement('p');
-    address.textContent = customer.address;
-    card.appendChild(address);
+    // Add last follow-up date if available
+    if (customer.lastInviteDate) {
+        const lastContact = document.createElement('p');
+        lastContact.className = 'last-contact';
+        lastContact.textContent = `最近聯繫: ${new Date(customer.lastInviteDate).toLocaleDateString()}`;
+        card.appendChild(lastContact);
+    }
     
     return card;
 }
@@ -455,5 +520,32 @@ function calculateSteamScore() {
     const totalScoreInput = document.getElementById('totalScore');
     if (totalScoreInput) {
         totalScoreInput.value = totalScore;
+    }
+}
+
+// Toggle Step2 filter
+async function toggleStep2Filter() {
+    showOnlyStep2 = !showOnlyStep2;
+    const filterButton = document.querySelector('.filter-button');
+    if (filterButton) {
+        filterButton.classList.toggle('active');
+        filterButton.textContent = showOnlyStep2 ? '顯示所有客戶' : '只顯示 Step 2 客戶';
+    }
+    await refreshCustomerList();
+}
+
+// Toggle Step2 tab visibility
+function toggleStep2TabVisibility(show) {
+    const step2Tab = document.querySelector('.form-tab[onclick="showTab(\'step2\')"]');
+    if (step2Tab) {
+        if (show) {
+            step2Tab.style.display = '';
+        } else {
+            step2Tab.style.display = 'none';
+            // If currently on Step2 tab, switch to basic tab
+            if (document.getElementById('step2Section').classList.contains('active')) {
+                showTab('basic');
+            }
+        }
     }
 }
