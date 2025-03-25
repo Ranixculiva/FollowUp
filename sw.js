@@ -48,6 +48,11 @@ self.addEventListener('activate', event => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
+    // Skip chrome-extension URLs
+    if (event.request.url.startsWith('chrome-extension://')) {
+        return;
+    }
+
     // Handle navigation requests differently
     if (event.request.mode === 'navigate') {
         event.respondWith(
@@ -66,37 +71,35 @@ self.addEventListener('fetch', event => {
                     return response;
                 }
 
-                // Clone the request because it can only be used once
-                const fetchRequest = event.request.clone();
-
-                return fetch(fetchRequest).then(response => {
-                    // Don't cache if:
-                    // 1. Response is not ok
-                    // 2. Response is not a GET
-                    if (!response || response.status !== 200 || event.request.method !== 'GET') {
+                return fetch(event.request).then(response => {
+                    // Check if we received a valid response
+                    if (!response || response.status !== 200 || response.type !== 'basic') {
                         return response;
                     }
 
-                    // Clone the response because it can only be used once
+                    // Clone the response
                     const responseToCache = response.clone();
 
-                    // Cache the response
                     caches.open(CACHE_NAME)
                         .then(cache => {
                             cache.put(event.request, responseToCache);
                         });
 
                     return response;
-                });
-            })
-            .catch(() => {
-                // Return a fallback response for failed fetches
-                if (event.request.destination === 'image') {
-                    return new Response();  // Empty response for failed images
-                }
-                return new Response('Network error happened', {
-                    status: 408,
-                    headers: { 'Content-Type': 'text/plain' },
+                }).catch(() => {
+                    // Return a fallback response for failed fetches
+                    if (event.request.url.endsWith('.png') || 
+                        event.request.url.endsWith('.jpg') || 
+                        event.request.url.endsWith('.jpeg')) {
+                        return new Response(
+                            '<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+                            '<rect width="100" height="100" fill="#eee"/>' +
+                            '<text x="50" y="50" text-anchor="middle" dy=".3em" fill="#aaa">Image</text>' +
+                            '</svg>',
+                            { headers: { 'Content-Type': 'image/svg+xml' } }
+                        );
+                    }
+                    return new Response('Offline');
                 });
             })
     );

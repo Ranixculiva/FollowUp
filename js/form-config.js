@@ -544,7 +544,7 @@ const formConfig = {
                     options: [
                         { id: 'needVIP', label: '成為優惠顧客' },
                         { id: 'needGroupBuy', label: '揪團購物' },
-                        { id: 'needHealth', label: '身體健康' }
+                        { id: 'needHealthBody', label: '身體健康' }
                     ]
                 }
             ]
