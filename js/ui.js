@@ -432,11 +432,6 @@ function getDialogCustomerOrder(allCustomers, filteredCustomers) {
     return [...filteredCustomers, ...remaining];
 }
 
-function hasActiveListViewFilter() {
-    const query = document.querySelector('.search-bar')?.value.trim();
-    return Boolean(query) || hasActiveListFilters();
-}
-
 async function getReportCustomers() {
     const useFiltered = document.getElementById('reportUseFilteredList')?.checked;
 
@@ -1096,7 +1091,7 @@ async function showReportDialog() {
     }
 
     if (useFiltered) {
-        useFiltered.checked = hasActiveListViewFilter();
+        useFiltered.checked = true;
     }
 
     await toggleReportFilteredMode();
