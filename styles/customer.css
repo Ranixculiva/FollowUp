@@ -823,12 +823,16 @@
 
     .customer-report,
     .pdf-detail-page {
-        break-before: page;
-        page-break-before: always;
         padding: 20px;
         margin-bottom: 30px;
         display: block !important;
         background: white !important;
+    }
+
+    .pdf-customer-page-break,
+    .html2pdf__page-break {
+        break-before: page;
+        page-break-before: always;
     }
 
     .pdf-detail-header,
@@ -844,9 +848,9 @@
         page-break-inside: auto;
     }
 
-    .report-section:not(.report-section-followup) {
-        break-inside: avoid;
-        page-break-inside: avoid;
+    .report-section {
+        break-inside: auto;
+        page-break-inside: auto;
     }
 
     .pdf-summary-table {
@@ -875,6 +879,8 @@
         display: block !important;
         color: black !important;
         font-size: 16pt !important;
+        break-after: avoid;
+        page-break-after: avoid;
     }
 
     .report-field {
@@ -1006,6 +1012,7 @@
 }
 
 .pdf-export-root .pdf-document,
+.pdf-export-root .pdf-customer-chunk,
 .pdf-export-root .pdf-detail-page {
     padding: 20px;
     box-sizing: border-box;
@@ -1055,10 +1062,20 @@
     text-align: left;
 }
 
+.pdf-section-break,
+.pdf-customer-page-break,
+.html2pdf__page-break {
+    page-break-before: always;
+    break-before: page;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
 .pdf-section-break {
     page-break-after: always;
     break-after: page;
-    height: 0;
 }
 
 .pdf-details-heading {
@@ -1067,8 +1084,6 @@
 }
 
 .pdf-detail-page {
-    page-break-before: always;
-    break-before: page;
     margin-bottom: 24px;
 }
 
@@ -1091,16 +1106,17 @@
     color: #000;
 }
 
-.pdf-detail-page:first-of-type {
-    page-break-before: always;
-    break-before: page;
+.pdf-details-heading {
+    break-after: avoid;
+    page-break-after: avoid;
 }
 
 #reportContent .report-section,
-.pdf-document .report-section {
+.pdf-document .report-section,
+.pdf-export-root .report-section {
     margin-bottom: 16px;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    page-break-inside: auto;
+    break-inside: auto;
 }
 
 #reportContent .report-section-followup,
@@ -1124,10 +1140,20 @@
     border-bottom: 2px solid #000;
     box-shadow: inset 0 -2px 0 #000;
     color: #000;
+    break-after: avoid;
+    page-break-after: avoid;
 }
 
 #reportContent .report-field,
-.pdf-document .report-field {
+.pdf-document .report-field,
+.pdf-export-root .report-field {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+#reportContent .report-field,
+.pdf-document .report-field,
+.pdf-export-root .report-field {
     display: flex;
     gap: 8px;
     margin-bottom: 6px;

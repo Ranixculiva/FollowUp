@@ -1,5 +1,9 @@
 /**
  * Export customer reports as PDF (summary table + full detail per customer).
+ *
+ * html2pdf renders HTML to a canvas and slices it into pages, so one giant document
+ * breaks unpredictably. We render summary + each customer separately, then merge
+ * the PDF blobs with pdf-lib (copying jsPDF internal pages corrupts the output).
  */
 const PDF_EXPORT_OPTIONS = {
     margin: [10, 10, 10, 10],
@@ -11,22 +15,63 @@ const PDF_EXPORT_OPTIONS = {
         scrollY: 0,
         backgroundColor: '#ffffff'
     },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+};
+
+const SUMMARY_PDF_OPTIONS = {
+    ...PDF_EXPORT_OPTIONS,
+    pagebreak: { mode: ['css', 'legacy'] }
+};
+
+const CUSTOMER_PDF_OPTIONS = {
+    ...PDF_EXPORT_OPTIONS,
     pagebreak: {
         mode: ['css', 'legacy'],
-        before: '.pdf-detail-page',
         avoid: [
             '.pdf-detail-header',
             '.pdf-detail-title',
             '.report-field',
-            '.report-section:not(.report-section-followup)'
+            '.report-section h3'
         ]
     }
 };
 
+async function renderElementToPdfBlob(element, options) {
+    return html2pdf().set(options).from(element).outputPdf('blob');
+}
+
+async function mergePdfBlobs(blobs) {
+    const { PDFDocument } = PDFLib;
+    const merged = await PDFDocument.create();
+
+    for (const blob of blobs) {
+        const bytes = await blob.arrayBuffer();
+        const doc = await PDFDocument.load(bytes);
+        const pages = await merged.copyPages(doc, doc.getPageIndices());
+        pages.forEach(page => merged.addPage(page));
+    }
+
+    return merged.save();
+}
+
+function downloadPdfBytes(bytes, filename) {
+    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
 async function generatePdfReport() {
     if (typeof html2pdf === 'undefined') {
         alert('PDF 元件尚未載入，請重新整理頁面');
+        return;
+    }
+
+    if (typeof PDFLib === 'undefined') {
+        alert('PDF 合併元件尚未載入，請重新整理頁面');
         return;
     }
 
@@ -40,26 +85,47 @@ async function generatePdfReport() {
     }
 
     let exportRoot = null;
+    const pdfButton = document.querySelector('#reportDialog .dialog-btn-primary');
 
     try {
+        if (pdfButton) {
+            pdfButton.disabled = true;
+            pdfButton.textContent = '正在產生 PDF…';
+        }
+
         exportRoot = document.createElement('div');
         exportRoot.className = 'pdf-export-root';
-        exportRoot.appendChild(ReportBuilder.createFullReportElement(customers));
         document.body.appendChild(exportRoot);
 
         const dateStamp = new Date().toISOString().slice(0, 10);
         const filename = `客戶報表_${dateStamp}.pdf`;
+        const pdfBlobs = [];
 
-        await html2pdf()
-            .set({ ...PDF_EXPORT_OPTIONS, filename })
-            .from(exportRoot.querySelector('.pdf-document'))
-            .save();
+        const summaryElement = ReportBuilder.createSummaryReportElement(customers);
+        exportRoot.appendChild(summaryElement);
+        pdfBlobs.push(await renderElementToPdfBlob(summaryElement, SUMMARY_PDF_OPTIONS));
+        exportRoot.removeChild(summaryElement);
 
+        for (let index = 0; index < customers.length; index += 1) {
+            const customerElement = ReportBuilder.createCustomerDetailPageElement(customers[index], {
+                showDetailsHeading: index === 0
+            });
+            exportRoot.appendChild(customerElement);
+            pdfBlobs.push(await renderElementToPdfBlob(customerElement, CUSTOMER_PDF_OPTIONS));
+            exportRoot.removeChild(customerElement);
+        }
+
+        const mergedBytes = await mergePdfBlobs(pdfBlobs);
+        downloadPdfBytes(mergedBytes, filename);
         closeReportDialog();
     } catch (error) {
         console.error('Error generating PDF:', error);
         alert(`匯出 PDF 失敗：${error.message || '請稍後再試'}`);
     } finally {
+        if (pdfButton) {
+            pdfButton.disabled = false;
+            pdfButton.textContent = '匯出 PDF';
+        }
         if (exportRoot?.parentNode) {
             exportRoot.parentNode.removeChild(exportRoot);
         }

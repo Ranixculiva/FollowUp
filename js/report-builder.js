@@ -177,9 +177,34 @@ const ReportBuilder = (() => {
                 return;
             }
 
-            const rows = collectRegularFields(section);
-            if (rows.length > 0) {
-                sections.push({ title: section.title, rows });
+            if (section.subsections) {
+                Object.values(section.subsections).forEach(subsection => {
+                    const rows = subsection.fields.map(field => ({
+                        label: field.label,
+                        value: formatFieldValue(customerRef, field)
+                    }));
+                    sections.push({
+                        title: `${section.title} · ${subsection.title}`,
+                        rows
+                    });
+                });
+
+                if (section.fields?.length) {
+                    section.fields.forEach(field => {
+                        sections.push({
+                            title: `${section.title} · ${field.label}`,
+                            rows: [{
+                                label: field.label,
+                                value: formatFieldValue(customerRef, field)
+                            }]
+                        });
+                    });
+                }
+            } else {
+                const rows = collectRegularFields(section);
+                if (rows.length > 0) {
+                    sections.push({ title: section.title, rows });
+                }
             }
         });
 
@@ -317,7 +342,10 @@ const ReportBuilder = (() => {
                 <div class="pdf-section-break"></div>
                 <section class="pdf-details-section">
                     <h1 class="pdf-title pdf-details-heading">客戶詳細資料</h1>
-                    ${customers.map(renderCustomerDetailHtml).join('')}
+                    ${customers.map((customer, index) => `
+                        ${index > 0 ? '<div class="html2pdf__page-break pdf-customer-page-break"></div>' : ''}
+                        ${renderCustomerDetailHtml(customer)}
+                    `).join('')}
                 </section>
             </div>
         `;
@@ -331,7 +359,7 @@ const ReportBuilder = (() => {
 
     function createCustomerDetailPageElement(customer, { showDetailsHeading = false } = {}) {
         const wrapper = document.createElement('div');
-        wrapper.className = 'pdf-customer-chunk';
+        wrapper.className = 'pdf-customer-chunk pdf-document';
         if (showDetailsHeading) {
             const heading = document.createElement('h1');
             heading.className = 'pdf-title pdf-details-heading';
