@@ -473,49 +473,115 @@
     color: var(--primary-color);
 }
 
-/* List controls */
-.list-controls {
+/* List toolbar (filters + sort) */
+.list-toolbar {
+    margin: 8px 16px 12px;
+    padding: 12px;
+    border: 1px solid var(--nav-border);
+    border-radius: 12px;
+    background: var(--nav-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toolbar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toolbar-heading {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--nav-text-secondary);
+}
+
+.toolbar-row {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.toolbar-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.toolbar-field-grow {
+    flex: 1 1 140px;
+}
+
+.toolbar-field label {
+    font-size: 12px;
+    color: var(--nav-text-secondary);
+}
+
+.toolbar-chip {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin: 8px 16px;
-}
-
-/* Step2 styles */
-.filter-button {
-    margin: 0;
-    padding: 8px 16px;
-    border: 1px solid var(--nav-button);
-    border-radius: 8px;
-    background: none;
-    color: var(--nav-button);
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.filter-button.active {
-    background: var(--nav-button);
-    color: white;
-}
-
-.sort-select {
-    flex: 1;
-    min-width: 180px;
-    padding: 8px 12px;
+    gap: 6px;
+    padding: 10px 14px;
     border: 1px solid var(--nav-border);
-    border-radius: 8px;
-    background: var(--nav-bg);
+    border-radius: 999px;
+    background: var(--bg-secondary, #fff);
     color: var(--nav-text);
     font-size: 14px;
     cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.toolbar-chip:has(input:checked) {
+    border-color: var(--nav-button);
+    background: rgba(var(--nav-button-rgb), 0.12);
+    color: var(--nav-button);
+    font-weight: 600;
+}
+
+.toolbar-chip input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--nav-button);
+}
+
+.toolbar-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--nav-border);
+    border-radius: 10px;
+    background: var(--bg-secondary, #fff);
+    color: var(--nav-text);
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.toolbar-select-full {
+    width: 100%;
+}
+
+.list-empty {
+    margin: 24px 16px;
+    text-align: center;
+    color: var(--nav-text-secondary);
+    font-size: 15px;
 }
 
 .steam-score {
     color: var(--nav-button);
     font-weight: 600;
     font-size: 14px;
+}
+
+.customer-country {
+    color: var(--nav-text-secondary);
+    font-size: 13px;
 }
 
 .step2-badge {

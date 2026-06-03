@@ -3,6 +3,7 @@ let currentCustomerId = null;
 let isEditing = false;
 let hasUnsavedChanges = false;
 let showOnlyStep2 = false;
+let countryFilter = '';
 let customerSortMode = 'default';
 
 // Initialize UI
@@ -21,36 +22,10 @@ async function initializeUI() {
         }
         FormGenerator.generateForm('customerForm');
         
-        // List controls: Step2 filter and STEAM sort
-        const listControls = document.createElement('div');
-        listControls.className = 'list-controls';
-
-        const filterButton = document.createElement('button');
-        filterButton.className = 'filter-button';
-        filterButton.textContent = '只顯示 Step 2 客戶';
-        filterButton.onclick = toggleStep2Filter;
-        listControls.appendChild(filterButton);
-
-        const sortSelect = document.createElement('select');
-        sortSelect.className = 'sort-select';
-        sortSelect.setAttribute('aria-label', '客戶列表排序');
-        [
-            { value: 'default', label: '預設順序' },
-            { value: 'steam-desc', label: 'STEAM 分數（高→低）' },
-            { value: 'steam-asc', label: 'STEAM 分數（低→高）' }
-        ].forEach(({ value, label }) => {
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = label;
-            sortSelect.appendChild(option);
-        });
-        sortSelect.addEventListener('change', () => {
-            customerSortMode = sortSelect.value;
-            refreshCustomerList();
-        });
-        listControls.appendChild(sortSelect);
-
-        document.querySelector('.container').insertBefore(listControls, document.querySelector('.customer-list'));
+        document.querySelector('.container').insertBefore(
+            createListToolbar(),
+            document.querySelector('.customer-list')
+        );
         
     // Set up search handler
     const searchBar = document.querySelector('.search-bar');
@@ -126,6 +101,141 @@ function debounce(func, wait) {
     };
 }
 
+function createListToolbar() {
+    const toolbar = document.createElement('div');
+    toolbar.className = 'list-toolbar';
+    toolbar.id = 'listToolbar';
+
+    const filterSection = document.createElement('div');
+    filterSection.className = 'toolbar-section';
+
+    const filterLabel = document.createElement('span');
+    filterLabel.className = 'toolbar-heading';
+    filterLabel.textContent = '篩選';
+    filterSection.appendChild(filterLabel);
+
+    const filterRow = document.createElement('div');
+    filterRow.className = 'toolbar-row';
+
+    const step2Chip = document.createElement('label');
+    step2Chip.className = 'toolbar-chip';
+    const step2Input = document.createElement('input');
+    step2Input.type = 'checkbox';
+    step2Input.id = 'filterStep2';
+    step2Input.addEventListener('change', () => {
+        showOnlyStep2 = step2Input.checked;
+        refreshCustomerList();
+    });
+    step2Chip.appendChild(step2Input);
+    step2Chip.appendChild(document.createTextNode(' Step 2'));
+    filterRow.appendChild(step2Chip);
+
+    const countryField = document.createElement('div');
+    countryField.className = 'toolbar-field toolbar-field-grow';
+    const countryLabel = document.createElement('label');
+    countryLabel.htmlFor = 'filterCountry';
+    countryLabel.textContent = '國家/地區';
+    const countrySelect = document.createElement('select');
+    countrySelect.id = 'filterCountry';
+    countrySelect.className = 'toolbar-select';
+    countrySelect.innerHTML = '<option value="">全部</option>';
+    countrySelect.addEventListener('change', () => {
+        countryFilter = countrySelect.value;
+        refreshCustomerList();
+    });
+    countryField.appendChild(countryLabel);
+    countryField.appendChild(countrySelect);
+    filterRow.appendChild(countryField);
+
+    filterSection.appendChild(filterRow);
+    toolbar.appendChild(filterSection);
+
+    const sortSection = document.createElement('div');
+    sortSection.className = 'toolbar-section';
+
+    const sortLabel = document.createElement('span');
+    sortLabel.className = 'toolbar-heading';
+    sortLabel.textContent = '排序';
+    sortSection.appendChild(sortLabel);
+
+    const sortSelect = document.createElement('select');
+    sortSelect.id = 'sortCustomers';
+    sortSelect.className = 'toolbar-select toolbar-select-full';
+    sortSelect.setAttribute('aria-label', '客戶列表排序');
+    [
+        { value: 'default', label: '預設順序' },
+        { value: 'steam-desc', label: 'STEAM 分數：高 → 低' },
+        { value: 'steam-asc', label: 'STEAM 分數：低 → 高' }
+    ].forEach(({ value, label }) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = label;
+        sortSelect.appendChild(option);
+    });
+    sortSelect.addEventListener('change', () => {
+        customerSortMode = sortSelect.value;
+        refreshCustomerList();
+    });
+    sortSection.appendChild(sortSelect);
+    toolbar.appendChild(sortSection);
+
+    return toolbar;
+}
+
+function getCountriesInUse(customers) {
+    const countries = new Set();
+    customers.forEach(customer => {
+        if (customer.country) {
+            countries.add(customer.country);
+        }
+    });
+    return [...countries].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+}
+
+async function updateCountryFilterOptions(customers) {
+    const select = document.getElementById('filterCountry');
+    if (!select) {
+        return;
+    }
+
+    const countries = getCountriesInUse(customers);
+    const previous = countryFilter || select.value;
+
+    select.innerHTML = '<option value="">全部</option>';
+    countries.forEach(country => {
+        const option = document.createElement('option');
+        option.value = country;
+        option.textContent = country;
+        select.appendChild(option);
+    });
+
+    if (previous && !countries.includes(previous)) {
+        const legacy = document.createElement('option');
+        legacy.value = previous;
+        legacy.textContent = previous;
+        select.appendChild(legacy);
+    }
+
+    select.value = countries.includes(previous) || previous ? previous : '';
+    countryFilter = select.value;
+}
+
+function applyListFilters(customers) {
+    if (showOnlyStep2) {
+        customers = customers.filter(customer => customer.isStep2);
+    }
+
+    if (countryFilter) {
+        customers = customers.filter(customer => customer.country === countryFilter);
+    }
+
+    return customers;
+}
+
+function hasActiveListFilters() {
+    return showOnlyStep2 || Boolean(countryFilter);
+}
+
 // Search handler
 async function handleSearch(event) {
     const query = event.target.value.trim();
@@ -176,12 +286,18 @@ function displayCustomers(customers) {
     const customerList = document.getElementById('customerList');
     customerList.innerHTML = '';
 
-    // Filter Step2 customers if needed
-    if (showOnlyStep2) {
-        customers = customers.filter(customer => customer.isStep2);
-    }
-
+    customers = applyListFilters(customers);
     customers = sortCustomers(customers);
+
+    if (customers.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'list-empty';
+        empty.textContent = hasActiveListFilters()
+            ? '沒有符合篩選條件的客戶'
+            : '尚無客戶資料';
+        customerList.appendChild(empty);
+        return;
+    }
 
     customers.forEach(customer => {
         const card = createCustomerCard(customer);
@@ -292,6 +408,16 @@ async function saveCustomer() {
 // Refresh customer list
 async function refreshCustomerList() {
     const customers = await getAllCustomers();
+    await updateCountryFilterOptions(customers);
+
+    const searchBar = document.querySelector('.search-bar');
+    const query = searchBar?.value.trim();
+    if (query) {
+        const results = await searchCustomers(query);
+        displayCustomers(results);
+        return;
+    }
+
     displayCustomers(customers);
 }
 
@@ -479,6 +605,13 @@ function createCustomerCard(customer) {
         occupation.textContent = customer.occupation;
         card.appendChild(occupation);
     }
+
+    if (customer.country) {
+        const country = document.createElement('p');
+        country.className = 'customer-country';
+        country.textContent = customer.country;
+        card.appendChild(country);
+    }
     
     const steamScore = getSteamScore(customer);
     if (steamScore > 0) {
@@ -600,17 +733,6 @@ function calculateSteamScore() {
     if (totalScoreInput) {
         totalScoreInput.value = getSteamScore(formData);
     }
-}
-
-// Toggle Step2 filter
-async function toggleStep2Filter() {
-    showOnlyStep2 = !showOnlyStep2;
-    const filterButton = document.querySelector('.filter-button');
-    if (filterButton) {
-        filterButton.classList.toggle('active');
-        filterButton.textContent = showOnlyStep2 ? '顯示所有客戶' : '只顯示 Step 2 客戶';
-    }
-    await refreshCustomerList();
 }
 
 // Toggle Step2 tab visibility
