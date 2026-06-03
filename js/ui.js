@@ -416,6 +416,79 @@ function applyListFilters(customers) {
     return customers;
 }
 
+async function getFilteredListCustomers() {
+    const searchBar = document.querySelector('.search-bar');
+    const query = searchBar?.value.trim();
+    let customers = query ? await searchCustomers(query) : await getAllCustomers();
+    customers = applyListFilters(customers);
+    return sortCustomers(customers);
+}
+
+function getDialogCustomerOrder(allCustomers, filteredCustomers) {
+    const filteredIds = new Set(filteredCustomers.map(customer => String(customer.id)));
+    const remaining = sortCustomers(
+        allCustomers.filter(customer => !filteredIds.has(String(customer.id)))
+    );
+    return [...filteredCustomers, ...remaining];
+}
+
+function hasActiveListViewFilter() {
+    const query = document.querySelector('.search-bar')?.value.trim();
+    return Boolean(query) || hasActiveListFilters();
+}
+
+async function getReportCustomers() {
+    const useFiltered = document.getElementById('reportUseFilteredList')?.checked;
+
+    if (useFiltered) {
+        const customers = await getFilteredListCustomers();
+        if (customers.length === 0) {
+            throw new Error('EMPTY_FILTERED');
+        }
+        return customers;
+    }
+
+    const selectedCheckboxes = document.querySelectorAll('#reportCustomerList input.report-customer-checkbox:checked');
+    const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+    if (selectedIds.length === 0) {
+        throw new Error('NONE_SELECTED');
+    }
+
+    const allCustomers = await getAllCustomers();
+    const filteredCustomers = await getFilteredListCustomers();
+    const listOrder = getDialogCustomerOrder(allCustomers, filteredCustomers);
+    const selectedIdSet = new Set(selectedIds.map(String));
+    const customers = listOrder.filter(customer => selectedIdSet.has(String(customer.id)));
+
+    for (const id of selectedIds) {
+        if (!customers.some(customer => String(customer.id) === String(id))) {
+            const customer = await getCustomer(id);
+            if (customer) {
+                customers.push(customer);
+            }
+        }
+    }
+
+    if (customers.length === 0) {
+        throw new Error('NONE_SELECTED');
+    }
+
+    return customers;
+}
+
+function handleReportSelectionError(error) {
+    if (error.message === 'EMPTY_FILTERED') {
+        alert('目前列表篩選結果沒有客戶');
+        return;
+    }
+    if (error.message === 'NONE_SELECTED') {
+        alert('請選擇至少一位客戶');
+        return;
+    }
+    throw error;
+}
+
 // Search handler
 async function handleSearch(event) {
     const query = event.target.value.trim();
@@ -978,39 +1051,84 @@ async function showReportDialog() {
     const dialog = document.getElementById('reportDialog');
     const customerList = document.getElementById('reportCustomerList');
     const selectAll = document.getElementById('reportSelectAll');
+    const useFiltered = document.getElementById('reportUseFilteredList');
     customerList.innerHTML = '';
 
-    const customers = await getAllCustomers();
+    const allCustomers = await getAllCustomers();
+    const filteredCustomers = await getFilteredListCustomers();
+    const customers = getDialogCustomerOrder(allCustomers, filteredCustomers);
+    const countEl = document.getElementById('reportFilteredCount');
+    if (countEl) {
+        countEl.textContent = String(filteredCustomers.length);
+    }
 
     if (customers.length === 0) {
         customerList.innerHTML = '<p class="report-empty-hint">尚無客戶資料</p>';
     } else {
+        const filteredIds = new Set(filteredCustomers.map(customer => String(customer.id)));
         customers.forEach(customer => {
-        const item = document.createElement('div');
-        item.className = 'report-customer-item';
-        
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'report-customer-checkbox';
-        checkbox.value = customer.id;
-        
-        const label = document.createElement('label');
-        label.textContent = `${customer.name || '未命名'} ${customer.age ? `(${customer.age}歲)` : ''}`;
-        
-        item.appendChild(checkbox);
-        item.appendChild(label);
-        customerList.appendChild(item);
+            const item = document.createElement('div');
+            item.className = 'report-customer-item';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'report-customer-checkbox';
+            checkbox.value = customer.id;
+
+            const label = document.createElement('label');
+            const steamScore = getSteamScore(customer);
+            const steamHint = steamScore > 0 ? ` · STEAM ${steamScore}` : '';
+            label.textContent = `${customer.name || '未命名'}${customer.age ? ` (${customer.age}歲)` : ''}${steamHint}`;
+
+            item.appendChild(checkbox);
+            item.appendChild(label);
+            customerList.appendChild(item);
+
+            if (filteredIds.has(String(customer.id))) {
+                item.classList.add('report-customer-item--in-filter');
+            }
         });
     }
 
     if (selectAll) {
         selectAll.checked = false;
+        selectAll.disabled = false;
     }
 
+    if (useFiltered) {
+        useFiltered.checked = hasActiveListViewFilter();
+    }
+
+    await toggleReportFilteredMode();
     dialog.style.display = 'block';
 }
 
+async function toggleReportFilteredMode() {
+    const useFiltered = document.getElementById('reportUseFilteredList')?.checked;
+    const list = document.getElementById('reportCustomerList');
+    const selectAll = document.getElementById('reportSelectAll');
+    const filteredCustomers = await getFilteredListCustomers();
+    const filteredIds = new Set(filteredCustomers.map(customer => String(customer.id)));
+
+    document.querySelectorAll('.report-customer-checkbox').forEach(checkbox => {
+        checkbox.checked = useFiltered ? filteredIds.has(String(checkbox.value)) : checkbox.checked;
+        checkbox.disabled = useFiltered;
+    });
+
+    if (selectAll) {
+        selectAll.disabled = useFiltered;
+        if (useFiltered) {
+            selectAll.checked = false;
+        }
+    }
+
+    list?.classList.toggle('is-disabled', Boolean(useFiltered));
+}
+
 function toggleReportSelectAll(checked) {
+    if (document.getElementById('reportUseFilteredList')?.checked) {
+        return;
+    }
     document.querySelectorAll('.report-customer-checkbox').forEach(checkbox => {
         checkbox.checked = checked;
     });
@@ -1023,11 +1141,12 @@ function closeReportDialog() {
 
 // Generate report for selected customers
 async function generateReport() {
-    const selectedCheckboxes = document.querySelectorAll('#reportCustomerList input[type="checkbox"]:checked');
-    const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+    let customers;
 
-    if (selectedIds.length === 0) {
-        alert('請選擇至少一位客戶');
+    try {
+        customers = await getReportCustomers();
+    } catch (error) {
+        handleReportSelectionError(error);
         return;
     }
 
@@ -1041,23 +1160,6 @@ async function generateReport() {
         reportContent.id = 'reportContent';
         reportContent.style.padding = '20px';
         reportContent.style.background = 'white';
-
-        const customers = [];
-        for (const id of selectedIds) {
-            const customer = await getCustomer(id);
-            if (customer) {
-                customers.push(customer);
-            }
-        }
-
-        if (customers.length === 0) {
-            alert('找不到選取的客戶資料');
-            document.querySelector('.container').style.display = '';
-            document.querySelector('.detail-view').style.display = '';
-            return;
-        }
-
-        customers.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'zh-Hant'));
         reportContent.appendChild(ReportBuilder.createFullReportElement(customers));
 
         // Add report to body
@@ -1081,7 +1183,8 @@ async function generateReport() {
     }
 }
 
-// Export data to CSV format
+window.getReportCustomers = getReportCustomers;
+window.handleReportSelectionError = handleReportSelectionError;
 async function exportToCSV() {
     try {
         const customers = await getAllCustomers();

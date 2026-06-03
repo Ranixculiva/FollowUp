@@ -2,37 +2,23 @@
  * Export customer reports as PDF (summary table + full detail per customer).
  */
 async function generatePdfReport() {
-    const selectedCheckboxes = document.querySelectorAll('#reportCustomerList input[type="checkbox"]:checked');
-    const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
-
-    if (selectedIds.length === 0) {
-        alert('請選擇至少一位客戶');
+    if (typeof html2pdf === 'undefined') {
+        alert('PDF 元件尚未載入，請重新整理頁面');
         return;
     }
 
-    if (typeof html2pdf === 'undefined') {
-        alert('PDF 元件尚未載入，請重新整理頁面');
+    let customers;
+
+    try {
+        customers = await getReportCustomers();
+    } catch (error) {
+        handleReportSelectionError(error);
         return;
     }
 
     let exportRoot = null;
 
     try {
-        const customers = [];
-        for (const id of selectedIds) {
-            const customer = await getCustomer(id);
-            if (customer) {
-                customers.push(customer);
-            }
-        }
-
-        if (customers.length === 0) {
-            alert('找不到選取的客戶資料');
-            return;
-        }
-
-        customers.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'zh-Hant'));
-
         exportRoot = document.createElement('div');
         exportRoot.className = 'pdf-export-root';
         exportRoot.appendChild(ReportBuilder.createFullReportElement(customers));
