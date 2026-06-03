@@ -747,6 +747,12 @@
     margin: 20px 0;
 }
 
+.report-empty-hint {
+    margin: 0;
+    color: var(--nav-text-secondary);
+    font-size: 14px;
+}
+
 .report-customer-item {
     display: flex;
     align-items: center;
@@ -813,12 +819,21 @@
         background: white !important;
     }
 
-    .customer-report {
+    .customer-report,
+    .pdf-detail-page {
         break-after: page;
         padding: 20px;
         margin-bottom: 30px;
         display: block !important;
         background: white !important;
+    }
+
+    .pdf-summary-table {
+        font-size: 8px;
+    }
+
+    .pdf-section-break {
+        break-after: page;
     }
 
     .customer-report:last-child {
@@ -874,7 +889,21 @@
     margin-left: auto;
 }
 
-.export-button, .import-button {
+.report-select-all {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--nav-text);
+}
+
+.dialog-btn-primary {
+    background-color: var(--nav-button) !important;
+    color: white !important;
+}
+
+.export-button, .import-button, .report-open-button {
     padding: 8px 16px;
     border: none;
     border-radius: 8px;
@@ -889,18 +918,141 @@
 }
 
 .export-button .material-icons, 
-.import-button .material-icons {
+.import-button .material-icons,
+.report-open-button .material-icons {
     font-size: 20px;
 }
 
-.export-button:hover, .import-button:hover {
+.export-button:hover, .import-button:hover, .report-open-button:hover {
     opacity: 0.9;
 }
 
-.export-button:active, .import-button:active {
+.export-button:active, .import-button:active, .report-open-button:active {
     opacity: 0.8;
 }
 
 .file-input {
     display: none;
+}
+
+/* PDF / print report layout */
+.pdf-export-root {
+    position: fixed;
+    left: -10000px;
+    top: 0;
+    width: 794px;
+    background: #fff;
+    color: #000;
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Noto Sans TC', sans-serif;
+}
+
+.pdf-document,
+#reportContent .pdf-document {
+    color: #000;
+    background: #fff;
+}
+
+.pdf-title {
+    font-size: 22px;
+    margin: 0 0 8px;
+    color: #000;
+}
+
+.pdf-meta {
+    font-size: 12px;
+    color: #444;
+    margin: 0 0 16px;
+}
+
+.pdf-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8px;
+    table-layout: fixed;
+}
+
+.pdf-summary-table th,
+.pdf-summary-table td {
+    border: 1px solid #bbb;
+    padding: 4px 2px;
+    text-align: center;
+    vertical-align: top;
+    word-break: break-word;
+}
+
+.pdf-summary-table th {
+    background: #f0f0f0;
+    font-weight: 700;
+}
+
+.pdf-summary-table td:nth-child(2),
+.pdf-summary-table th:nth-child(2) {
+    text-align: left;
+}
+
+.pdf-section-break {
+    page-break-after: always;
+    break-after: page;
+    height: 0;
+}
+
+.pdf-details-heading {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.pdf-detail-page {
+    page-break-before: always;
+    break-before: page;
+    margin-bottom: 24px;
+}
+
+.pdf-detail-page:first-of-type {
+    page-break-before: auto;
+    break-before: auto;
+}
+
+.pdf-detail-title {
+    font-size: 20px;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #000;
+    color: #000;
+}
+
+#reportContent .report-section,
+.pdf-document .report-section {
+    margin-bottom: 16px;
+}
+
+#reportContent .report-section h3,
+.pdf-document .report-section h3 {
+    font-size: 14px;
+    margin: 0 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #000;
+    color: #000;
+}
+
+#reportContent .report-field,
+.pdf-document .report-field {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+#reportContent .report-field-label,
+.pdf-document .report-field-label {
+    flex: 0 0 38%;
+    font-weight: 700;
+    color: #000;
+}
+
+#reportContent .report-field-value,
+.pdf-document .report-field-value {
+    flex: 1;
+    white-space: pre-wrap;
+    color: #222;
 }

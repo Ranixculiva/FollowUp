@@ -25,6 +25,9 @@
             <button class="import-button" onclick="document.getElementById('fileInput').click()">
                 <span class="material-icons">upload_file</span>
             </button>
+            <button class="report-open-button" onclick="showReportDialog()" title="匯出報表">
+                <span class="material-icons">picture_as_pdf</span>
+            </button>
             <input type="file" id="fileInput" class="file-input" accept=".json,.csv" onchange="handleFileImport(event)">
         </div>
         <div id="customerList" class="customer-list"></div>
@@ -64,10 +67,15 @@
     <!-- Report Dialog -->
     <div id="reportDialog" class="dialog">
         <div class="dialog-content">
-            <h2>選擇要列印的客戶</h2>
+            <h2>選擇要匯出的客戶</h2>
+            <label class="report-select-all">
+                <input type="checkbox" id="reportSelectAll" onchange="toggleReportSelectAll(this.checked)">
+                全選
+            </label>
             <div class="report-customer-list" id="reportCustomerList"></div>
             <div class="dialog-buttons">
-                <button onclick="generateReport()">列印選擇的客戶</button>
+                <button class="dialog-btn-primary" onclick="generatePdfReport()">匯出 PDF</button>
+                <button class="dialog-btn-primary" onclick="generateReport()">列印</button>
                 <button onclick="closeReportDialog()">取消</button>
             </div>
         </div>
@@ -92,6 +100,9 @@
     <script src="js/form-config.js"></script>
     <script src="js/countries.js"></script>
     <script src="js/form-generator.js"></script>
+    <script src="js/report-builder.js"></script>
+    <script src="js/vendor/html2pdf.bundle.min.js"></script>
+    <script src="js/pdf-report.js"></script>
     <script src="js/ui.js"></script>
 </body>
 </html>

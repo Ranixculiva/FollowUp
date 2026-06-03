@@ -1,4 +1,4 @@
-const CACHE_NAME = 'customer-app-v4';
+const CACHE_NAME = 'customer-app-v5';
 const ASSETS = [
     './',
     './index.html',
@@ -10,6 +10,9 @@ const ASSETS = [
     './js/countries.js',
     './data/countries-fallback.json',
     './js/form-generator.js',
+    './js/report-builder.js',
+    './js/pdf-report.js',
+    './js/vendor/html2pdf.bundle.min.js',
     './js/ui.js',
     './manifest.json',
     './icons/icon-72x72.png',
