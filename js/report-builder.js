@@ -263,6 +263,11 @@ const ReportBuilder = (() => {
     }
 
     function renderDetailSectionHtml(section) {
+        const isFollowup = section.title === '跟進計劃';
+        const sectionClass = isFollowup
+            ? 'report-section report-section-followup'
+            : 'report-section';
+
         const rows = section.rows.map(row => `
             <div class="report-field">
                 <span class="report-field-label">${escapeHtml(row.label)}</span>
@@ -271,7 +276,7 @@ const ReportBuilder = (() => {
         `).join('');
 
         return `
-            <div class="report-section">
+            <div class="${sectionClass}">
                 <h3>${escapeHtml(section.title)}</h3>
                 ${rows}
             </div>
@@ -284,9 +289,20 @@ const ReportBuilder = (() => {
 
         return `
             <article class="customer-report pdf-detail-page">
-                <h2 class="pdf-detail-title">${escapeHtml(name)}</h2>
+                <header class="pdf-detail-header">
+                    <h2 class="pdf-detail-title">${escapeHtml(name)}</h2>
+                </header>
                 ${sections.map(renderDetailSectionHtml).join('')}
             </article>
+        `;
+    }
+
+    function renderSummaryDocumentHtml(customers, includeDetailsHeading = false) {
+        return `
+            <div class="pdf-document pdf-summary-chunk">
+                ${renderSummaryTableHtml(customers)}
+                ${includeDetailsHeading ? '<div class="pdf-section-break"></div><h1 class="pdf-title pdf-details-heading">客戶詳細資料</h1>' : ''}
+            </div>
         `;
     }
 
@@ -305,6 +321,25 @@ const ReportBuilder = (() => {
                 </section>
             </div>
         `;
+    }
+
+    function createSummaryReportElement(customers) {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = renderSummaryDocumentHtml(customers);
+        return wrapper.firstElementChild;
+    }
+
+    function createCustomerDetailPageElement(customer, { showDetailsHeading = false } = {}) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pdf-customer-chunk';
+        if (showDetailsHeading) {
+            const heading = document.createElement('h1');
+            heading.className = 'pdf-title pdf-details-heading';
+            heading.textContent = '客戶詳細資料';
+            wrapper.appendChild(heading);
+        }
+        wrapper.appendChild(createCustomerReportElement(customer));
+        return wrapper;
     }
 
     function createCustomerReportElement(customer) {
@@ -327,6 +362,8 @@ const ReportBuilder = (() => {
         buildSummaryRows,
         buildDetailSections,
         buildFullReportHtml,
+        createSummaryReportElement,
+        createCustomerDetailPageElement,
         createCustomerReportElement,
         createFullReportElement
     };

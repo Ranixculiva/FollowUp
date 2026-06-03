@@ -823,11 +823,30 @@
 
     .customer-report,
     .pdf-detail-page {
-        break-after: page;
+        break-before: page;
+        page-break-before: always;
         padding: 20px;
         margin-bottom: 30px;
         display: block !important;
         background: white !important;
+    }
+
+    .pdf-detail-header,
+    .pdf-detail-title {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+    .report-section-followup {
+        break-inside: auto;
+        page-break-inside: auto;
+    }
+
+    .report-section:not(.report-section-followup) {
+        break-inside: avoid;
+        page-break-inside: avoid;
     }
 
     .pdf-summary-table {
@@ -849,7 +868,8 @@
     }
 
     .report-section h3 {
-        border-bottom: 1px solid #000;
+        border-bottom: 2px solid #000;
+        box-shadow: inset 0 -2px 0 #000;
         padding-bottom: 5px;
         margin-bottom: 10px;
         display: block !important;
@@ -978,6 +998,19 @@
     font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Noto Sans TC', sans-serif;
 }
 
+.pdf-customer-chunk,
+.pdf-summary-chunk {
+    width: 794px;
+    background: #fff;
+    color: #000;
+}
+
+.pdf-export-root .pdf-document,
+.pdf-export-root .pdf-detail-page {
+    padding: 20px;
+    box-sizing: border-box;
+}
+
 .pdf-document,
 #reportContent .pdf-document {
     color: #000;
@@ -1039,12 +1072,18 @@
     margin-bottom: 24px;
 }
 
-.pdf-detail-page:first-of-type {
-    page-break-before: auto;
-    break-before: auto;
+.pdf-detail-header {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    page-break-after: avoid;
+    break-after: avoid;
 }
 
 .pdf-detail-title {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    page-break-after: avoid;
+    break-after: avoid;
     font-size: 20px;
     margin: 0 0 16px;
     padding-bottom: 8px;
@@ -1052,17 +1091,38 @@
     color: #000;
 }
 
+.pdf-detail-page:first-of-type {
+    page-break-before: always;
+    break-before: page;
+}
+
 #reportContent .report-section,
 .pdf-document .report-section {
     margin-bottom: 16px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+#reportContent .report-section-followup,
+.pdf-document .report-section-followup {
+    page-break-inside: auto;
+    break-inside: auto;
+}
+
+#reportContent .report-section-followup .report-field,
+.pdf-document .report-section-followup .report-field {
+    page-break-inside: avoid;
+    break-inside: avoid;
 }
 
 #reportContent .report-section h3,
-.pdf-document .report-section h3 {
+.pdf-document .report-section h3,
+.pdf-export-root .report-section h3 {
     font-size: 14px;
     margin: 0 0 8px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #000;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #000;
+    box-shadow: inset 0 -2px 0 #000;
     color: #000;
 }
 
