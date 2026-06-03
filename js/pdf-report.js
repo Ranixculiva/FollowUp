@@ -51,7 +51,32 @@ async function mergePdfBlobs(blobs) {
         pages.forEach(page => merged.addPage(page));
     }
 
-    return merged.save();
+    return merged;
+}
+
+async function addPageNumbers(pdfDoc) {
+    const { StandardFonts, rgb } = PDFLib;
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const pages = pdfDoc.getPages();
+    const totalPages = pages.length;
+    const fontSize = 10;
+    const bottomOffset = 28;
+
+    pages.forEach((page, index) => {
+        const { width } = page.getSize();
+        const label = `${index + 1} / ${totalPages}`;
+        const textWidth = font.widthOfTextAtSize(label, fontSize);
+
+        page.drawText(label, {
+            x: (width - textWidth) / 2,
+            y: bottomOffset,
+            size: fontSize,
+            font,
+            color: rgb(0.35, 0.35, 0.35)
+        });
+    });
+
+    return pdfDoc.save();
 }
 
 function downloadPdfBytes(bytes, filename) {
@@ -123,7 +148,8 @@ async function generatePdfReport() {
             }
         }
 
-        const mergedBytes = await mergePdfBlobs(pdfBlobs);
+        const mergedDoc = await mergePdfBlobs(pdfBlobs);
+        const mergedBytes = await addPageNumbers(mergedDoc);
         downloadPdfBytes(mergedBytes, filename);
         closeReportDialog();
     } catch (error) {
