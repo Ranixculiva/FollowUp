@@ -370,7 +370,9 @@ function getCountriesInUse(customers) {
             countries.add(customer.country);
         }
     });
-    return [...countries].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+    return window.Countries
+        ? Countries.orderLabels([...countries])
+        : [...countries].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
 }
 
 async function updateCountryFilterOptions(customers) {

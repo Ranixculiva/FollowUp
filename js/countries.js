@@ -6,7 +6,21 @@
  * - REST Countries: https://restcountries.com/v3.1/all (English / nativeName.zho; not used for labels)
  */
 const Countries = (() => {
-    const STORAGE_KEY = 'followup_countries_v1';
+    const STORAGE_KEY = 'followup_countries_v2';
+    /** Default order: TW → ID → HK → MY → SG → AU → GB → US → CN */
+    const PRIORITY_COUNTRY_CODES = ['TW', 'ID', 'HK', 'MY', 'SG', 'AU', 'GB', 'US', 'CN'];
+    const PRIORITY_LABELS = [
+        '台灣',
+        '印尼',
+        '中國香港特別行政區',
+        '香港',
+        '馬來西亞',
+        '新加坡',
+        '澳洲',
+        '英國',
+        '美國',
+        '中國'
+    ];
     const FALLBACK_URL = './data/countries-fallback.json';
     const REMOTE_ZH_TW_URL =
         'https://raw.githubusercontent.com/umpirsky/country-list/master/data/zh_TW/country.json';
@@ -29,19 +43,35 @@ const Countries = (() => {
         };
     }
 
-    function dedupeSort(list) {
+    function getPriorityIndex(item) {
+        const codeIndex = PRIORITY_COUNTRY_CODES.indexOf(item.code || '');
+        if (codeIndex >= 0) {
+            return codeIndex;
+        }
+        const labelIndex = PRIORITY_LABELS.indexOf(item.value);
+        return labelIndex >= 0 ? labelIndex : PRIORITY_LABELS.length;
+    }
+
+    function orderCountries(list) {
         const seen = new Set();
-        return list
+        const deduped = list
             .map(normalizeOption)
-            .filter(item => item.value && !seen.has(item.value) && seen.add(item.value))
-            .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant'));
+            .filter(item => item.value && !seen.has(item.value) && seen.add(item.value));
+
+        return deduped.sort((a, b) => {
+            const priorityDiff = getPriorityIndex(a) - getPriorityIndex(b);
+            if (priorityDiff !== 0) {
+                return priorityDiff;
+            }
+            return a.label.localeCompare(b.label, 'zh-Hant');
+        });
     }
 
     function readCache() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) return null;
-            return dedupeSort(JSON.parse(raw));
+            return orderCountries(JSON.parse(raw));
         } catch {
             return null;
         }
@@ -60,7 +90,7 @@ const Countries = (() => {
         if (!response.ok) {
             throw new Error(`Bundled fallback failed: ${response.status}`);
         }
-        return dedupeSort(await response.json());
+        return orderCountries(await response.json());
     }
 
     async function fetchRemoteZhTw() {
@@ -74,7 +104,7 @@ const Countries = (() => {
             label,
             code
         }));
-        return dedupeSort(list);
+        return orderCountries(list);
     }
 
     async function init() {
@@ -89,7 +119,7 @@ const Countries = (() => {
                 options = await fetchBundledFallback();
             } catch (error) {
                 console.warn('Bundled country list unavailable', error);
-                options = dedupeSort(MINIMAL_FALLBACK);
+                options = orderCountries(MINIMAL_FALLBACK);
             }
         }
 
@@ -107,7 +137,7 @@ const Countries = (() => {
     }
 
     function getOptions() {
-        return options || dedupeSort(MINIMAL_FALLBACK);
+        return options || orderCountries(MINIMAL_FALLBACK);
     }
 
     function fillSelect(selectEl, selectedValue) {
@@ -138,7 +168,11 @@ const Countries = (() => {
         selectEl.value = current || '';
     }
 
-    return { init, getOptions, fillSelect };
+    function orderLabels(labels) {
+        return orderCountries(labels.map(label => ({ value: label, label }))).map(item => item.value);
+    }
+
+    return { init, getOptions, fillSelect, orderLabels };
 })();
 
 window.Countries = Countries;
