@@ -35,6 +35,11 @@ const formConfig = {
                     type: 'text'
                 },
                 {
+                    id: 'country',
+                    label: '國家/地區',
+                    type: 'country-select'
+                },
+                {
                     id: 'age',
                     label: '年齡',
                     type: 'number',

@@ -473,9 +473,18 @@
     color: var(--primary-color);
 }
 
+/* List controls */
+.list-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 16px;
+}
+
 /* Step2 styles */
 .filter-button {
-    margin: 8px 16px;
+    margin: 0;
     padding: 8px 16px;
     border: 1px solid var(--nav-button);
     border-radius: 8px;
@@ -489,6 +498,24 @@
 .filter-button.active {
     background: var(--nav-button);
     color: white;
+}
+
+.sort-select {
+    flex: 1;
+    min-width: 180px;
+    padding: 8px 12px;
+    border: 1px solid var(--nav-border);
+    border-radius: 8px;
+    background: var(--nav-bg);
+    color: var(--nav-text);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.steam-score {
+    color: var(--nav-button);
+    font-weight: 600;
+    font-size: 14px;
 }
 
 .step2-badge {

@@ -1,0 +1,1247 @@
+[
+  {
+    "value": "不丹",
+    "label": "不丹",
+    "code": "BT"
+  },
+  {
+    "value": "中國",
+    "label": "中國",
+    "code": "CN"
+  },
+  {
+    "value": "中國澳門特別行政區",
+    "label": "中國澳門特別行政區",
+    "code": "MO"
+  },
+  {
+    "value": "中國香港特別行政區",
+    "label": "中國香港特別行政區",
+    "code": "HK"
+  },
+  {
+    "value": "中非共和國",
+    "label": "中非共和國",
+    "code": "CF"
+  },
+  {
+    "value": "丹麥",
+    "label": "丹麥",
+    "code": "DK"
+  },
+  {
+    "value": "亞塞拜然",
+    "label": "亞塞拜然",
+    "code": "AZ"
+  },
+  {
+    "value": "亞美尼亞",
+    "label": "亞美尼亞",
+    "code": "AM"
+  },
+  {
+    "value": "以色列",
+    "label": "以色列",
+    "code": "IL"
+  },
+  {
+    "value": "伊拉克",
+    "label": "伊拉克",
+    "code": "IQ"
+  },
+  {
+    "value": "伊朗",
+    "label": "伊朗",
+    "code": "IR"
+  },
+  {
+    "value": "俄羅斯",
+    "label": "俄羅斯",
+    "code": "RU"
+  },
+  {
+    "value": "保加利亞",
+    "label": "保加利亞",
+    "code": "BG"
+  },
+  {
+    "value": "克羅埃西亞",
+    "label": "克羅埃西亞",
+    "code": "HR"
+  },
+  {
+    "value": "冰島",
+    "label": "冰島",
+    "code": "IS"
+  },
+  {
+    "value": "列支敦斯登",
+    "label": "列支敦斯登",
+    "code": "LI"
+  },
+  {
+    "value": "利比亞",
+    "label": "利比亞",
+    "code": "LY"
+  },
+  {
+    "value": "剛果（布拉薩）",
+    "label": "剛果（布拉薩）",
+    "code": "CG"
+  },
+  {
+    "value": "剛果（金夏沙）",
+    "label": "剛果（金夏沙）",
+    "code": "CD"
+  },
+  {
+    "value": "加彭",
+    "label": "加彭",
+    "code": "GA"
+  },
+  {
+    "value": "加拿大",
+    "label": "加拿大",
+    "code": "CA"
+  },
+  {
+    "value": "匈牙利",
+    "label": "匈牙利",
+    "code": "HU"
+  },
+  {
+    "value": "北韓",
+    "label": "北韓",
+    "code": "KP"
+  },
+  {
+    "value": "北馬其頓",
+    "label": "北馬其頓",
+    "code": "MK"
+  },
+  {
+    "value": "北馬利安納群島",
+    "label": "北馬利安納群島",
+    "code": "MP"
+  },
+  {
+    "value": "千里達及托巴哥",
+    "label": "千里達及托巴哥",
+    "code": "TT"
+  },
+  {
+    "value": "南喬治亞與南三明治群島",
+    "label": "南喬治亞與南三明治群島",
+    "code": "GS"
+  },
+  {
+    "value": "南極洲",
+    "label": "南極洲",
+    "code": "AQ"
+  },
+  {
+    "value": "南蘇丹",
+    "label": "南蘇丹",
+    "code": "SS"
+  },
+  {
+    "value": "南非",
+    "label": "南非",
+    "code": "ZA"
+  },
+  {
+    "value": "南韓",
+    "label": "南韓",
+    "code": "KR"
+  },
+  {
+    "value": "卡達",
+    "label": "卡達",
+    "code": "QA"
+  },
+  {
+    "value": "印尼",
+    "label": "印尼",
+    "code": "ID"
+  },
+  {
+    "value": "印度",
+    "label": "印度",
+    "code": "IN"
+  },
+  {
+    "value": "厄利垂亞",
+    "label": "厄利垂亞",
+    "code": "ER"
+  },
+  {
+    "value": "厄瓜多",
+    "label": "厄瓜多",
+    "code": "EC"
+  },
+  {
+    "value": "古巴",
+    "label": "古巴",
+    "code": "CU"
+  },
+  {
+    "value": "台灣",
+    "label": "台灣",
+    "code": "TW"
+  },
+  {
+    "value": "史瓦帝尼",
+    "label": "史瓦帝尼",
+    "code": "SZ"
+  },
+  {
+    "value": "吉布地",
+    "label": "吉布地",
+    "code": "DJ"
+  },
+  {
+    "value": "吉爾吉斯",
+    "label": "吉爾吉斯",
+    "code": "KG"
+  },
+  {
+    "value": "吉里巴斯",
+    "label": "吉里巴斯",
+    "code": "KI"
+  },
+  {
+    "value": "吐瓦魯",
+    "label": "吐瓦魯",
+    "code": "TV"
+  },
+  {
+    "value": "哈薩克",
+    "label": "哈薩克",
+    "code": "KZ"
+  },
+  {
+    "value": "哥倫比亞",
+    "label": "哥倫比亞",
+    "code": "CO"
+  },
+  {
+    "value": "哥斯大黎加",
+    "label": "哥斯大黎加",
+    "code": "CR"
+  },
+  {
+    "value": "喀麥隆",
+    "label": "喀麥隆",
+    "code": "CM"
+  },
+  {
+    "value": "喬治亞",
+    "label": "喬治亞",
+    "code": "GE"
+  },
+  {
+    "value": "土克斯及開科斯群島",
+    "label": "土克斯及開科斯群島",
+    "code": "TC"
+  },
+  {
+    "value": "土庫曼",
+    "label": "土庫曼",
+    "code": "TM"
+  },
+  {
+    "value": "土耳其",
+    "label": "土耳其",
+    "code": "TR"
+  },
+  {
+    "value": "坦尚尼亞",
+    "label": "坦尚尼亞",
+    "code": "TZ"
+  },
+  {
+    "value": "埃及",
+    "label": "埃及",
+    "code": "EG"
+  },
+  {
+    "value": "塔吉克",
+    "label": "塔吉克",
+    "code": "TJ"
+  },
+  {
+    "value": "塞內加爾",
+    "label": "塞內加爾",
+    "code": "SN"
+  },
+  {
+    "value": "塞席爾",
+    "label": "塞席爾",
+    "code": "SC"
+  },
+  {
+    "value": "塞爾維亞",
+    "label": "塞爾維亞",
+    "code": "RS"
+  },
+  {
+    "value": "墨西哥",
+    "label": "墨西哥",
+    "code": "MX"
+  },
+  {
+    "value": "多哥",
+    "label": "多哥",
+    "code": "TG"
+  },
+  {
+    "value": "多明尼加共和國",
+    "label": "多明尼加共和國",
+    "code": "DO"
+  },
+  {
+    "value": "多米尼克",
+    "label": "多米尼克",
+    "code": "DM"
+  },
+  {
+    "value": "奈及利亞",
+    "label": "奈及利亞",
+    "code": "NG"
+  },
+  {
+    "value": "奧地利",
+    "label": "奧地利",
+    "code": "AT"
+  },
+  {
+    "value": "奧蘭群島",
+    "label": "奧蘭群島",
+    "code": "AX"
+  },
+  {
+    "value": "委內瑞拉",
+    "label": "委內瑞拉",
+    "code": "VE"
+  },
+  {
+    "value": "孟加拉",
+    "label": "孟加拉",
+    "code": "BD"
+  },
+  {
+    "value": "安哥拉",
+    "label": "安哥拉",
+    "code": "AO"
+  },
+  {
+    "value": "安地卡及巴布達",
+    "label": "安地卡及巴布達",
+    "code": "AG"
+  },
+  {
+    "value": "安奎拉",
+    "label": "安奎拉",
+    "code": "AI"
+  },
+  {
+    "value": "安道爾",
+    "label": "安道爾",
+    "code": "AD"
+  },
+  {
+    "value": "宏都拉斯",
+    "label": "宏都拉斯",
+    "code": "HN"
+  },
+  {
+    "value": "密克羅尼西亞",
+    "label": "密克羅尼西亞",
+    "code": "FM"
+  },
+  {
+    "value": "寮國",
+    "label": "寮國",
+    "code": "LA"
+  },
+  {
+    "value": "尚比亞",
+    "label": "尚比亞",
+    "code": "ZM"
+  },
+  {
+    "value": "尼加拉瓜",
+    "label": "尼加拉瓜",
+    "code": "NI"
+  },
+  {
+    "value": "尼日",
+    "label": "尼日",
+    "code": "NE"
+  },
+  {
+    "value": "尼泊爾",
+    "label": "尼泊爾",
+    "code": "NP"
+  },
+  {
+    "value": "巴勒斯坦自治區",
+    "label": "巴勒斯坦自治區",
+    "code": "PS"
+  },
+  {
+    "value": "巴哈馬",
+    "label": "巴哈馬",
+    "code": "BS"
+  },
+  {
+    "value": "巴基斯坦",
+    "label": "巴基斯坦",
+    "code": "PK"
+  },
+  {
+    "value": "巴布亞紐幾內亞",
+    "label": "巴布亞紐幾內亞",
+    "code": "PG"
+  },
+  {
+    "value": "巴拉圭",
+    "label": "巴拉圭",
+    "code": "PY"
+  },
+  {
+    "value": "巴拿馬",
+    "label": "巴拿馬",
+    "code": "PA"
+  },
+  {
+    "value": "巴林",
+    "label": "巴林",
+    "code": "BH"
+  },
+  {
+    "value": "巴西",
+    "label": "巴西",
+    "code": "BR"
+  },
+  {
+    "value": "巴貝多",
+    "label": "巴貝多",
+    "code": "BB"
+  },
+  {
+    "value": "布吉納法索",
+    "label": "布吉納法索",
+    "code": "BF"
+  },
+  {
+    "value": "布威島",
+    "label": "布威島",
+    "code": "BV"
+  },
+  {
+    "value": "希臘",
+    "label": "希臘",
+    "code": "GR"
+  },
+  {
+    "value": "帛琉",
+    "label": "帛琉",
+    "code": "PW"
+  },
+  {
+    "value": "幾內亞",
+    "label": "幾內亞",
+    "code": "GN"
+  },
+  {
+    "value": "幾內亞比索",
+    "label": "幾內亞比索",
+    "code": "GW"
+  },
+  {
+    "value": "庫克群島",
+    "label": "庫克群島",
+    "code": "CK"
+  },
+  {
+    "value": "庫拉索",
+    "label": "庫拉索",
+    "code": "CW"
+  },
+  {
+    "value": "德國",
+    "label": "德國",
+    "code": "DE"
+  },
+  {
+    "value": "愛沙尼亞",
+    "label": "愛沙尼亞",
+    "code": "EE"
+  },
+  {
+    "value": "愛爾蘭",
+    "label": "愛爾蘭",
+    "code": "IE"
+  },
+  {
+    "value": "托克勞群島",
+    "label": "托克勞群島",
+    "code": "TK"
+  },
+  {
+    "value": "拉脫維亞",
+    "label": "拉脫維亞",
+    "code": "LV"
+  },
+  {
+    "value": "挪威",
+    "label": "挪威",
+    "code": "NO"
+  },
+  {
+    "value": "挪威屬斯瓦巴及尖棉",
+    "label": "挪威屬斯瓦巴及尖棉",
+    "code": "SJ"
+  },
+  {
+    "value": "捷克",
+    "label": "捷克",
+    "code": "CZ"
+  },
+  {
+    "value": "摩洛哥",
+    "label": "摩洛哥",
+    "code": "MA"
+  },
+  {
+    "value": "摩爾多瓦",
+    "label": "摩爾多瓦",
+    "code": "MD"
+  },
+  {
+    "value": "摩納哥",
+    "label": "摩納哥",
+    "code": "MC"
+  },
+  {
+    "value": "敘利亞",
+    "label": "敘利亞",
+    "code": "SY"
+  },
+  {
+    "value": "斐濟",
+    "label": "斐濟",
+    "code": "FJ"
+  },
+  {
+    "value": "斯洛伐克",
+    "label": "斯洛伐克",
+    "code": "SK"
+  },
+  {
+    "value": "斯洛維尼亞",
+    "label": "斯洛維尼亞",
+    "code": "SI"
+  },
+  {
+    "value": "斯里蘭卡",
+    "label": "斯里蘭卡",
+    "code": "LK"
+  },
+  {
+    "value": "新加坡",
+    "label": "新加坡",
+    "code": "SG"
+  },
+  {
+    "value": "新喀里多尼亞",
+    "label": "新喀里多尼亞",
+    "code": "NC"
+  },
+  {
+    "value": "日本",
+    "label": "日本",
+    "code": "JP"
+  },
+  {
+    "value": "智利",
+    "label": "智利",
+    "code": "CL"
+  },
+  {
+    "value": "曼島",
+    "label": "曼島",
+    "code": "IM"
+  },
+  {
+    "value": "東加",
+    "label": "東加",
+    "code": "TO"
+  },
+  {
+    "value": "東帝汶",
+    "label": "東帝汶",
+    "code": "TL"
+  },
+  {
+    "value": "查德",
+    "label": "查德",
+    "code": "TD"
+  },
+  {
+    "value": "柬埔寨",
+    "label": "柬埔寨",
+    "code": "KH"
+  },
+  {
+    "value": "根息",
+    "label": "根息",
+    "code": "GG"
+  },
+  {
+    "value": "格瑞那達",
+    "label": "格瑞那達",
+    "code": "GD"
+  },
+  {
+    "value": "格陵蘭",
+    "label": "格陵蘭",
+    "code": "GL"
+  },
+  {
+    "value": "梵蒂岡",
+    "label": "梵蒂岡",
+    "code": "VA"
+  },
+  {
+    "value": "模里西斯",
+    "label": "模里西斯",
+    "code": "MU"
+  },
+  {
+    "value": "比利時",
+    "label": "比利時",
+    "code": "BE"
+  },
+  {
+    "value": "汶萊",
+    "label": "汶萊",
+    "code": "BN"
+  },
+  {
+    "value": "沙烏地阿拉伯",
+    "label": "沙烏地阿拉伯",
+    "code": "SA"
+  },
+  {
+    "value": "法國",
+    "label": "法國",
+    "code": "FR"
+  },
+  {
+    "value": "法屬南部屬地",
+    "label": "法屬南部屬地",
+    "code": "TF"
+  },
+  {
+    "value": "法屬圭亞那",
+    "label": "法屬圭亞那",
+    "code": "GF"
+  },
+  {
+    "value": "法屬玻里尼西亞",
+    "label": "法屬玻里尼西亞",
+    "code": "PF"
+  },
+  {
+    "value": "法屬聖馬丁",
+    "label": "法屬聖馬丁",
+    "code": "MF"
+  },
+  {
+    "value": "法羅群島",
+    "label": "法羅群島",
+    "code": "FO"
+  },
+  {
+    "value": "波士尼亞與赫塞哥維納",
+    "label": "波士尼亞與赫塞哥維納",
+    "code": "BA"
+  },
+  {
+    "value": "波多黎各",
+    "label": "波多黎各",
+    "code": "PR"
+  },
+  {
+    "value": "波札那",
+    "label": "波札那",
+    "code": "BW"
+  },
+  {
+    "value": "波蘭",
+    "label": "波蘭",
+    "code": "PL"
+  },
+  {
+    "value": "泰國",
+    "label": "泰國",
+    "code": "TH"
+  },
+  {
+    "value": "海地",
+    "label": "海地",
+    "code": "HT"
+  },
+  {
+    "value": "澤西島",
+    "label": "澤西島",
+    "code": "JE"
+  },
+  {
+    "value": "澳洲",
+    "label": "澳洲",
+    "code": "AU"
+  },
+  {
+    "value": "烏克蘭",
+    "label": "烏克蘭",
+    "code": "UA"
+  },
+  {
+    "value": "烏干達",
+    "label": "烏干達",
+    "code": "UG"
+  },
+  {
+    "value": "烏拉圭",
+    "label": "烏拉圭",
+    "code": "UY"
+  },
+  {
+    "value": "烏茲別克",
+    "label": "烏茲別克",
+    "code": "UZ"
+  },
+  {
+    "value": "牙買加",
+    "label": "牙買加",
+    "code": "JM"
+  },
+  {
+    "value": "獅子山",
+    "label": "獅子山",
+    "code": "SL"
+  },
+  {
+    "value": "玻利維亞",
+    "label": "玻利維亞",
+    "code": "BO"
+  },
+  {
+    "value": "瑞典",
+    "label": "瑞典",
+    "code": "SE"
+  },
+  {
+    "value": "瑞士",
+    "label": "瑞士",
+    "code": "CH"
+  },
+  {
+    "value": "瓜地洛普",
+    "label": "瓜地洛普",
+    "code": "GP"
+  },
+  {
+    "value": "瓜地馬拉",
+    "label": "瓜地馬拉",
+    "code": "GT"
+  },
+  {
+    "value": "瓦利斯群島和富圖那群島",
+    "label": "瓦利斯群島和富圖那群島",
+    "code": "WF"
+  },
+  {
+    "value": "甘比亞",
+    "label": "甘比亞",
+    "code": "GM"
+  },
+  {
+    "value": "留尼旺",
+    "label": "留尼旺",
+    "code": "RE"
+  },
+  {
+    "value": "白俄羅斯",
+    "label": "白俄羅斯",
+    "code": "BY"
+  },
+  {
+    "value": "百慕達",
+    "label": "百慕達",
+    "code": "BM"
+  },
+  {
+    "value": "皮特肯群島",
+    "label": "皮特肯群島",
+    "code": "PN"
+  },
+  {
+    "value": "盧安達",
+    "label": "盧安達",
+    "code": "RW"
+  },
+  {
+    "value": "盧森堡",
+    "label": "盧森堡",
+    "code": "LU"
+  },
+  {
+    "value": "直布羅陀",
+    "label": "直布羅陀",
+    "code": "GI"
+  },
+  {
+    "value": "福克蘭群島",
+    "label": "福克蘭群島",
+    "code": "FK"
+  },
+  {
+    "value": "科克斯（基靈）群島",
+    "label": "科克斯（基靈）群島",
+    "code": "CC"
+  },
+  {
+    "value": "科威特",
+    "label": "科威特",
+    "code": "KW"
+  },
+  {
+    "value": "秘魯",
+    "label": "秘魯",
+    "code": "PE"
+  },
+  {
+    "value": "突尼西亞",
+    "label": "突尼西亞",
+    "code": "TN"
+  },
+  {
+    "value": "立陶宛",
+    "label": "立陶宛",
+    "code": "LT"
+  },
+  {
+    "value": "約旦",
+    "label": "約旦",
+    "code": "JO"
+  },
+  {
+    "value": "納米比亞",
+    "label": "納米比亞",
+    "code": "NA"
+  },
+  {
+    "value": "紐埃島",
+    "label": "紐埃島",
+    "code": "NU"
+  },
+  {
+    "value": "紐西蘭",
+    "label": "紐西蘭",
+    "code": "NZ"
+  },
+  {
+    "value": "索羅門群島",
+    "label": "索羅門群島",
+    "code": "SB"
+  },
+  {
+    "value": "索馬利亞",
+    "label": "索馬利亞",
+    "code": "SO"
+  },
+  {
+    "value": "維德角",
+    "label": "維德角",
+    "code": "CV"
+  },
+  {
+    "value": "緬甸",
+    "label": "緬甸",
+    "code": "MM"
+  },
+  {
+    "value": "羅馬尼亞",
+    "label": "羅馬尼亞",
+    "code": "RO"
+  },
+  {
+    "value": "美國",
+    "label": "美國",
+    "code": "US"
+  },
+  {
+    "value": "美國本土外小島嶼",
+    "label": "美國本土外小島嶼",
+    "code": "UM"
+  },
+  {
+    "value": "美屬維京群島",
+    "label": "美屬維京群島",
+    "code": "VI"
+  },
+  {
+    "value": "美屬薩摩亞",
+    "label": "美屬薩摩亞",
+    "code": "AS"
+  },
+  {
+    "value": "義大利",
+    "label": "義大利",
+    "code": "IT"
+  },
+  {
+    "value": "聖克里斯多福及尼維斯",
+    "label": "聖克里斯多福及尼維斯",
+    "code": "KN"
+  },
+  {
+    "value": "聖多美普林西比",
+    "label": "聖多美普林西比",
+    "code": "ST"
+  },
+  {
+    "value": "聖巴瑟米",
+    "label": "聖巴瑟米",
+    "code": "BL"
+  },
+  {
+    "value": "聖文森及格瑞那丁",
+    "label": "聖文森及格瑞那丁",
+    "code": "VC"
+  },
+  {
+    "value": "聖皮埃與密克隆群島",
+    "label": "聖皮埃與密克隆群島",
+    "code": "PM"
+  },
+  {
+    "value": "聖誕島",
+    "label": "聖誕島",
+    "code": "CX"
+  },
+  {
+    "value": "聖赫勒拿島",
+    "label": "聖赫勒拿島",
+    "code": "SH"
+  },
+  {
+    "value": "聖露西亞",
+    "label": "聖露西亞",
+    "code": "LC"
+  },
+  {
+    "value": "聖馬利諾",
+    "label": "聖馬利諾",
+    "code": "SM"
+  },
+  {
+    "value": "肯亞",
+    "label": "肯亞",
+    "code": "KE"
+  },
+  {
+    "value": "芬蘭",
+    "label": "芬蘭",
+    "code": "FI"
+  },
+  {
+    "value": "英國",
+    "label": "英國",
+    "code": "GB"
+  },
+  {
+    "value": "英屬印度洋領地",
+    "label": "英屬印度洋領地",
+    "code": "IO"
+  },
+  {
+    "value": "英屬維京群島",
+    "label": "英屬維京群島",
+    "code": "VG"
+  },
+  {
+    "value": "茅利塔尼亞",
+    "label": "茅利塔尼亞",
+    "code": "MR"
+  },
+  {
+    "value": "荷屬聖馬丁",
+    "label": "荷屬聖馬丁",
+    "code": "SX"
+  },
+  {
+    "value": "荷屬阿魯巴",
+    "label": "荷屬阿魯巴",
+    "code": "AW"
+  },
+  {
+    "value": "荷蘭",
+    "label": "荷蘭",
+    "code": "NL"
+  },
+  {
+    "value": "荷蘭加勒比區",
+    "label": "荷蘭加勒比區",
+    "code": "BQ"
+  },
+  {
+    "value": "莫三比克",
+    "label": "莫三比克",
+    "code": "MZ"
+  },
+  {
+    "value": "菲律賓",
+    "label": "菲律賓",
+    "code": "PH"
+  },
+  {
+    "value": "萬那杜",
+    "label": "萬那杜",
+    "code": "VU"
+  },
+  {
+    "value": "葉門",
+    "label": "葉門",
+    "code": "YE"
+  },
+  {
+    "value": "葛摩",
+    "label": "葛摩",
+    "code": "KM"
+  },
+  {
+    "value": "葡萄牙",
+    "label": "葡萄牙",
+    "code": "PT"
+  },
+  {
+    "value": "蒙古",
+    "label": "蒙古",
+    "code": "MN"
+  },
+  {
+    "value": "蒙哲臘",
+    "label": "蒙哲臘",
+    "code": "MS"
+  },
+  {
+    "value": "蒙特內哥羅",
+    "label": "蒙特內哥羅",
+    "code": "ME"
+  },
+  {
+    "value": "蒲隆地",
+    "label": "蒲隆地",
+    "code": "BI"
+  },
+  {
+    "value": "蓋亞那",
+    "label": "蓋亞那",
+    "code": "GY"
+  },
+  {
+    "value": "薩摩亞",
+    "label": "薩摩亞",
+    "code": "WS"
+  },
+  {
+    "value": "薩爾瓦多",
+    "label": "薩爾瓦多",
+    "code": "SV"
+  },
+  {
+    "value": "蘇丹",
+    "label": "蘇丹",
+    "code": "SD"
+  },
+  {
+    "value": "蘇利南",
+    "label": "蘇利南",
+    "code": "SR"
+  },
+  {
+    "value": "衣索比亞",
+    "label": "衣索比亞",
+    "code": "ET"
+  },
+  {
+    "value": "西撒哈拉",
+    "label": "西撒哈拉",
+    "code": "EH"
+  },
+  {
+    "value": "西班牙",
+    "label": "西班牙",
+    "code": "ES"
+  },
+  {
+    "value": "諾福克島",
+    "label": "諾福克島",
+    "code": "NF"
+  },
+  {
+    "value": "諾魯",
+    "label": "諾魯",
+    "code": "NR"
+  },
+  {
+    "value": "象牙海岸",
+    "label": "象牙海岸",
+    "code": "CI"
+  },
+  {
+    "value": "貝南",
+    "label": "貝南",
+    "code": "BJ"
+  },
+  {
+    "value": "貝里斯",
+    "label": "貝里斯",
+    "code": "BZ"
+  },
+  {
+    "value": "賴比瑞亞",
+    "label": "賴比瑞亞",
+    "code": "LR"
+  },
+  {
+    "value": "賴索托",
+    "label": "賴索托",
+    "code": "LS"
+  },
+  {
+    "value": "賽普勒斯",
+    "label": "賽普勒斯",
+    "code": "CY"
+  },
+  {
+    "value": "赤道幾內亞",
+    "label": "赤道幾內亞",
+    "code": "GQ"
+  },
+  {
+    "value": "赫德島及麥唐納群島",
+    "label": "赫德島及麥唐納群島",
+    "code": "HM"
+  },
+  {
+    "value": "越南",
+    "label": "越南",
+    "code": "VN"
+  },
+  {
+    "value": "辛巴威",
+    "label": "辛巴威",
+    "code": "ZW"
+  },
+  {
+    "value": "迦納",
+    "label": "迦納",
+    "code": "GH"
+  },
+  {
+    "value": "開曼群島",
+    "label": "開曼群島",
+    "code": "KY"
+  },
+  {
+    "value": "關島",
+    "label": "關島",
+    "code": "GU"
+  },
+  {
+    "value": "阿富汗",
+    "label": "阿富汗",
+    "code": "AF"
+  },
+  {
+    "value": "阿拉伯聯合大公國",
+    "label": "阿拉伯聯合大公國",
+    "code": "AE"
+  },
+  {
+    "value": "阿曼",
+    "label": "阿曼",
+    "code": "OM"
+  },
+  {
+    "value": "阿根廷",
+    "label": "阿根廷",
+    "code": "AR"
+  },
+  {
+    "value": "阿爾及利亞",
+    "label": "阿爾及利亞",
+    "code": "DZ"
+  },
+  {
+    "value": "阿爾巴尼亞",
+    "label": "阿爾巴尼亞",
+    "code": "AL"
+  },
+  {
+    "value": "馬丁尼克",
+    "label": "馬丁尼克",
+    "code": "MQ"
+  },
+  {
+    "value": "馬來西亞",
+    "label": "馬來西亞",
+    "code": "MY"
+  },
+  {
+    "value": "馬利",
+    "label": "馬利",
+    "code": "ML"
+  },
+  {
+    "value": "馬拉威",
+    "label": "馬拉威",
+    "code": "MW"
+  },
+  {
+    "value": "馬爾他",
+    "label": "馬爾他",
+    "code": "MT"
+  },
+  {
+    "value": "馬爾地夫",
+    "label": "馬爾地夫",
+    "code": "MV"
+  },
+  {
+    "value": "馬約特島",
+    "label": "馬約特島",
+    "code": "YT"
+  },
+  {
+    "value": "馬紹爾群島",
+    "label": "馬紹爾群島",
+    "code": "MH"
+  },
+  {
+    "value": "馬達加斯加",
+    "label": "馬達加斯加",
+    "code": "MG"
+  },
+  {
+    "value": "黎巴嫩",
+    "label": "黎巴嫩",
+    "code": "LB"
+  }
+]

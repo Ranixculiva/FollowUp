@@ -14,6 +14,19 @@ class FormGenerator {
 
         let input;
         switch (field.type) {
+            case 'country-select':
+                input = document.createElement('select');
+                input.className = 'form-input';
+                if (window.Countries) {
+                    Countries.fillSelect(input);
+                } else {
+                    const placeholder = document.createElement('option');
+                    placeholder.value = '';
+                    placeholder.textContent = '請選擇';
+                    input.appendChild(placeholder);
+                }
+                break;
+
             case 'select':
                 input = document.createElement('select');
                 input.className = 'form-input';
@@ -249,6 +262,8 @@ class FormGenerator {
                         if (element) {
                             if (field.type === 'checkbox') {
                                 element.checked = data[field.id] || false;
+                            } else if (field.type === 'country-select' && window.Countries) {
+                                Countries.fillSelect(element, data[field.id] || '');
                             } else {
                                 element.value = data[field.id] || '';
                             }

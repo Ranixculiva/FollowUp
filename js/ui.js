@@ -3,6 +3,7 @@ let currentCustomerId = null;
 let isEditing = false;
 let hasUnsavedChanges = false;
 let showOnlyStep2 = false;
+let customerSortMode = 'default';
 
 // Initialize UI
 async function initializeUI() {
@@ -10,6 +11,9 @@ async function initializeUI() {
         // Initialize database first
         await initDB();
         
+        // Load country list (offline fallback, optional online refresh)
+        await Countries.init();
+
         // Initialize form
         const formContainer = document.getElementById('customerForm');
         if (!formContainer) {
@@ -17,12 +21,36 @@ async function initializeUI() {
         }
         FormGenerator.generateForm('customerForm');
         
-        // Add Step2 filter button
+        // List controls: Step2 filter and STEAM sort
+        const listControls = document.createElement('div');
+        listControls.className = 'list-controls';
+
         const filterButton = document.createElement('button');
         filterButton.className = 'filter-button';
         filterButton.textContent = '只顯示 Step 2 客戶';
         filterButton.onclick = toggleStep2Filter;
-        document.querySelector('.container').insertBefore(filterButton, document.querySelector('.customer-list'));
+        listControls.appendChild(filterButton);
+
+        const sortSelect = document.createElement('select');
+        sortSelect.className = 'sort-select';
+        sortSelect.setAttribute('aria-label', '客戶列表排序');
+        [
+            { value: 'default', label: '預設順序' },
+            { value: 'steam-desc', label: 'STEAM 分數（高→低）' },
+            { value: 'steam-asc', label: 'STEAM 分數（低→高）' }
+        ].forEach(({ value, label }) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            sortSelect.appendChild(option);
+        });
+        sortSelect.addEventListener('change', () => {
+            customerSortMode = sortSelect.value;
+            refreshCustomerList();
+        });
+        listControls.appendChild(sortSelect);
+
+        document.querySelector('.container').insertBefore(listControls, document.querySelector('.customer-list'));
         
     // Set up search handler
     const searchBar = document.querySelector('.search-bar');
@@ -105,6 +133,44 @@ async function handleSearch(event) {
     displayCustomers(customers);
 }
 
+// Get STEAM total score from stored value or field values
+function getSteamScore(customer) {
+    const steamFields = [
+        'steamS',
+        'steamT',
+        'steamE',
+        'steamA',
+        'steamM',
+        'onlineSales',
+        'connections'
+    ];
+
+    const fromFields = steamFields.reduce((sum, field) => {
+        const value = parseInt(customer[field], 10);
+        return sum + (isNaN(value) ? 0 : value);
+    }, 0);
+
+    if (fromFields > 0) {
+        return fromFields;
+    }
+
+    const stored = parseInt(customer.totalScore, 10);
+    return isNaN(stored) ? 0 : stored;
+}
+
+function sortCustomers(customers) {
+    if (customerSortMode === 'default') {
+        return customers;
+    }
+
+    const sorted = [...customers];
+    sorted.sort((a, b) => {
+        const diff = getSteamScore(b) - getSteamScore(a);
+        return customerSortMode === 'steam-desc' ? diff : -diff;
+    });
+    return sorted;
+}
+
 // Display customers in the list
 function displayCustomers(customers) {
     const customerList = document.getElementById('customerList');
@@ -114,6 +180,8 @@ function displayCustomers(customers) {
     if (showOnlyStep2) {
         customers = customers.filter(customer => customer.isStep2);
     }
+
+    customers = sortCustomers(customers);
 
     customers.forEach(customer => {
         const card = createCustomerCard(customer);
@@ -412,6 +480,14 @@ function createCustomerCard(customer) {
         card.appendChild(occupation);
     }
     
+    const steamScore = getSteamScore(customer);
+    if (steamScore > 0) {
+        const scoreEl = document.createElement('p');
+        scoreEl.className = 'steam-score';
+        scoreEl.textContent = `STEAM: ${steamScore}`;
+        card.appendChild(scoreEl);
+    }
+
     // Add color rating if available
     if (customer.colorRating) {
         const colorRating = document.createElement('div');
@@ -468,16 +544,7 @@ async function handleFormSubmit(event) {
 async function loadCustomers() {
     try {
         const customers = await getAllCustomers();
-        const container = document.getElementById('customerList');
-        container.innerHTML = '';
-        
-        customers.forEach(customer => {
-            const card = createCustomerCard(customer);
-            card.addEventListener('click', () => {
-                showCustomerDetail(customer.id);
-            });
-            container.appendChild(card);
-        });
+        displayCustomers(customers);
     } catch (error) {
         console.error('Error loading customers:', error);
         alert('載入客戶資料失敗，請稍後再試');
@@ -509,7 +576,7 @@ async function handleDeleteCustomer() {
     }
 }
 
-// Calculate STEAM score
+// Calculate STEAM score from the customer form
 function calculateSteamScore() {
     const steamFields = [
         'steamS',
@@ -521,17 +588,17 @@ function calculateSteamScore() {
         'connections'
     ];
 
-    let totalScore = 0;
+    const formData = {};
     steamFields.forEach(field => {
         const select = document.getElementById(field);
         if (select && select.value) {
-            totalScore += parseInt(select.value);
+            formData[field] = select.value;
         }
     });
 
     const totalScoreInput = document.getElementById('totalScore');
     if (totalScoreInput) {
-        totalScoreInput.value = totalScore;
+        totalScoreInput.value = getSteamScore(formData);
     }
 }
 
@@ -669,6 +736,7 @@ function createCustomerReport(customer) {
         'FB': customer.fb,
         'IG': customer.ig,
         '居住地': customer.address,
+        '國家/地區': customer.country,
         '年齡': customer.age ? `${customer.age}歲` : '',
         '性別': customer.gender,
         '如何認識': customer.howMet
@@ -819,7 +887,7 @@ async function exportToCSV() {
         // Define CSV headers based on basic customer information
         const headers = [
             'ID', '姓名', '電話', 'Line', 'FB', 'IG',
-            '年齡', '性別', '職業', '地址', '如何認識',
+            '年齡', '性別', '職業', '居住地', '國家/地區', '如何認識',
             'Step2', '顏色評級', '最近聯繫日期'
         ];
 
@@ -835,6 +903,7 @@ async function exportToCSV() {
             customer.gender || '',
             customer.occupation || '',
             customer.address || '',
+            customer.country || '',
             customer.howMet || '',
             customer.isStep2 ? '是' : '否',
             customer.colorRating || '',
@@ -989,7 +1058,9 @@ function parseCSV(csvContent) {
                     '年齡': 'age',
                     '性別': 'gender',
                     '職業': 'occupation',
+                    '居住地': 'address',
                     '地址': 'address',
+                    '國家/地區': 'country',
                     '如何認識': 'howMet',
                     'Step2': 'isStep2',
                     '顏色評級': 'colorRating',

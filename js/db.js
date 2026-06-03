@@ -131,6 +131,7 @@ const searchCustomers = async (query) => {
             customer.name?.toLowerCase().includes(query) ||
             customer.contact?.toLowerCase().includes(query) ||
             customer.address?.toLowerCase().includes(query) ||
+            customer.country?.toLowerCase().includes(query) ||
             customer.occupation?.toLowerCase().includes(query) ||
             customer.notes?.toLowerCase().includes(query)
         );
