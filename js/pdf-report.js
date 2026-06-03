@@ -107,12 +107,15 @@ async function generatePdfReport() {
         exportRoot.removeChild(summaryElement);
 
         for (let index = 0; index < customers.length; index += 1) {
-            const customerElement = ReportBuilder.createCustomerDetailPageElement(customers[index], {
+            const partElements = ReportBuilder.createCustomerPdfPartElements(customers[index], {
                 showDetailsHeading: index === 0
             });
-            exportRoot.appendChild(customerElement);
-            pdfBlobs.push(await renderElementToPdfBlob(customerElement, CUSTOMER_PDF_OPTIONS));
-            exportRoot.removeChild(customerElement);
+
+            for (const partElement of partElements) {
+                exportRoot.appendChild(partElement);
+                pdfBlobs.push(await renderElementToPdfBlob(partElement, CUSTOMER_PDF_OPTIONS));
+                exportRoot.removeChild(partElement);
+            }
         }
 
         const mergedBytes = await mergePdfBlobs(pdfBlobs);

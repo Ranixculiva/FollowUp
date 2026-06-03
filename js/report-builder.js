@@ -289,9 +289,12 @@ const ReportBuilder = (() => {
 
     function renderDetailSectionHtml(section) {
         const isFollowup = section.title === '跟進計劃';
+        const isEvaluation = section.title === '客戶評估';
         const sectionClass = isFollowup
             ? 'report-section report-section-followup'
-            : 'report-section';
+            : isEvaluation
+                ? 'report-section report-section-evaluation'
+                : 'report-section';
 
         const rows = section.rows.map(row => `
             <div class="report-field">
@@ -306,6 +309,42 @@ const ReportBuilder = (() => {
                 ${rows}
             </div>
         `;
+    }
+
+    function renderCustomerPartHtml(customer, sections, { includeHeader = false } = {}) {
+        const name = customer.name || '未命名客戶';
+        const headerHtml = includeHeader ? `
+            <header class="pdf-detail-header">
+                <h2 class="pdf-detail-title">${escapeHtml(name)}</h2>
+            </header>
+        ` : '';
+
+        return `
+            <article class="customer-report pdf-detail-page">
+                ${headerHtml}
+                ${sections.map(renderDetailSectionHtml).join('')}
+            </article>
+        `;
+    }
+
+    function splitSectionsForPdfParts(sections) {
+        const evaluationIndex = sections.findIndex(section => section.title === '客戶評估');
+
+        if (evaluationIndex === -1) {
+            return [{ sections, includeHeader: true }];
+        }
+
+        if (evaluationIndex === 0) {
+            return [
+                { sections: [], includeHeader: true },
+                { sections: sections.slice(evaluationIndex), includeHeader: false }
+            ];
+        }
+
+        return [
+            { sections: sections.slice(0, evaluationIndex), includeHeader: true },
+            { sections: sections.slice(evaluationIndex), includeHeader: false }
+        ];
     }
 
     function renderCustomerDetailHtml(customer) {
@@ -357,16 +396,43 @@ const ReportBuilder = (() => {
         return wrapper.firstElementChild;
     }
 
+    function createCustomerPdfPartElements(customer, { showDetailsHeading = false } = {}) {
+        const sections = buildDetailSections(customer);
+        const partSpecs = splitSectionsForPdfParts(sections);
+
+        return partSpecs.map((spec, partIndex) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'pdf-customer-chunk pdf-document';
+
+            if (showDetailsHeading && partIndex === 0) {
+                const heading = document.createElement('h1');
+                heading.className = 'pdf-title pdf-details-heading';
+                heading.textContent = '客戶詳細資料';
+                wrapper.appendChild(heading);
+            }
+
+            const articleWrapper = document.createElement('div');
+            articleWrapper.innerHTML = renderCustomerPartHtml(customer, spec.sections, {
+                includeHeader: spec.includeHeader
+            });
+            wrapper.appendChild(articleWrapper.firstElementChild);
+            return wrapper;
+        });
+    }
+
     function createCustomerDetailPageElement(customer, { showDetailsHeading = false } = {}) {
+        const parts = createCustomerPdfPartElements(customer, { showDetailsHeading });
+        if (parts.length === 1) {
+            return parts[0];
+        }
+
         const wrapper = document.createElement('div');
         wrapper.className = 'pdf-customer-chunk pdf-document';
-        if (showDetailsHeading) {
-            const heading = document.createElement('h1');
-            heading.className = 'pdf-title pdf-details-heading';
-            heading.textContent = '客戶詳細資料';
-            wrapper.appendChild(heading);
-        }
-        wrapper.appendChild(createCustomerReportElement(customer));
+        parts.forEach(part => {
+            while (part.firstChild) {
+                wrapper.appendChild(part.firstChild);
+            }
+        });
         return wrapper;
     }
 
@@ -391,6 +457,7 @@ const ReportBuilder = (() => {
         buildDetailSections,
         buildFullReportHtml,
         createSummaryReportElement,
+        createCustomerPdfPartElements,
         createCustomerDetailPageElement,
         createCustomerReportElement,
         createFullReportElement

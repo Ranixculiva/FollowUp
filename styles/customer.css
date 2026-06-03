@@ -853,6 +853,11 @@
         page-break-inside: auto;
     }
 
+    .report-section-evaluation {
+        break-before: page;
+        page-break-before: always;
+    }
+
     .pdf-summary-table {
         font-size: 8px;
     }
@@ -993,12 +998,13 @@
     display: none;
 }
 
-/* PDF / print report layout */
+/* PDF / print report layout — width matches A4 content area after 10mm margins */
 .pdf-export-root {
     position: fixed;
     left: -10000px;
     top: 0;
-    width: 794px;
+    width: 190mm;
+    max-width: 190mm;
     background: #fff;
     color: #000;
     font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Noto Sans TC', sans-serif;
@@ -1006,15 +1012,17 @@
 
 .pdf-customer-chunk,
 .pdf-summary-chunk {
-    width: 794px;
+    width: 100%;
+    max-width: 100%;
     background: #fff;
     color: #000;
 }
 
 .pdf-export-root .pdf-document,
 .pdf-export-root .pdf-customer-chunk,
+.pdf-export-root .pdf-summary-chunk,
 .pdf-export-root .pdf-detail-page {
-    padding: 20px;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -1038,28 +1046,63 @@
 
 .pdf-summary-table {
     width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
-    font-size: 8px;
+    font-size: 7px;
     table-layout: fixed;
+}
+
+.pdf-export-root .pdf-summary-table {
+    font-size: 6.5px;
 }
 
 .pdf-summary-table th,
 .pdf-summary-table td {
     border: 1px solid #bbb;
-    padding: 4px 2px;
+    padding: 2px 1px;
     text-align: center;
     vertical-align: top;
     word-break: break-word;
+    overflow-wrap: anywhere;
 }
+
+/* Keep summary columns within printable width */
+.pdf-summary-table th:nth-child(1),
+.pdf-summary-table td:nth-child(1) { width: 4%; }
+.pdf-summary-table th:nth-child(2),
+.pdf-summary-table td:nth-child(2) { width: 11%; text-align: left; }
+.pdf-summary-table th:nth-child(3),
+.pdf-summary-table td:nth-child(3) { width: 5%; }
+.pdf-summary-table th:nth-child(4),
+.pdf-summary-table td:nth-child(4) { width: 5%; }
+.pdf-summary-table th:nth-child(5),
+.pdf-summary-table td:nth-child(5) { width: 8%; }
+.pdf-summary-table th:nth-child(6),
+.pdf-summary-table td:nth-child(6) { width: 10%; }
+.pdf-summary-table th:nth-child(7),
+.pdf-summary-table td:nth-child(7) { width: 10%; }
+.pdf-summary-table th:nth-child(8),
+.pdf-summary-table td:nth-child(8) { width: 5%; }
+.pdf-summary-table th:nth-child(9),
+.pdf-summary-table td:nth-child(9),
+.pdf-summary-table th:nth-child(10),
+.pdf-summary-table td:nth-child(10),
+.pdf-summary-table th:nth-child(11),
+.pdf-summary-table td:nth-child(11),
+.pdf-summary-table th:nth-child(12),
+.pdf-summary-table td:nth-child(12),
+.pdf-summary-table th:nth-child(13),
+.pdf-summary-table td:nth-child(13),
+.pdf-summary-table th:nth-child(14),
+.pdf-summary-table td:nth-child(14),
+.pdf-summary-table th:nth-child(15),
+.pdf-summary-table td:nth-child(15) { width: 3%; }
+.pdf-summary-table th:nth-child(16),
+.pdf-summary-table td:nth-child(16) { width: 5%; }
 
 .pdf-summary-table th {
     background: #f0f0f0;
     font-weight: 700;
-}
-
-.pdf-summary-table td:nth-child(2),
-.pdf-summary-table th:nth-child(2) {
-    text-align: left;
 }
 
 .pdf-section-break,
