@@ -858,6 +858,24 @@
         page-break-before: always;
     }
 
+    .pdf-details-title-page {
+        break-before: page;
+        page-break-before: always;
+        break-after: page;
+        page-break-after: always;
+        min-height: 240mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .pdf-details-heading--standalone {
+        font-size: 32pt;
+        font-weight: 700;
+        margin: 0;
+    }
+
     .pdf-summary-table {
         font-size: 8px;
     }
@@ -1021,6 +1039,7 @@
 .pdf-export-root .pdf-document,
 .pdf-export-root .pdf-customer-chunk,
 .pdf-export-root .pdf-summary-chunk,
+.pdf-export-root .pdf-details-title-chunk,
 .pdf-export-root .pdf-detail-page {
     padding: 0;
     box-sizing: border-box;
@@ -1124,6 +1143,23 @@
 .pdf-details-heading {
     margin-top: 0;
     margin-bottom: 20px;
+}
+
+.pdf-details-title-page {
+    min-height: 277mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.pdf-details-heading--standalone {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+    color: #000;
 }
 
 .pdf-detail-page {

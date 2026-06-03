@@ -379,15 +379,29 @@ const ReportBuilder = (() => {
             <div class="pdf-document">
                 ${renderSummaryTableHtml(customers)}
                 <div class="pdf-section-break"></div>
+                <section class="pdf-details-title-page">
+                    <h1 class="pdf-title pdf-details-heading pdf-details-heading--standalone">客戶詳細資料</h1>
+                </section>
+                <div class="pdf-section-break"></div>
                 <section class="pdf-details-section">
-                    <h1 class="pdf-title pdf-details-heading">客戶詳細資料</h1>
-                    ${customers.map((customer, index) => `
-                        ${index > 0 ? '<div class="html2pdf__page-break pdf-customer-page-break"></div>' : ''}
+                    ${customers.map(customer => `
+                        <div class="html2pdf__page-break pdf-customer-page-break"></div>
                         ${renderCustomerDetailHtml(customer)}
                     `).join('')}
                 </section>
             </div>
         `;
+    }
+
+    function createDetailsTitlePageElement() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pdf-document pdf-details-title-chunk';
+        wrapper.innerHTML = `
+            <section class="pdf-details-title-page">
+                <h1 class="pdf-title pdf-details-heading pdf-details-heading--standalone">客戶詳細資料</h1>
+            </section>
+        `;
+        return wrapper;
     }
 
     function createSummaryReportElement(customers) {
@@ -396,20 +410,13 @@ const ReportBuilder = (() => {
         return wrapper.firstElementChild;
     }
 
-    function createCustomerPdfPartElements(customer, { showDetailsHeading = false } = {}) {
+    function createCustomerPdfPartElements(customer) {
         const sections = buildDetailSections(customer);
         const partSpecs = splitSectionsForPdfParts(sections);
 
-        return partSpecs.map((spec, partIndex) => {
+        return partSpecs.map(spec => {
             const wrapper = document.createElement('div');
             wrapper.className = 'pdf-customer-chunk pdf-document';
-
-            if (showDetailsHeading && partIndex === 0) {
-                const heading = document.createElement('h1');
-                heading.className = 'pdf-title pdf-details-heading';
-                heading.textContent = '客戶詳細資料';
-                wrapper.appendChild(heading);
-            }
 
             const articleWrapper = document.createElement('div');
             articleWrapper.innerHTML = renderCustomerPartHtml(customer, spec.sections, {
@@ -420,8 +427,8 @@ const ReportBuilder = (() => {
         });
     }
 
-    function createCustomerDetailPageElement(customer, { showDetailsHeading = false } = {}) {
-        const parts = createCustomerPdfPartElements(customer, { showDetailsHeading });
+    function createCustomerDetailPageElement(customer) {
+        const parts = createCustomerPdfPartElements(customer);
         if (parts.length === 1) {
             return parts[0];
         }
@@ -457,6 +464,7 @@ const ReportBuilder = (() => {
         buildDetailSections,
         buildFullReportHtml,
         createSummaryReportElement,
+        createDetailsTitlePageElement,
         createCustomerPdfPartElements,
         createCustomerDetailPageElement,
         createCustomerReportElement,

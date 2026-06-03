@@ -106,10 +106,15 @@ async function generatePdfReport() {
         pdfBlobs.push(await renderElementToPdfBlob(summaryElement, SUMMARY_PDF_OPTIONS));
         exportRoot.removeChild(summaryElement);
 
+        if (customers.length > 0) {
+            const detailsTitleElement = ReportBuilder.createDetailsTitlePageElement();
+            exportRoot.appendChild(detailsTitleElement);
+            pdfBlobs.push(await renderElementToPdfBlob(detailsTitleElement, SUMMARY_PDF_OPTIONS));
+            exportRoot.removeChild(detailsTitleElement);
+        }
+
         for (let index = 0; index < customers.length; index += 1) {
-            const partElements = ReportBuilder.createCustomerPdfPartElements(customers[index], {
-                showDetailsHeading: index === 0
-            });
+            const partElements = ReportBuilder.createCustomerPdfPartElements(customers[index]);
 
             for (const partElement of partElements) {
                 exportRoot.appendChild(partElement);
