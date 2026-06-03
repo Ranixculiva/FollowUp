@@ -37,9 +37,19 @@
 .search-container {
     display: flex;
     align-items: center;
-    margin: 16px;
+    margin: 12px 16px 8px;
     gap: 8px;
     flex-wrap: wrap;
+}
+
+.list-view-sticky {
+    flex-shrink: 0;
+    background: var(--bg-primary);
+    z-index: 10;
+}
+
+.list-view-sticky .list-toolbar {
+    margin: 0 16px 8px;
 }
 
 .search-bar {
@@ -63,7 +73,7 @@
 .customer-list {
     display: grid;
     gap: 16px;
-    margin-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); /* Space for bottom nav + safe area */
+    min-height: 0;
 }
 
 .customer-card {

@@ -76,10 +76,15 @@ async function initializeUI() {
         FormGenerator.generateForm('customerForm');
 
         loadListPrefs();
-        document.querySelector('.container').insertBefore(
-            createListToolbar(),
-            document.querySelector('.customer-list')
-        );
+        const listViewSticky = document.getElementById('listViewSticky');
+        if (listViewSticky) {
+            listViewSticky.appendChild(createListToolbar());
+        } else {
+            document.querySelector('.container').insertBefore(
+                createListToolbar(),
+                document.querySelector('.customer-list')
+            );
+        }
         syncListToolbarUI();
         
     // Set up search handler
