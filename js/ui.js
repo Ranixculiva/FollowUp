@@ -2,9 +2,62 @@
 let currentCustomerId = null;
 let isEditing = false;
 let hasUnsavedChanges = false;
+const LIST_PREFS_KEY = 'followup_list_prefs';
+
 let showOnlyStep2 = false;
 let countryFilter = '';
-let customerSortMode = 'default';
+let sortField = 'updated';
+let sortDir = 'desc';
+let listPanelOpen = false;
+
+const SORT_FIELD_LABELS = {
+    updated: '最近更新',
+    created: '新增日期',
+    lastContact: '最近聯繫',
+    name: '姓名',
+    steam: 'STEAM'
+};
+
+function loadListPrefs() {
+    try {
+        const raw = localStorage.getItem(LIST_PREFS_KEY);
+        if (!raw) return;
+        const prefs = JSON.parse(raw);
+        if (typeof prefs.showOnlyStep2 === 'boolean') showOnlyStep2 = prefs.showOnlyStep2;
+        if (typeof prefs.countryFilter === 'string') countryFilter = prefs.countryFilter;
+        if (prefs.sortField && SORT_FIELD_LABELS[prefs.sortField]) sortField = prefs.sortField;
+        if (prefs.sortDir === 'asc' || prefs.sortDir === 'desc') sortDir = prefs.sortDir;
+        if (typeof prefs.listPanelOpen === 'boolean') listPanelOpen = prefs.listPanelOpen;
+    } catch (error) {
+        console.warn('Could not load list preferences', error);
+    }
+}
+
+function saveListPrefs() {
+    try {
+        localStorage.setItem(LIST_PREFS_KEY, JSON.stringify({
+            showOnlyStep2,
+            countryFilter,
+            sortField,
+            sortDir,
+            listPanelOpen
+        }));
+    } catch (error) {
+        console.warn('Could not save list preferences', error);
+    }
+}
+
+function hasNonDefaultSort() {
+    return sortField !== 'updated' || sortDir !== 'desc';
+}
+
+function hasActiveListFilters() {
+    return showOnlyStep2 || Boolean(countryFilter);
+}
+
+function hasActiveListControls() {
+    return hasActiveListFilters() || hasNonDefaultSort();
+}
 
 // Initialize UI
 async function initializeUI() {
@@ -21,11 +74,13 @@ async function initializeUI() {
             throw new Error('Customer form container not found');
         }
         FormGenerator.generateForm('customerForm');
-        
+
+        loadListPrefs();
         document.querySelector('.container').insertBefore(
             createListToolbar(),
             document.querySelector('.customer-list')
         );
+        syncListToolbarUI();
         
     // Set up search handler
     const searchBar = document.querySelector('.search-bar');
@@ -106,13 +161,52 @@ function createListToolbar() {
     toolbar.className = 'list-toolbar';
     toolbar.id = 'listToolbar';
 
+    const header = document.createElement('div');
+    header.className = 'toolbar-header';
+
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'toolbar-toggle';
+    toggleBtn.id = 'toolbarToggle';
+    toggleBtn.setAttribute('aria-controls', 'toolbarPanel');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    const toggleIcon = document.createElement('span');
+    toggleIcon.className = 'material-icons toolbar-toggle-icon';
+    toggleIcon.textContent = 'expand_more';
+    toggleBtn.appendChild(toggleIcon);
+    toggleBtn.appendChild(document.createTextNode(' 篩選與排序'));
+    toggleBtn.addEventListener('click', () => {
+        listPanelOpen = !listPanelOpen;
+        syncListToolbarUI();
+        saveListPrefs();
+    });
+    header.appendChild(toggleBtn);
+
+    const summary = document.createElement('span');
+    summary.className = 'toolbar-summary';
+    summary.id = 'toolbarSummary';
+    header.appendChild(summary);
+
+    const clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.className = 'toolbar-clear';
+    clearBtn.id = 'toolbarClear';
+    clearBtn.textContent = '清除';
+    clearBtn.addEventListener('click', clearListControls);
+    header.appendChild(clearBtn);
+
+    toolbar.appendChild(header);
+
+    const panel = document.createElement('div');
+    panel.className = 'toolbar-panel';
+    panel.id = 'toolbarPanel';
+
     const filterSection = document.createElement('div');
     filterSection.className = 'toolbar-section';
-
-    const filterLabel = document.createElement('span');
-    filterLabel.className = 'toolbar-heading';
-    filterLabel.textContent = '篩選';
-    filterSection.appendChild(filterLabel);
+    const filterHeading = document.createElement('span');
+    filterHeading.className = 'toolbar-heading';
+    filterHeading.textContent = '篩選';
+    filterSection.appendChild(filterHeading);
 
     const filterRow = document.createElement('div');
     filterRow.className = 'toolbar-row';
@@ -124,6 +218,8 @@ function createListToolbar() {
     step2Input.id = 'filterStep2';
     step2Input.addEventListener('change', () => {
         showOnlyStep2 = step2Input.checked;
+        saveListPrefs();
+        updateToolbarSummary();
         refreshCustomerList();
     });
     step2Chip.appendChild(step2Input);
@@ -141,45 +237,130 @@ function createListToolbar() {
     countrySelect.innerHTML = '<option value="">全部</option>';
     countrySelect.addEventListener('change', () => {
         countryFilter = countrySelect.value;
+        saveListPrefs();
+        updateToolbarSummary();
         refreshCustomerList();
     });
     countryField.appendChild(countryLabel);
     countryField.appendChild(countrySelect);
     filterRow.appendChild(countryField);
-
     filterSection.appendChild(filterRow);
-    toolbar.appendChild(filterSection);
+    panel.appendChild(filterSection);
 
     const sortSection = document.createElement('div');
     sortSection.className = 'toolbar-section';
+    const sortHeading = document.createElement('span');
+    sortHeading.className = 'toolbar-heading';
+    sortHeading.textContent = '排序';
+    sortSection.appendChild(sortHeading);
 
-    const sortLabel = document.createElement('span');
-    sortLabel.className = 'toolbar-heading';
-    sortLabel.textContent = '排序';
-    sortSection.appendChild(sortLabel);
+    const sortRow = document.createElement('div');
+    sortRow.className = 'toolbar-row toolbar-sort-row';
 
     const sortSelect = document.createElement('select');
-    sortSelect.id = 'sortCustomers';
-    sortSelect.className = 'toolbar-select toolbar-select-full';
-    sortSelect.setAttribute('aria-label', '客戶列表排序');
-    [
-        { value: 'default', label: '預設順序' },
-        { value: 'steam-desc', label: 'STEAM 分數：高 → 低' },
-        { value: 'steam-asc', label: 'STEAM 分數：低 → 高' }
-    ].forEach(({ value, label }) => {
+    sortSelect.id = 'sortField';
+    sortSelect.className = 'toolbar-select toolbar-field-grow';
+    sortSelect.setAttribute('aria-label', '排序欄位');
+    Object.entries(SORT_FIELD_LABELS).forEach(([value, label]) => {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = label;
         sortSelect.appendChild(option);
     });
     sortSelect.addEventListener('change', () => {
-        customerSortMode = sortSelect.value;
+        sortField = sortSelect.value;
+        saveListPrefs();
+        syncListToolbarUI();
         refreshCustomerList();
     });
-    sortSection.appendChild(sortSelect);
-    toolbar.appendChild(sortSection);
+    sortRow.appendChild(sortSelect);
 
+    const sortDirBtn = document.createElement('button');
+    sortDirBtn.type = 'button';
+    sortDirBtn.id = 'sortDirBtn';
+    sortDirBtn.className = 'toolbar-icon-btn';
+    sortDirBtn.addEventListener('click', () => {
+        sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+        saveListPrefs();
+        syncListToolbarUI();
+        refreshCustomerList();
+    });
+    sortRow.appendChild(sortDirBtn);
+    sortSection.appendChild(sortRow);
+    panel.appendChild(sortSection);
+
+    toolbar.appendChild(panel);
     return toolbar;
+}
+
+function syncListToolbarUI() {
+    const panel = document.getElementById('toolbarPanel');
+    const toggle = document.getElementById('toolbarToggle');
+    const toggleIcon = toggle?.querySelector('.toolbar-toggle-icon');
+    const step2 = document.getElementById('filterStep2');
+    const country = document.getElementById('filterCountry');
+    const sortSelect = document.getElementById('sortField');
+    const sortDirBtn = document.getElementById('sortDirBtn');
+
+    if (panel) {
+        panel.classList.toggle('is-open', listPanelOpen);
+    }
+    if (toggle) {
+        toggle.setAttribute('aria-expanded', String(listPanelOpen));
+    }
+    if (toggleIcon) {
+        toggleIcon.textContent = listPanelOpen ? 'expand_less' : 'expand_more';
+    }
+    if (step2) step2.checked = showOnlyStep2;
+    if (country && country.value !== countryFilter) country.value = countryFilter;
+    if (sortSelect) sortSelect.value = sortField;
+    if (sortDirBtn) {
+        const icon = sortDirBtn.querySelector('.material-icons') || document.createElement('span');
+        icon.className = 'material-icons';
+        icon.textContent = sortDir === 'desc' ? 'arrow_downward' : 'arrow_upward';
+        if (!sortDirBtn.querySelector('.material-icons')) {
+            sortDirBtn.appendChild(icon);
+        }
+        sortDirBtn.setAttribute(
+            'aria-label',
+            sortDir === 'desc' ? '降序（高到低 / 新到舊）' : '升序（低到高 / 舊到新）'
+        );
+    }
+
+    updateToolbarSummary();
+}
+
+function updateToolbarSummary() {
+    const summary = document.getElementById('toolbarSummary');
+    const clearBtn = document.getElementById('toolbarClear');
+    if (!summary) return;
+
+    const parts = [];
+    if (hasActiveListFilters()) {
+        const filters = [];
+        if (showOnlyStep2) filters.push('Step 2');
+        if (countryFilter) filters.push(countryFilter);
+        parts.push(filters.join(' · '));
+    }
+    if (hasNonDefaultSort()) {
+        const arrow = sortDir === 'desc' ? '↓' : '↑';
+        parts.push(`${SORT_FIELD_LABELS[sortField]} ${arrow}`);
+    }
+
+    summary.textContent = parts.join(' · ');
+    if (clearBtn) {
+        clearBtn.hidden = !hasActiveListControls();
+    }
+}
+
+function clearListControls() {
+    showOnlyStep2 = false;
+    countryFilter = '';
+    sortField = 'updated';
+    sortDir = 'desc';
+    saveListPrefs();
+    syncListToolbarUI();
+    refreshCustomerList();
 }
 
 function getCountriesInUse(customers) {
@@ -218,6 +399,7 @@ async function updateCountryFilterOptions(customers) {
 
     select.value = countries.includes(previous) || previous ? previous : '';
     countryFilter = select.value;
+    saveListPrefs();
 }
 
 function applyListFilters(customers) {
@@ -230,10 +412,6 @@ function applyListFilters(customers) {
     }
 
     return customers;
-}
-
-function hasActiveListFilters() {
-    return showOnlyStep2 || Boolean(countryFilter);
 }
 
 // Search handler
@@ -268,15 +446,56 @@ function getSteamScore(customer) {
     return isNaN(stored) ? 0 : stored;
 }
 
-function sortCustomers(customers) {
-    if (customerSortMode === 'default') {
-        return customers;
+function getSortValue(customer, field) {
+    switch (field) {
+        case 'name':
+            return customer.name || '';
+        case 'steam':
+            return getSteamScore(customer);
+        case 'created':
+            return customer.createdAt || '';
+        case 'lastContact':
+            return customer.lastInviteDate || '';
+        case 'updated':
+        default:
+            return customer.updatedAt || '';
     }
+}
 
+function isEmptySortValue(value, field) {
+    if (field === 'name') {
+        return !String(value).trim();
+    }
+    if (field === 'steam') {
+        return value === 0;
+    }
+    return !value;
+}
+
+function compareSortValues(aVal, bVal, field) {
+    if (field === 'name') {
+        return String(aVal).localeCompare(String(bVal), 'zh-Hant');
+    }
+    if (field === 'steam') {
+        return aVal - bVal;
+    }
+    return new Date(aVal).getTime() - new Date(bVal).getTime();
+}
+
+function sortCustomers(customers) {
     const sorted = [...customers];
     sorted.sort((a, b) => {
-        const diff = getSteamScore(b) - getSteamScore(a);
-        return customerSortMode === 'steam-desc' ? diff : -diff;
+        const aVal = getSortValue(a, sortField);
+        const bVal = getSortValue(b, sortField);
+        const aEmpty = isEmptySortValue(aVal, sortField);
+        const bEmpty = isEmptySortValue(bVal, sortField);
+
+        if (aEmpty && bEmpty) return 0;
+        if (aEmpty) return 1;
+        if (bEmpty) return -1;
+
+        const cmp = compareSortValues(aVal, bVal, sortField);
+        return sortDir === 'asc' ? cmp : -cmp;
     });
     return sorted;
 }
@@ -409,6 +628,7 @@ async function saveCustomer() {
 async function refreshCustomerList() {
     const customers = await getAllCustomers();
     await updateCountryFilterOptions(customers);
+    updateToolbarSummary();
 
     const searchBar = document.querySelector('.search-bar');
     const query = searchBar?.value.trim();

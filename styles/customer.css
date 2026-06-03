@@ -476,13 +476,76 @@
 /* List toolbar (filters + sort) */
 .list-toolbar {
     margin: 8px 16px 12px;
-    padding: 12px;
     border: 1px solid var(--nav-border);
     border-radius: 12px;
     background: var(--nav-bg);
+    overflow: hidden;
+}
+
+.toolbar-header {
     display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px 8px 4px;
+    min-height: 44px;
+}
+
+.toolbar-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 8px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--nav-text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.toolbar-toggle-icon {
+    font-size: 22px;
+    color: var(--nav-text-secondary);
+}
+
+.toolbar-summary {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--nav-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toolbar-clear {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--nav-button);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.toolbar-clear[hidden] {
+    display: none;
+}
+
+.toolbar-panel {
+    display: none;
     flex-direction: column;
     gap: 12px;
+    padding: 0 12px 12px;
+    border-top: 1px solid var(--nav-border);
+}
+
+.toolbar-panel.is-open {
+    display: flex;
 }
 
 .toolbar-section {
@@ -564,6 +627,28 @@
 
 .toolbar-select-full {
     width: 100%;
+}
+
+.toolbar-sort-row {
+    align-items: stretch;
+}
+
+.toolbar-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid var(--nav-border);
+    border-radius: 10px;
+    background: var(--bg-secondary, #fff);
+    color: var(--nav-button);
+    cursor: pointer;
+}
+
+.toolbar-icon-btn .material-icons {
+    font-size: 22px;
 }
 
 .list-empty {
