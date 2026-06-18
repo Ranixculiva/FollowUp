@@ -16,6 +16,38 @@ function loadBackupApi() {
 
 const sampleCustomers = [{ id: '1', name: 'Alice' }];
 
+const richCustomers = [
+    {
+        id: 'cust-1',
+        name: '王小明',
+        contact: '91234567',
+        address: '台北市',
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-06-01T00:00:00.000Z',
+        notes: 'note with "quotes" and, commas',
+        tags: ['vip', 'referral']
+    },
+    {
+        id: 'cust-2',
+        name: '李美華',
+        contact: null,
+        evaluations: { score: 85 }
+    }
+];
+
+test('export then import round-trip preserves customer data', () => {
+    const { createBackupPayload, parseBackupJson, validateBackupVersion } = loadBackupApi();
+    const original = structuredClone(richCustomers);
+
+    const jsonText = JSON.stringify(createBackupPayload(original), null, 2);
+    const parsedFile = JSON.parse(jsonText);
+    const versionCheck = validateBackupVersion(parsedFile.formatVersion);
+    const { customers: imported } = parseBackupJson(parsedFile);
+
+    assert.equal(versionCheck.ok, true);
+    assert.deepEqual(imported, original);
+});
+
 test('createBackupPayload wraps customers with current formatVersion', () => {
     const { createBackupPayload, BACKUP_FORMAT_VERSION } = loadBackupApi();
     const payload = createBackupPayload(sampleCustomers);
