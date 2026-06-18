@@ -1,18 +1,11 @@
-const { readFileSync } = require('node:fs');
-const { join } = require('node:path');
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const vm = require('node:vm');
-
-function loadBackupApi() {
-    const context = { window: {} };
-    vm.createContext(context);
-    vm.runInContext(
-        readFileSync(join(__dirname, '../js/backup.js'), 'utf8'),
-        context
-    );
-    return context.window;
-}
+const {
+    createBackupPayload,
+    parseBackupJson,
+    validateBackupVersion,
+    BACKUP_FORMAT_VERSION
+} = require('../js/backup.js');
 
 const sampleCustomers = [{ id: '1', name: 'Alice' }];
 
@@ -36,7 +29,6 @@ const richCustomers = [
 ];
 
 test('export then import round-trip preserves customer data', () => {
-    const { createBackupPayload, parseBackupJson, validateBackupVersion } = loadBackupApi();
     const original = structuredClone(richCustomers);
 
     const jsonText = JSON.stringify(createBackupPayload(original), null, 2);
@@ -49,7 +41,6 @@ test('export then import round-trip preserves customer data', () => {
 });
 
 test('createBackupPayload wraps customers with current formatVersion', () => {
-    const { createBackupPayload, BACKUP_FORMAT_VERSION } = loadBackupApi();
     const payload = createBackupPayload(sampleCustomers);
 
     assert.equal(payload.formatVersion, BACKUP_FORMAT_VERSION);
@@ -58,7 +49,6 @@ test('createBackupPayload wraps customers with current formatVersion', () => {
 });
 
 test('parseBackupJson accepts legacy plain customer arrays as version 0', () => {
-    const { parseBackupJson } = loadBackupApi();
     const result = parseBackupJson(sampleCustomers);
 
     assert.equal(result.formatVersion, 0);
@@ -66,7 +56,6 @@ test('parseBackupJson accepts legacy plain customer arrays as version 0', () => 
 });
 
 test('parseBackupJson accepts versioned backup objects', () => {
-    const { parseBackupJson } = loadBackupApi();
     const backup = {
         formatVersion: 1,
         exportedAt: '2026-06-18T12:00:00.000Z',
@@ -79,8 +68,6 @@ test('parseBackupJson accepts versioned backup objects', () => {
 });
 
 test('parseBackupJson rejects invalid backup shapes', () => {
-    const { parseBackupJson } = loadBackupApi();
-
     assert.throws(() => parseBackupJson(null), /無效的 JSON 格式/);
     assert.throws(() => parseBackupJson({ formatVersion: 1 }), /無效的 JSON 格式/);
     assert.throws(
@@ -94,14 +81,11 @@ test('parseBackupJson rejects invalid backup shapes', () => {
 });
 
 test('validateBackupVersion allows same and older backup versions', () => {
-    const { validateBackupVersion, BACKUP_FORMAT_VERSION } = loadBackupApi();
-
     assert.equal(validateBackupVersion(BACKUP_FORMAT_VERSION).ok, true);
     assert.equal(validateBackupVersion(0).ok, true);
 });
 
 test('validateBackupVersion blocks backups newer than the app', () => {
-    const { validateBackupVersion, BACKUP_FORMAT_VERSION } = loadBackupApi();
     const newerVersion = BACKUP_FORMAT_VERSION + 1;
     const result = validateBackupVersion(newerVersion);
 

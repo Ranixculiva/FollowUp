@@ -41,7 +41,18 @@ function validateBackupVersion(fileVersion) {
     return { ok: true };
 }
 
-window.BACKUP_FORMAT_VERSION = BACKUP_FORMAT_VERSION;
-window.createBackupPayload = createBackupPayload;
-window.parseBackupJson = parseBackupJson;
-window.validateBackupVersion = validateBackupVersion;
+const backupApi = {
+    BACKUP_FORMAT_VERSION,
+    LEGACY_BACKUP_VERSION,
+    createBackupPayload,
+    parseBackupJson,
+    validateBackupVersion
+};
+
+if (typeof window !== 'undefined') {
+    Object.assign(window, backupApi);
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = backupApi;
+}

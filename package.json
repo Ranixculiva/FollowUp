@@ -2,6 +2,7 @@
   "name": "followup",
   "private": true,
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=js/backup.js tests/*.test.js"
   }
 }
