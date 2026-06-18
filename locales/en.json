@@ -1,0 +1,318 @@
+{
+  "app": {
+    "title": "Customer Manager",
+    "description": "Offline customer management and follow-up"
+  },
+  "locale": {
+    "zhTW": "繁中",
+    "en": "EN"
+  },
+  "search": {
+    "placeholder": "Search customers..."
+  },
+  "backup": {
+    "export": "Export backup",
+    "import": "Import backup",
+    "invalidJson": "Invalid JSON format",
+    "invalidVersion": "Invalid backup version",
+    "versionTooNew": "This backup (version {version}) is newer than the app supports (version {supported}).\nPlease update the app before importing to avoid data issues."
+  },
+  "report": {
+    "open": "Export report",
+    "title": "Select customers to export",
+    "useFilteredPrefix": "Use current list filter (",
+    "customersUnit": ")",
+    "selectAll": "Select all",
+    "exportPdf": "Export PDF",
+    "print": "Print",
+    "cancel": "Cancel",
+    "noFilteredCustomers": "No customers in the current filtered list",
+    "selectAtLeastOne": "Select at least one customer",
+    "generateFailed": "Could not generate the report. Please try again.",
+    "emptyCustomers": "No customers yet"
+  },
+  "nav": {
+    "customers": "Customers",
+    "addCustomer": "Add customer",
+    "followUps": "Follow-ups"
+  },
+  "form": {
+    "back": "Back",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  "tabs": {
+    "basic": "Basic info",
+    "step2": "Step 2",
+    "steam": "STEAM",
+    "formhd": "FORMHD",
+    "evaluation": "Evaluation",
+    "followup": "Follow-up plan"
+  },
+  "toolbar": {
+    "filterSort": "Filter & sort",
+    "clear": "Clear",
+    "filter": "Filter",
+    "sort": "Sort",
+    "step2Only": "Step 2",
+    "country": "Country/region",
+    "allCountries": "All",
+    "sortFieldAria": "Sort field"
+  },
+  "sort": {
+    "updated": "Last updated",
+    "created": "Date added",
+    "lastContact": "Last contact",
+    "name": "Name",
+    "steam": "STEAM",
+    "desc": "Descending (high to low / new to old)",
+    "asc": "Ascending (low to high / old to new)"
+  },
+  "list": {
+    "noResults": "No customers match the current filters",
+    "empty": "No customers yet"
+  },
+  "pdf": {
+    "notLoaded": "PDF component not loaded. Please refresh the page.",
+    "mergeNotLoaded": "PDF merge component not loaded. Please refresh the page.",
+    "generating": "Generating PDF…",
+    "exportFailed": "PDF export failed: {message}",
+    "retry": "Please try again later"
+  },
+  "customer": {
+    "unnamed": "Unnamed customer",
+    "unnamedShort": "Unnamed",
+    "ageYears": "{age} y/o",
+    "lastContact": "Last contact: {date}",
+    "loadFailed": "Could not load customer data. Please try again.",
+    "deleteNotFound": "Cannot delete: customer not found",
+    "deleteFailed": "Could not delete customer. Please try again.",
+    "addFailed": "Could not add customer: {message}"
+  },
+  "followup": {
+    "loadFailed": "Could not load follow-ups. Please try again."
+  },
+  "confirm": {
+    "unsavedLeave": "You have unsaved changes. Leave anyway?",
+    "deleteCustomer": "Delete this customer? This cannot be undone.",
+    "importOverwrite": "Import will replace all existing data. Continue?"
+  },
+  "error": {
+    "initFailed": "Initialization failed. Please refresh the page.",
+    "saveFailed": "Could not save. Please try again.",
+    "localeSwitchFailed": "Could not switch language. Please try again."
+  },
+  "export": {
+    "noCustomers": "No customer data to export",
+    "csvSuccess": "CSV exported successfully!",
+    "jsonSuccess": "JSON exported successfully!",
+    "failed": "Export failed. Please try again."
+  },
+  "import": {
+    "success": "Data imported successfully!",
+    "invalidFile": "Invalid file format. Please import a valid backup file.",
+    "failed": "Import failed. Please try again.",
+    "unsupportedFile": "Unsupported file format"
+  },
+  "forms": {
+    "sections": {
+      "basic": "Basic info",
+      "step2": "Step 2 data",
+      "steam": "STEAM evaluation",
+      "formhd": "FORMHD evaluation",
+      "evaluation": "Customer evaluation",
+      "followup": "Follow-up plan",
+      "followup.addButton": "Add follow-up plan"
+    },
+    "subsections": {
+      "family": "F - Family",
+      "occupation": "O - Occupation",
+      "recreation": "R - Recreation",
+      "money": "M - Money",
+      "health": "H - Health",
+      "dream": "D - Dreams"
+    },
+    "fields": {
+      "name": "Name",
+      "phone": "Phone",
+      "line": "Line",
+      "fb": "FB",
+      "ig": "IG",
+      "address": "Location",
+      "country": "Country/region",
+      "age": "Age",
+      "gender": "Gender",
+      "howMet": "How you met",
+      "personality": "Personality",
+      "maritalStatus": "Marital status",
+      "annualIncome": "Annual income",
+      "moneyNeeds": "Financial needs",
+      "relationship": "Relationship",
+      "relationshipCloseness": "Closeness",
+      "colorRating": "Color rating",
+      "productInterest": "Product interest",
+      "interests": "Interests",
+      "health": "Health",
+      "dreams": "Dreams",
+      "lastInviteDate": "Last invite date",
+      "lastPresentationDate": "Product/business presentation date",
+      "firstFollowUp": "First follow-up",
+      "secondFollowUp": "Second follow-up",
+      "notes": "Notes",
+      "listOwner": "List Owner",
+      "joinDate": "Added to list date",
+      "steamS": "S (有銷售服務經驗)",
+      "steamT": "T (指導教練或輔導員)",
+      "steamE": "E (創業家或事業經驗)",
+      "steamA": "A (態度積極並具個人魅力)",
+      "steamM": "M (個人收入及希望達到收入目標)",
+      "onlineSales": "網路銷售經驗",
+      "connections": "人脈關係",
+      "totalScore": "Total score",
+      "isStep2": "Step 2 customer",
+      "needs": "Needs analysis",
+      "formF": "F - 家庭狀況",
+      "formFSpouse": "另一半職業",
+      "formFChildren": "子女數量/年齡",
+      "formFEducation": "就學/就業",
+      "formFFamily": "家中成員/寵物",
+      "formFShopping": "喜歡線上購物",
+      "formFSaving": "喜歡省錢",
+      "formFNeedMoney": "需要錢嗎",
+      "formO": "職業",
+      "formOIncome": "收入",
+      "formOWorkType": "上班型態",
+      "formOTime": "時間",
+      "formR": "休閒娛樂",
+      "formRDrink": "喜歡喝茶/咖啡",
+      "formRMakeup": "喜歡化妝",
+      "formM": "財務狀況",
+      "formMNoTime": "賺很多錢沒時間花",
+      "formH": "健康狀況",
+      "formHExercise": "運動狀況",
+      "formHWeight": "需要減重",
+      "formD": "D - 對未來的期待",
+      "hasCard": "Has credit card",
+      "joinFee": "Franchise fee",
+      "maKnowledge": "Market America knowledge",
+      "questions": "Questions/objections",
+      "discussedMA": "Discussed Market America concept",
+      "features": "Features introduced",
+      "triedProduct": "Tried product",
+      "usingProduct": "Using product",
+      "customerNeeds": "Customer needs",
+      "discussionDate": "Discussion date",
+      "followupPlan": "Follow-up plan",
+      "followupDate": "Action date",
+      "followupFeedback": "Feedback"
+    },
+    "placeholders": {
+      "formF": "Enter family situation",
+      "formO": "Enter occupation",
+      "formR": "Enter recreation",
+      "formM": "Enter financial situation",
+      "formH": "Enter health status",
+      "formD": "Enter future expectations"
+    },
+    "options": {
+      "gender": {
+        "_empty": "Please select",
+        "男": "Male",
+        "女": "Female"
+      },
+      "maritalStatus": {
+        "_empty": "Please select",
+        "已婚": "Married",
+        "單身": "Single",
+        "離婚": "Divorced",
+        "喪偶": "Widowed"
+      },
+      "annualIncome": {
+        "_empty": "請選擇",
+        "50萬以下": "50萬以下",
+        "50-100萬": "50-100萬",
+        "100-150萬": "100-150萬",
+        "150-200萬": "150-200萬",
+        "200萬以上": "200萬以上"
+      },
+      "relationshipCloseness": {
+        "_empty": "Please select",
+        "非常親近": "Very close",
+        "親近": "Close",
+        "普通": "Neutral",
+        "疏遠": "Distant",
+        "非常疏遠": "Very distant"
+      },
+      "colorRating": {
+        "_empty": "Please select",
+        "red": "Red",
+        "yellow": "Yellow",
+        "green": "Green"
+      },
+      "productInterest": {
+        "_empty": "Please select",
+        "高": "High",
+        "中": "Medium",
+        "低": "Low",
+        "無": "None"
+      },
+      "steamS": {
+        "0": "0 - 沒有",
+        "3": "3 - 接觸過",
+        "5": "5 - 專業"
+      },
+      "steamT": {
+        "0": "0 - 沒有",
+        "3": "3 - 接觸過",
+        "5": "5 - 專業"
+      },
+      "steamE": {
+        "0": "0 - 沒有",
+        "3": "3 - 曾經或剛起步",
+        "5": "5 - 正在創業或有自己生意"
+      },
+      "steamA": {
+        "0": "0 - 安於現狀",
+        "3": "3 - 願意改變",
+        "5": "5 - 態度積極勇於嘗試"
+      },
+      "steamM": {
+        "0": "0 - 暫無收入需求，安於現狀",
+        "3": "3 - 收入不穩定或急需增加收入",
+        "5": "5 - 收入穩定，想創造額外收入"
+      },
+      "onlineSales": {
+        "0": "0 - 沒有",
+        "3": "3 - 接觸過",
+        "5": "5 - 專業"
+      },
+      "connections": {
+        "0": "0 - 除了少數家人沒有太多社交",
+        "3": "3 - 交友圈侷限特定族群但願意交朋友",
+        "5": "5 - 廣結善緣/家族龐大/花蝴蝶等級"
+      }
+    },
+    "checkboxes": {
+      "needWeightLoss": "Weight loss",
+      "needSkincare": "Skincare & makeup",
+      "needHealth": "Health site",
+      "needIncome": "Extra income",
+      "needPassiveIncome": "Passive income",
+      "featureWebsite": "Website tour",
+      "featureConsumption": "Consumption transfer",
+      "featureAnnuity": "Shopping annuity",
+      "featurePlatform": "Five-win platform",
+      "featureMPCP": "MPCP",
+      "needVIP": "VIP customer",
+      "needGroupBuy": "Group buying",
+      "needHealthBody": "Physical health"
+    },
+    "common": {
+      "pleaseSelect": "Please select",
+      "addItem": "Add item",
+      "requiredField": "{field} is required",
+      "listItemRequired": "{section} item {index}: {field} is required",
+      "unsupportedFile": "Unsupported file format"
+    }
+  }
+}

@@ -994,6 +994,33 @@
     color: white !important;
 }
 
+.locale-switch {
+    display: inline-flex;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.locale-switch-btn {
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.locale-switch-btn.is-active {
+    background: white;
+    color: var(--nav-button);
+}
+
+.locale-switch-btn:hover {
+    opacity: 0.9;
+}
+
 .export-button, .import-button, .report-open-button {
     padding: 8px 16px;
     border: none;

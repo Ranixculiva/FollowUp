@@ -68,15 +68,15 @@ test('parseBackupJson accepts versioned backup objects', () => {
 });
 
 test('parseBackupJson rejects invalid backup shapes', () => {
-    assert.throws(() => parseBackupJson(null), /無效的 JSON 格式/);
-    assert.throws(() => parseBackupJson({ formatVersion: 1 }), /無效的 JSON 格式/);
+    assert.throws(() => parseBackupJson(null), /backup\.invalidJson/);
+    assert.throws(() => parseBackupJson({ formatVersion: 1 }), /backup\.invalidJson/);
     assert.throws(
         () => parseBackupJson({ formatVersion: 1.5, customers: [] }),
-        /無效的備份版本/
+        /backup\.invalidVersion/
     );
     assert.throws(
         () => parseBackupJson({ formatVersion: -1, customers: [] }),
-        /無效的備份版本/
+        /backup\.invalidVersion/
     );
 });
 
@@ -90,6 +90,7 @@ test('validateBackupVersion blocks backups newer than the app', () => {
     const result = validateBackupVersion(newerVersion);
 
     assert.equal(result.ok, false);
-    assert.match(result.message, new RegExp(`版本 \\(${newerVersion}\\)`));
-    assert.match(result.message, /請先更新應用程式/);
+    assert.equal(result.messageKey, 'backup.versionTooNew');
+    assert.equal(result.params.version, newerVersion);
+    assert.equal(result.params.supported, BACKUP_FORMAT_VERSION);
 });

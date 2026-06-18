@@ -1,0 +1,318 @@
+{
+  "app": {
+    "title": "客戶管理系統",
+    "description": "離線客戶管理與跟進系統"
+  },
+  "locale": {
+    "zhTW": "繁中",
+    "en": "EN"
+  },
+  "search": {
+    "placeholder": "搜尋客戶..."
+  },
+  "backup": {
+    "export": "匯出備份",
+    "import": "匯入備份",
+    "invalidJson": "無效的 JSON 格式",
+    "invalidVersion": "無效的備份版本",
+    "versionTooNew": "此備份檔版本 ({version}) 較新，目前應用程式僅支援版本 {supported}。\n請先更新應用程式後再匯入，以免資料損壞。"
+  },
+  "report": {
+    "open": "匯出報表",
+    "title": "選擇要匯出的客戶",
+    "useFilteredPrefix": "使用目前列表篩選結果（",
+    "customersUnit": "位）",
+    "selectAll": "全選",
+    "exportPdf": "匯出 PDF",
+    "print": "列印",
+    "cancel": "取消",
+    "noFilteredCustomers": "目前列表篩選結果沒有客戶",
+    "selectAtLeastOne": "請選擇至少一位客戶",
+    "generateFailed": "生成報表時發生錯誤，請稍後再試",
+    "emptyCustomers": "尚無客戶資料"
+  },
+  "nav": {
+    "customers": "客戶列表",
+    "addCustomer": "新增客戶",
+    "followUps": "跟進計劃"
+  },
+  "form": {
+    "back": "返回",
+    "save": "儲存",
+    "delete": "刪除"
+  },
+  "tabs": {
+    "basic": "基本資料",
+    "step2": "Step 2",
+    "steam": "STEAM評估",
+    "formhd": "FORMHD評估",
+    "evaluation": "客戶評估",
+    "followup": "跟進計劃"
+  },
+  "toolbar": {
+    "filterSort": "篩選與排序",
+    "clear": "清除",
+    "filter": "篩選",
+    "sort": "排序",
+    "step2Only": "Step 2",
+    "country": "國家/地區",
+    "allCountries": "全部",
+    "sortFieldAria": "排序欄位"
+  },
+  "sort": {
+    "updated": "最近更新",
+    "created": "新增日期",
+    "lastContact": "最近聯繫",
+    "name": "姓名",
+    "steam": "STEAM",
+    "desc": "降序（高到低 / 新到舊）",
+    "asc": "升序（低到高 / 舊到新）"
+  },
+  "list": {
+    "noResults": "沒有符合篩選條件的客戶",
+    "empty": "尚無客戶資料"
+  },
+  "pdf": {
+    "notLoaded": "PDF 元件尚未載入，請重新整理頁面",
+    "mergeNotLoaded": "PDF 合併元件尚未載入，請重新整理頁面",
+    "generating": "正在產生 PDF…",
+    "exportFailed": "匯出 PDF 失敗：{message}",
+    "retry": "請稍後再試"
+  },
+  "customer": {
+    "unnamed": "未命名客戶",
+    "unnamedShort": "未命名",
+    "ageYears": "{age}歲",
+    "lastContact": "最近聯繫: {date}",
+    "loadFailed": "載入客戶資料失敗，請稍後再試",
+    "deleteNotFound": "無法刪除：找不到客戶",
+    "deleteFailed": "刪除失敗，請稍後再試",
+    "addFailed": "新增客戶失敗：{message}"
+  },
+  "followup": {
+    "loadFailed": "載入跟進計劃失敗，請稍後再試"
+  },
+  "confirm": {
+    "unsavedLeave": "您有未儲存的更改，確定要離開嗎？",
+    "deleteCustomer": "確定要刪除此客戶嗎？此操作無法復原。",
+    "importOverwrite": "匯入將會覆蓋現有資料，確定要繼續嗎？"
+  },
+  "error": {
+    "initFailed": "初始化失敗，請重新整理頁面",
+    "saveFailed": "儲存失敗，請稍後再試",
+    "localeSwitchFailed": "無法切換語言，請稍後再試"
+  },
+  "export": {
+    "noCustomers": "沒有客戶資料可供匯出",
+    "csvSuccess": "CSV 匯出成功！",
+    "jsonSuccess": "JSON 匯出成功！",
+    "failed": "匯出失敗，請稍後再試"
+  },
+  "import": {
+    "success": "資料匯入成功！",
+    "invalidFile": "檔案格式錯誤，請確保匯入正確的備份檔案",
+    "failed": "匯入失敗，請稍後再試",
+    "unsupportedFile": "不支援的檔案格式"
+  },
+  "forms": {
+    "sections": {
+      "basic": "基本資料",
+      "step2": "Step 2 資料",
+      "steam": "STEAM評估",
+      "formhd": "FORMHD評估",
+      "evaluation": "客戶評估",
+      "followup": "跟進計劃",
+      "followup.addButton": "新增跟進計劃"
+    },
+    "subsections": {
+      "family": "F - 家庭狀況",
+      "occupation": "O - 職業",
+      "recreation": "R - 休閒娛樂",
+      "money": "M - 財務狀況",
+      "health": "H - 健康狀況",
+      "dream": "D - 對未來的期待"
+    },
+    "fields": {
+      "name": "姓名",
+      "phone": "電話",
+      "line": "Line",
+      "fb": "FB",
+      "ig": "IG",
+      "address": "居住地",
+      "country": "國家/地區",
+      "age": "年齡",
+      "gender": "性別",
+      "howMet": "如何認識對方",
+      "personality": "人格特質",
+      "maritalStatus": "婚姻狀況",
+      "annualIncome": "年收入",
+      "moneyNeeds": "金錢需求",
+      "relationship": "關係",
+      "relationshipCloseness": "關係親疏",
+      "colorRating": "顏色評級",
+      "productInterest": "對產品興趣",
+      "interests": "興趣",
+      "health": "健康狀況",
+      "dreams": "夢想",
+      "lastInviteDate": "最近邀約日期",
+      "lastPresentationDate": "產品/事業展示日期",
+      "firstFollowUp": "第一次跟進",
+      "secondFollowUp": "第二次跟進",
+      "notes": "備注",
+      "listOwner": "List Owner",
+      "joinDate": "加入名單日期",
+      "steamS": "S (有銷售服務經驗)",
+      "steamT": "T (指導教練或輔導員)",
+      "steamE": "E (創業家或事業經驗)",
+      "steamA": "A (態度積極並具個人魅力)",
+      "steamM": "M (個人收入及希望達到收入目標)",
+      "onlineSales": "網路銷售經驗",
+      "connections": "人脈關係",
+      "totalScore": "總分",
+      "isStep2": "Step 2 客戶",
+      "needs": "需求分析",
+      "formF": "F - 家庭狀況",
+      "formFSpouse": "另一半職業",
+      "formFChildren": "子女數量/年齡",
+      "formFEducation": "就學/就業",
+      "formFFamily": "家中成員/寵物",
+      "formFShopping": "喜歡線上購物",
+      "formFSaving": "喜歡省錢",
+      "formFNeedMoney": "需要錢嗎",
+      "formO": "職業",
+      "formOIncome": "收入",
+      "formOWorkType": "上班型態",
+      "formOTime": "時間",
+      "formR": "休閒娛樂",
+      "formRDrink": "喜歡喝茶/咖啡",
+      "formRMakeup": "喜歡化妝",
+      "formM": "財務狀況",
+      "formMNoTime": "賺很多錢沒時間花",
+      "formH": "健康狀況",
+      "formHExercise": "運動狀況",
+      "formHWeight": "需要減重",
+      "formD": "D - 對未來的期待",
+      "hasCard": "是否持有信用卡",
+      "joinFee": "加盟金",
+      "maKnowledge": "對美安的認知",
+      "questions": "興趣/疑惑/異議問題",
+      "discussedMA": "是否談過美安概念",
+      "features": "已介紹功能",
+      "triedProduct": "是否試用產品",
+      "usingProduct": "是否使用產品",
+      "customerNeeds": "對方需求",
+      "discussionDate": "討論日期",
+      "followupPlan": "跟進計劃",
+      "followupDate": "執行日期",
+      "followupFeedback": "反饋"
+    },
+    "placeholders": {
+      "formF": "請輸入家庭狀況",
+      "formO": "請輸入職業",
+      "formR": "請輸入休閒娛樂",
+      "formM": "請輸入財務狀況",
+      "formH": "請輸入健康狀況",
+      "formD": "請輸入對未來的期待"
+    },
+    "options": {
+      "gender": {
+        "_empty": "請選擇",
+        "男": "男",
+        "女": "女"
+      },
+      "maritalStatus": {
+        "_empty": "請選擇",
+        "已婚": "已婚",
+        "單身": "單身",
+        "離婚": "離婚",
+        "喪偶": "喪偶"
+      },
+      "annualIncome": {
+        "_empty": "請選擇",
+        "50萬以下": "50萬以下",
+        "50-100萬": "50-100萬",
+        "100-150萬": "100-150萬",
+        "150-200萬": "150-200萬",
+        "200萬以上": "200萬以上"
+      },
+      "relationshipCloseness": {
+        "_empty": "請選擇",
+        "非常親近": "非常親近",
+        "親近": "親近",
+        "普通": "普通",
+        "疏遠": "疏遠",
+        "非常疏遠": "非常疏遠"
+      },
+      "colorRating": {
+        "_empty": "請選擇",
+        "red": "紅色",
+        "yellow": "黃色",
+        "green": "綠色"
+      },
+      "productInterest": {
+        "_empty": "請選擇",
+        "高": "高",
+        "中": "中",
+        "低": "低",
+        "無": "無"
+      },
+      "steamS": {
+        "0": "0 - 沒有",
+        "3": "3 - 接觸過",
+        "5": "5 - 專業"
+      },
+      "steamT": {
+        "0": "0 - 沒有",
+        "3": "3 - 接觸過",
+        "5": "5 - 專業"
+      },
+      "steamE": {
+        "0": "0 - 沒有",
+        "3": "3 - 曾經或剛起步",
+        "5": "5 - 正在創業或有自己生意"
+      },
+      "steamA": {
+        "0": "0 - 安於現狀",
+        "3": "3 - 願意改變",
+        "5": "5 - 態度積極勇於嘗試"
+      },
+      "steamM": {
+        "0": "0 - 暫無收入需求，安於現狀",
+        "3": "3 - 收入不穩定或急需增加收入",
+        "5": "5 - 收入穩定，想創造額外收入"
+      },
+      "onlineSales": {
+        "0": "0 - 沒有",
+        "3": "3 - 接觸過",
+        "5": "5 - 專業"
+      },
+      "connections": {
+        "0": "0 - 除了少數家人沒有太多社交",
+        "3": "3 - 交友圈侷限特定族群但願意交朋友",
+        "5": "5 - 廣結善緣/家族龐大/花蝴蝶等級"
+      }
+    },
+    "checkboxes": {
+      "needWeightLoss": "減脂減重",
+      "needSkincare": "保養彩妝",
+      "needHealth": "健康網站",
+      "needIncome": "增加收入",
+      "needPassiveIncome": "永續收入",
+      "featureWebsite": "網站導覽",
+      "featureConsumption": "消費轉移",
+      "featureAnnuity": "購物年金",
+      "featurePlatform": "五贏平台",
+      "featureMPCP": "ＭＰＣＰ",
+      "needVIP": "成為優惠顧客",
+      "needGroupBuy": "揪團購物",
+      "needHealthBody": "身體健康"
+    },
+    "common": {
+      "pleaseSelect": "請選擇",
+      "addItem": "新增項目",
+      "requiredField": "{field}為必填欄位",
+      "listItemRequired": "第 {index} 個{section}的 {field}為必填欄位",
+      "unsupportedFile": "不支援的檔案格式"
+    }
+  }
+}

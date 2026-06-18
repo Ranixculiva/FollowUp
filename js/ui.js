@@ -11,12 +11,17 @@ let sortDir = 'desc';
 let listPanelOpen = false;
 
 const SORT_FIELD_LABELS = {
-    updated: '最近更新',
-    created: '新增日期',
-    lastContact: '最近聯繫',
-    name: '姓名',
-    steam: 'STEAM'
+    updated: 'sort.updated',
+    created: 'sort.created',
+    lastContact: 'sort.lastContact',
+    name: 'sort.name',
+    steam: 'sort.steam'
 };
+
+function getSortFieldLabel(field) {
+    const key = SORT_FIELD_LABELS[field];
+    return key ? t(key) : field;
+}
 
 function loadListPrefs() {
     try {
@@ -62,6 +67,8 @@ function hasActiveListControls() {
 // Initialize UI
 async function initializeUI() {
     try {
+        await I18n.init();
+
         // Initialize database first
         await initDB();
         
@@ -86,6 +93,10 @@ async function initializeUI() {
             );
         }
         syncListToolbarUI();
+
+        I18n.onLocaleChange(() => {
+            refreshLocalizedUI();
+        });
         
     // Set up search handler
     const searchBar = document.querySelector('.search-bar');
@@ -96,18 +107,7 @@ async function initializeUI() {
         }
 
         // Set up form change tracking and STEAM score calculation
-    const formInputs = document.querySelectorAll('input, select, textarea');
-    formInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            hasUnsavedChanges = true;
-                if (input.id.startsWith('steam') || input.id === 'onlineSales' || input.id === 'connections') {
-                    calculateSteamScore();
-                }
-                if (input.id === 'isStep2') {
-                    toggleStep2TabVisibility(input.checked);
-                }
-            });
-        });
+        bindCustomerFormListeners();
 
         // Initial setup of Step2 tab visibility
         const isStep2Input = document.getElementById('isStep2');
@@ -137,8 +137,74 @@ async function initializeUI() {
     await refreshCustomerList();
     } catch (error) {
         console.error('Error initializing application:', error);
-        alert('初始化失敗，請重新整理頁面');
+        const message = (typeof I18n !== 'undefined' && I18n.hasTranslation('error.initFailed'))
+            ? t('error.initFailed')
+            : '初始化失敗，請重新整理頁面';
+        alert(message);
     }
+}
+
+function bindCustomerFormListeners() {
+    document.querySelectorAll('#customerForm input, #customerForm select, #customerForm textarea').forEach(input => {
+        input.addEventListener('change', () => {
+            hasUnsavedChanges = true;
+            if (input.id.startsWith('steam') || input.id === 'onlineSales' || input.id === 'connections') {
+                calculateSteamScore();
+            }
+            if (input.id === 'isStep2') {
+                toggleStep2TabVisibility(input.checked);
+            }
+        });
+    });
+}
+
+async function refreshLocalizedUI() {
+    rebuildListToolbar();
+    I18n.applyDomI18n();
+
+    const formContainer = document.getElementById('customerForm');
+    if (!formContainer) {
+        return;
+    }
+
+    const savedId = currentCustomerId;
+    const wasEditing = isEditing;
+    FormGenerator.generateForm('customerForm');
+    bindCustomerFormListeners();
+
+    if (wasEditing && savedId) {
+        const customer = await getCustomer(savedId);
+        if (customer) {
+            FormGenerator.loadData(customer);
+            document.querySelector('.customer-title').textContent = customer.name || t('customer.unnamed');
+        }
+    } else if (wasEditing) {
+        document.querySelector('.customer-title').textContent = t('nav.addCustomer');
+    }
+
+    const isStep2Input = document.getElementById('isStep2');
+    if (isStep2Input) {
+        toggleStep2TabVisibility(isStep2Input.checked);
+    }
+}
+
+function rebuildListToolbar() {
+    const existing = document.getElementById('listToolbar');
+    if (existing) {
+        existing.remove();
+    }
+
+    const listViewSticky = document.getElementById('listViewSticky');
+    const toolbar = createListToolbar();
+    if (listViewSticky) {
+        listViewSticky.appendChild(toolbar);
+    } else {
+        const customerList = document.querySelector('.customer-list');
+        document.querySelector('.container').insertBefore(toolbar, customerList);
+    }
+
+    syncListToolbarUI();
+    refreshCustomerList();
 }
 
 // Start initialization when DOM is ready
@@ -179,7 +245,7 @@ function createListToolbar() {
     toggleIcon.className = 'material-icons toolbar-toggle-icon';
     toggleIcon.textContent = 'expand_more';
     toggleBtn.appendChild(toggleIcon);
-    toggleBtn.appendChild(document.createTextNode(' 篩選與排序'));
+    toggleBtn.appendChild(document.createTextNode(` ${t('toolbar.filterSort')}`));
     toggleBtn.addEventListener('click', () => {
         listPanelOpen = !listPanelOpen;
         syncListToolbarUI();
@@ -196,7 +262,7 @@ function createListToolbar() {
     clearBtn.type = 'button';
     clearBtn.className = 'toolbar-clear';
     clearBtn.id = 'toolbarClear';
-    clearBtn.textContent = '清除';
+    clearBtn.textContent = t('toolbar.clear');
     clearBtn.addEventListener('click', clearListControls);
     header.appendChild(clearBtn);
 
@@ -210,7 +276,7 @@ function createListToolbar() {
     filterSection.className = 'toolbar-section';
     const filterHeading = document.createElement('span');
     filterHeading.className = 'toolbar-heading';
-    filterHeading.textContent = '篩選';
+    filterHeading.textContent = t('toolbar.filter');
     filterSection.appendChild(filterHeading);
 
     const filterRow = document.createElement('div');
@@ -228,18 +294,18 @@ function createListToolbar() {
         refreshCustomerList();
     });
     step2Chip.appendChild(step2Input);
-    step2Chip.appendChild(document.createTextNode(' Step 2'));
+    step2Chip.appendChild(document.createTextNode(` ${t('toolbar.step2Only')}`));
     filterRow.appendChild(step2Chip);
 
     const countryField = document.createElement('div');
     countryField.className = 'toolbar-field toolbar-field-grow';
     const countryLabel = document.createElement('label');
     countryLabel.htmlFor = 'filterCountry';
-    countryLabel.textContent = '國家/地區';
+    countryLabel.textContent = t('toolbar.country');
     const countrySelect = document.createElement('select');
     countrySelect.id = 'filterCountry';
     countrySelect.className = 'toolbar-select';
-    countrySelect.innerHTML = '<option value="">全部</option>';
+    countrySelect.innerHTML = `<option value="">${t('toolbar.allCountries')}</option>`;
     countrySelect.addEventListener('change', () => {
         countryFilter = countrySelect.value;
         saveListPrefs();
@@ -256,7 +322,7 @@ function createListToolbar() {
     sortSection.className = 'toolbar-section';
     const sortHeading = document.createElement('span');
     sortHeading.className = 'toolbar-heading';
-    sortHeading.textContent = '排序';
+    sortHeading.textContent = t('toolbar.sort');
     sortSection.appendChild(sortHeading);
 
     const sortRow = document.createElement('div');
@@ -265,11 +331,11 @@ function createListToolbar() {
     const sortSelect = document.createElement('select');
     sortSelect.id = 'sortField';
     sortSelect.className = 'toolbar-select toolbar-field-grow';
-    sortSelect.setAttribute('aria-label', '排序欄位');
-    Object.entries(SORT_FIELD_LABELS).forEach(([value, label]) => {
+    sortSelect.setAttribute('aria-label', t('toolbar.sortFieldAria'));
+    Object.keys(SORT_FIELD_LABELS).forEach((value) => {
         const option = document.createElement('option');
         option.value = value;
-        option.textContent = label;
+        option.textContent = getSortFieldLabel(value);
         sortSelect.appendChild(option);
     });
     sortSelect.addEventListener('change', () => {
@@ -328,7 +394,7 @@ function syncListToolbarUI() {
         }
         sortDirBtn.setAttribute(
             'aria-label',
-            sortDir === 'desc' ? '降序（高到低 / 新到舊）' : '升序（低到高 / 舊到新）'
+            sortDir === 'desc' ? t('sort.desc') : t('sort.asc')
         );
     }
 
@@ -389,7 +455,7 @@ async function updateCountryFilterOptions(customers) {
     const countries = getCountriesInUse(customers);
     const previous = countryFilter || select.value;
 
-    select.innerHTML = '<option value="">全部</option>';
+    select.innerHTML = `<option value="">${t('toolbar.allCountries')}</option>`;
     countries.forEach(country => {
         const option = document.createElement('option');
         option.value = country;
@@ -479,11 +545,11 @@ async function getReportCustomers() {
 
 function handleReportSelectionError(error) {
     if (error.message === 'EMPTY_FILTERED') {
-        alert('目前列表篩選結果沒有客戶');
+        alert(t('report.noFilteredCustomers'));
         return;
     }
     if (error.message === 'NONE_SELECTED') {
-        alert('請選擇至少一位客戶');
+        alert(t('report.selectAtLeastOne'));
         return;
     }
     throw error;
@@ -587,8 +653,8 @@ function displayCustomers(customers) {
         const empty = document.createElement('p');
         empty.className = 'list-empty';
         empty.textContent = hasActiveListFilters()
-            ? '沒有符合篩選條件的客戶'
-            : '尚無客戶資料';
+            ? t('list.noResults')
+            : t('list.empty');
         customerList.appendChild(empty);
         return;
     }
@@ -612,7 +678,7 @@ async function showCustomerDetail(customerId) {
     const detailView = document.getElementById('customerDetail');
     
     // Update customer title
-    document.querySelector('.customer-title').textContent = customer.name || '未命名客戶';
+    document.querySelector('.customer-title').textContent = customer.name || t('customer.unnamed');
     
     // Load all customer data using FormGenerator
     FormGenerator.loadData(customer);
@@ -632,7 +698,7 @@ function showAddCustomer() {
     hasUnsavedChanges = false;
 
     // Clear customer title
-    document.querySelector('.customer-title').textContent = '新增客戶';
+    document.querySelector('.customer-title').textContent = t('nav.addCustomer');
 
     // Clear form using FormGenerator
     FormGenerator.loadData({});
@@ -649,7 +715,7 @@ function showAddCustomer() {
 // Handle back button
 function handleBack() {
     if (hasUnsavedChanges) {
-        if (confirm('您有未儲存的更改，確定要離開嗎？')) {
+        if (confirm(t('confirm.unsavedLeave'))) {
             hasUnsavedChanges = false;
             showCustomers();
         }
@@ -695,7 +761,7 @@ async function saveCustomer() {
         showCustomers();
     } catch (error) {
         console.error('Error saving customer:', error);
-        alert('儲存失敗，請稍後再試');
+        alert(t('error.saveFailed'));
     }
 }
 
@@ -777,7 +843,7 @@ async function showFollowUps() {
                     }
                     followupsByDate.get(date).push({
                         customerId: customer.id,
-                        customerName: customer.name || '未命名',
+                        customerName: customer.name || t('customer.unnamedShort'),
                         ...followup
                     });
                 });
@@ -828,7 +894,7 @@ async function showFollowUps() {
     });
     } catch (error) {
         console.error('Error loading followups:', error);
-        alert('載入跟進計劃失敗，請稍後再試');
+        alert(t('followup.loadFailed'));
     }
 }
 
@@ -935,7 +1001,9 @@ function createCustomerCard(customer) {
     if (customer.lastInviteDate) {
         const lastContact = document.createElement('p');
         lastContact.className = 'last-contact';
-        lastContact.textContent = `最近聯繫: ${new Date(customer.lastInviteDate).toLocaleDateString()}`;
+        lastContact.textContent = t('customer.lastContact', {
+            date: new Date(customer.lastInviteDate).toLocaleDateString(I18n.getLocale())
+        });
         card.appendChild(lastContact);
     }
     
@@ -964,7 +1032,7 @@ async function handleFormSubmit(event) {
         loadCustomers();
         event.target.reset();
     } catch (error) {
-        alert('Error adding customer: ' + error.message);
+        alert(t('customer.addFailed', { message: error.message }));
     }
 }
 
@@ -975,7 +1043,7 @@ async function loadCustomers() {
         displayCustomers(customers);
     } catch (error) {
         console.error('Error loading customers:', error);
-        alert('載入客戶資料失敗，請稍後再試');
+        alert(t('customer.loadFailed'));
     }
 }
 
@@ -987,11 +1055,11 @@ function handleAddCustomer() {
 // Delete customer
 async function handleDeleteCustomer() {
     if (!currentCustomerId) {
-        alert('無法刪除：找不到客戶');
+        alert(t('customer.deleteNotFound'));
         return;
     }
 
-    if (!confirm('確定要刪除此客戶嗎？此操作無法復原。')) {
+    if (!confirm(t('confirm.deleteCustomer'))) {
         return;
     }
 
@@ -1000,7 +1068,7 @@ async function handleDeleteCustomer() {
         showCustomers();
     } catch (error) {
         console.error('Error deleting customer:', error);
-        alert('刪除失敗，請稍後再試');
+        alert(t('customer.deleteFailed'));
     }
 }
 
@@ -1063,7 +1131,7 @@ async function showReportDialog() {
     }
 
     if (customers.length === 0) {
-        customerList.innerHTML = '<p class="report-empty-hint">尚無客戶資料</p>';
+        customerList.innerHTML = `<p class="report-empty-hint">${t('report.emptyCustomers')}</p>`;
     } else {
         const filteredIds = new Set(filteredCustomers.map(customer => String(customer.id)));
         customers.forEach(customer => {
@@ -1078,7 +1146,7 @@ async function showReportDialog() {
             const label = document.createElement('label');
             const steamScore = getSteamScore(customer);
             const steamHint = steamScore > 0 ? ` · STEAM ${steamScore}` : '';
-            label.textContent = `${customer.name || '未命名'}${customer.age ? ` (${customer.age}歲)` : ''}${steamHint}`;
+            label.textContent = `${customer.name || t('customer.unnamedShort')}${customer.age ? ` (${t('customer.ageYears', { age: customer.age })})` : ''}${steamHint}`;
 
             item.appendChild(checkbox);
             item.appendChild(label);
@@ -1175,7 +1243,7 @@ async function generateReport() {
         document.querySelector('.detail-view').style.display = '';
     } catch (error) {
         console.error('Error generating report:', error);
-        alert('生成報表時發生錯誤，請稍後再試');
+        alert(t('report.generateFailed'));
         
         // Restore display in case of error
         document.querySelector('.container').style.display = '';
@@ -1189,7 +1257,7 @@ async function exportToCSV() {
     try {
         const customers = await getAllCustomers();
         if (customers.length === 0) {
-            alert('沒有客戶資料可供匯出');
+            alert(t('export.noCustomers'));
             return;
         }
 
@@ -1239,10 +1307,10 @@ async function exportToCSV() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        alert('CSV 匯出成功！');
+        alert(t('export.csvSuccess'));
     } catch (error) {
         console.error('匯出 CSV 時發生錯誤：', error);
-        alert('匯出失敗，請稍後再試');
+        alert(t('export.failed'));
     }
 }
 
@@ -1251,7 +1319,7 @@ async function exportToJSON() {
     try {
         const customers = await getAllCustomers();
         if (customers.length === 0) {
-            alert('沒有客戶資料可供匯出');
+            alert(t('export.noCustomers'));
             return;
         }
 
@@ -1267,10 +1335,10 @@ async function exportToJSON() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        alert('JSON 匯出成功！');
+        alert(t('export.jsonSuccess'));
     } catch (error) {
         console.error('匯出 JSON 時發生錯誤：', error);
-        alert('匯出失敗，請稍後再試');
+        alert(t('export.failed'));
     }
 }
 
@@ -1280,7 +1348,7 @@ async function handleFileImport(event) {
         const file = event.target.files[0];
         if (!file) return;
 
-        const confirmImport = confirm('匯入將會覆蓋現有資料，確定要繼續嗎？');
+        const confirmImport = confirm(t('confirm.importOverwrite'));
         if (!confirmImport) {
             event.target.value = '';
             return;
@@ -1295,7 +1363,7 @@ async function handleFileImport(event) {
                     const backup = parseBackupJson(JSON.parse(e.target.result));
                     const versionCheck = validateBackupVersion(backup.formatVersion);
                     if (!versionCheck.ok) {
-                        alert(versionCheck.message);
+                        alert(t(versionCheck.messageKey, versionCheck.params));
                         return;
                     }
                     importedCustomers = backup.customers;
@@ -1303,7 +1371,7 @@ async function handleFileImport(event) {
                     // Handle CSV import
                     importedCustomers = parseCSV(e.target.result);
                 } else {
-                    throw new Error('不支援的檔案格式');
+                    throw new Error('import.unsupportedFile');
                 }
 
                 // Clear existing data
@@ -1314,11 +1382,14 @@ async function handleFileImport(event) {
                     await addCustomer(customer);
                 }
 
-                alert('資料匯入成功！');
+                alert(t('import.success'));
                 loadCustomers();
             } catch (error) {
                 console.error('解析檔案時發生錯誤：', error);
-                alert('檔案格式錯誤，請確保匯入正確的備份檔案');
+                const message = I18n.hasTranslation(error.message)
+                    ? t(error.message)
+                    : t('import.invalidFile');
+                alert(message);
             }
         };
 
@@ -1329,7 +1400,7 @@ async function handleFileImport(event) {
         }
     } catch (error) {
         console.error('匯入資料時發生錯誤：', error);
-        alert('匯入失敗，請稍後再試');
+        alert(t('import.failed'));
     }
     event.target.value = '';
 }

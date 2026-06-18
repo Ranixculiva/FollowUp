@@ -22,7 +22,9 @@ class FormGenerator {
                 } else {
                     const placeholder = document.createElement('option');
                     placeholder.value = '';
-                    placeholder.textContent = '請選擇';
+                    placeholder.textContent = typeof t === 'function'
+                        ? t('forms.common.pleaseSelect')
+                        : '請選擇';
                     input.appendChild(placeholder);
                 }
                 break;
@@ -96,7 +98,9 @@ class FormGenerator {
             const addButton = document.createElement('button');
             addButton.type = 'button';
             addButton.className = 'add-list-item-btn';
-            addButton.textContent = section.addButtonText || '新增項目';
+            addButton.textContent = section.addButtonText || (
+                typeof t === 'function' ? t('forms.common.addItem') : '新增項目'
+            );
             addButton.onclick = () => this.addListItem(sectionId, section.itemFields);
 
             sectionElement.appendChild(listContainer);
@@ -175,11 +179,18 @@ class FormGenerator {
         listContainer.appendChild(item);
     }
 
+    static getConfig() {
+        return typeof getLocalizedFormConfig === 'function'
+            ? getLocalizedFormConfig()
+            : formConfig;
+    }
+
     static generateForm(containerId) {
         const container = document.getElementById(containerId);
         container.innerHTML = '';
 
-        Object.entries(formConfig.sections).forEach(([sectionId, section]) => {
+        const config = this.getConfig();
+        Object.entries(config.sections).forEach(([sectionId, section]) => {
             container.appendChild(this.createFormSection(sectionId, section));
         });
     }
@@ -348,10 +359,10 @@ class FormGenerator {
 
     static validateForm() {
         const errors = [];
-        
-        Object.entries(formConfig.sections).forEach(([sectionId, section]) => {
+        const config = this.getConfig();
+
+        Object.entries(config.sections).forEach(([sectionId, section]) => {
             if (section.type === 'list') {
-                // Handle list type sections
                 const listContainer = document.getElementById(`${sectionId}List`);
                 if (listContainer) {
                     listContainer.querySelectorAll('.form-list-item').forEach((item, index) => {
@@ -360,7 +371,15 @@ class FormGenerator {
                             if (field.required) {
                                 const element = document.getElementById(`${field.id}_${itemId}`);
                                 if (!element || !element.value.trim()) {
-                                    errors.push(`第 ${index + 1} 個${section.title}的 ${field.label}為必填欄位`);
+                                    errors.push(
+                                        typeof t === 'function'
+                                            ? t('forms.common.listItemRequired', {
+                                                index: index + 1,
+                                                section: section.title,
+                                                field: field.label
+                                            })
+                                            : `第 ${index + 1} 個${section.title}的 ${field.label}為必填欄位`
+                                    );
                                 }
                             }
                         });
@@ -369,21 +388,23 @@ class FormGenerator {
                 return;
             }
 
-            // Handle subsections if they exist
             if (section.subsections) {
                 Object.values(section.subsections).forEach(subsection => {
                     subsection.fields.forEach(field => {
                         if (field.required) {
                             const element = document.getElementById(field.id);
                             if (!element || !element.value.trim()) {
-                                errors.push(`${field.label}為必填欄位`);
+                                errors.push(
+                                    typeof t === 'function'
+                                        ? t('forms.common.requiredField', { field: field.label })
+                                        : `${field.label}為必填欄位`
+                                );
                             }
                         }
                     });
                 });
             }
 
-            // Handle regular fields
             if (section.fields) {
                 section.fields.forEach(field => {
                     if (field.required) {
@@ -393,12 +414,20 @@ class FormGenerator {
                                 return checkbox && checkbox.checked;
                             });
                             if (!hasChecked) {
-                                errors.push(`${field.label}為必填欄位`);
+                                errors.push(
+                                    typeof t === 'function'
+                                        ? t('forms.common.requiredField', { field: field.label })
+                                        : `${field.label}為必填欄位`
+                                );
                             }
                         } else {
                             const element = document.getElementById(field.id);
                             if (!element || !element.value.trim()) {
-                                errors.push(`${field.label}為必填欄位`);
+                                errors.push(
+                                    typeof t === 'function'
+                                        ? t('forms.common.requiredField', { field: field.label })
+                                        : `${field.label}為必填欄位`
+                                );
                             }
                         }
                     }

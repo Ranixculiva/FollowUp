@@ -7,7 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="description" content="離線客戶管理與跟進系統">
+    <meta name="description" data-i18n="app.description" data-i18n-attr="content" content="離線客戶管理與跟進系統">
+    <meta name="i18n-title" content="app.title">
     <title>客戶管理系統</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
@@ -19,14 +20,18 @@
     <div class="container list-view">
         <div class="list-view-sticky" id="listViewSticky">
             <div class="search-container">
-                <input type="text" class="search-bar" placeholder="搜尋客戶...">
-                <button class="export-button" onclick="exportToJSON()" title="匯出備份">
+                <input type="text" class="search-bar" data-i18n="search.placeholder" data-i18n-attr="placeholder" placeholder="搜尋客戶...">
+                <div class="locale-switch" role="group" aria-label="Language">
+                    <button type="button" class="locale-switch-btn" data-set-locale="zh-TW" data-i18n="locale.zhTW" title="繁體中文">繁中</button>
+                    <button type="button" class="locale-switch-btn" data-set-locale="en" data-i18n="locale.en" title="English">EN</button>
+                </div>
+                <button class="export-button" onclick="exportToJSON()" data-i18n="backup.export" data-i18n-attr="title" title="匯出備份">
                     <span class="material-icons">backup</span>
                 </button>
-                <button class="import-button" onclick="document.getElementById('fileInput').click()" title="匯入備份">
+                <button class="import-button" onclick="document.getElementById('fileInput').click()" data-i18n="backup.import" data-i18n-attr="title" title="匯入備份">
                     <span class="material-icons">restore</span>
                 </button>
-                <button class="report-open-button" onclick="showReportDialog()" title="匯出報表">
+                <button class="report-open-button" onclick="showReportDialog()" data-i18n="report.open" data-i18n-attr="title" title="匯出報表">
                     <span class="material-icons">picture_as_pdf</span>
                 </button>
                 <input type="file" id="fileInput" class="file-input" accept=".json,.csv" onchange="handleFileImport(event)">
@@ -38,19 +43,19 @@
     <div id="customerDetail" class="detail-view">
         <div class="form-header">
             <div class="form-buttons">
-                <button class="ios-back-btn" onclick="handleBack()">返回</button>
+                <button class="ios-back-btn" onclick="handleBack()" data-i18n="form.back">返回</button>
                 <div class="customer-title"></div>
-                <button class="ios-save-btn" onclick="saveCustomer()">儲存</button>
-                <button class="ios-delete-btn" onclick="handleDeleteCustomer()">刪除</button>
+                <button class="ios-save-btn" onclick="saveCustomer()" data-i18n="form.save">儲存</button>
+                <button class="ios-delete-btn" onclick="handleDeleteCustomer()" data-i18n="form.delete">刪除</button>
             </div>
             <div class="form-tabs">
                 <div class="form-tabs-container">
-                    <div class="form-tab active" onclick="showTab('basic')">基本資料</div>
-                    <div class="form-tab" onclick="showTab('step2')">Step 2</div>
-                    <div class="form-tab" onclick="showTab('steam')">STEAM評估</div>
-                    <div class="form-tab" onclick="showTab('formhd')">FORMHD評估</div>
-                    <div class="form-tab" onclick="showTab('evaluation')">客戶評估</div>
-                    <div class="form-tab" onclick="showTab('followup')">跟進計劃</div>
+                    <div class="form-tab active" onclick="showTab('basic')" data-i18n="tabs.basic">基本資料</div>
+                    <div class="form-tab" onclick="showTab('step2')" data-i18n="tabs.step2">Step 2</div>
+                    <div class="form-tab" onclick="showTab('steam')" data-i18n="tabs.steam">STEAM評估</div>
+                    <div class="form-tab" onclick="showTab('formhd')" data-i18n="tabs.formhd">FORMHD評估</div>
+                    <div class="form-tab" onclick="showTab('evaluation')" data-i18n="tabs.evaluation">客戶評估</div>
+                    <div class="form-tab" onclick="showTab('followup')" data-i18n="tabs.followup">跟進計劃</div>
                 </div>
             </div>
         </div>
@@ -61,28 +66,28 @@
     </div>
 
     <nav class="nav-bottom">
-        <a href="#" class="nav-item" onclick="showCustomers()">客戶列表</a>
-        <a href="#" class="nav-item" onclick="showAddCustomer()">新增客戶</a>
-        <a href="#" class="nav-item" onclick="showFollowUps()">跟進計劃</a>
+        <a href="#" class="nav-item" onclick="showCustomers()" data-i18n="nav.customers">客戶列表</a>
+        <a href="#" class="nav-item" onclick="showAddCustomer()" data-i18n="nav.addCustomer">新增客戶</a>
+        <a href="#" class="nav-item" onclick="showFollowUps()" data-i18n="nav.followUps">跟進計劃</a>
     </nav>
 
     <!-- Report Dialog -->
     <div id="reportDialog" class="dialog">
         <div class="dialog-content">
-            <h2>選擇要匯出的客戶</h2>
+            <h2 data-i18n="report.title">選擇要匯出的客戶</h2>
             <label class="report-use-filter">
                 <input type="checkbox" id="reportUseFilteredList" checked onchange="toggleReportFilteredMode()">
-                使用目前列表篩選結果（<span id="reportFilteredCount">0</span> 位）
+                <span data-i18n="report.useFilteredPrefix">使用目前列表篩選結果（</span><span id="reportFilteredCount">0</span><span data-i18n="report.customersUnit">位）</span>
             </label>
             <label class="report-select-all">
                 <input type="checkbox" id="reportSelectAll" onchange="toggleReportSelectAll(this.checked)">
-                全選
+                <span data-i18n="report.selectAll">全選</span>
             </label>
             <div class="report-customer-list" id="reportCustomerList"></div>
             <div class="dialog-buttons">
-                <button class="dialog-btn-primary" onclick="generatePdfReport()">匯出 PDF</button>
-                <button class="dialog-btn-primary" onclick="generateReport()">列印</button>
-                <button onclick="closeReportDialog()">取消</button>
+                <button class="dialog-btn-primary" onclick="generatePdfReport()" data-i18n="report.exportPdf">匯出 PDF</button>
+                <button class="dialog-btn-primary" onclick="generateReport()" data-i18n="report.print">列印</button>
+                <button onclick="closeReportDialog()" data-i18n="report.cancel">取消</button>
             </div>
         </div>
     </div>
@@ -101,9 +106,12 @@
             });
         }
     </script>
+    <script src="js/locales/bundled.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/db.js"></script>
     <script src="js/customer.js"></script>
     <script src="js/form-config.js"></script>
+    <script src="js/form-i18n.js"></script>
     <script src="js/countries.js"></script>
     <script src="js/form-generator.js"></script>
     <script src="js/report-builder.js"></script>

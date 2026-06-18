@@ -1,9 +1,14 @@
-const CACHE_NAME = 'customer-app-v7';
+const CACHE_NAME = 'customer-app-v9';
 const ASSETS = [
     './',
     './index.html',
     './styles/main.css',
     './styles/customer.css',
+    './js/locales/bundled.js',
+    './js/i18n.js',
+    './js/form-i18n.js',
+    './locales/zh-TW.json',
+    './locales/en.json',
     './js/db.js',
     './js/customer.js',
     './js/form-config.js',

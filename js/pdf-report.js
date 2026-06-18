@@ -91,12 +91,12 @@ function downloadPdfBytes(bytes, filename) {
 
 async function generatePdfReport() {
     if (typeof html2pdf === 'undefined') {
-        alert('PDF 元件尚未載入，請重新整理頁面');
+        alert(t('pdf.notLoaded'));
         return;
     }
 
     if (typeof PDFLib === 'undefined') {
-        alert('PDF 合併元件尚未載入，請重新整理頁面');
+        alert(t('pdf.mergeNotLoaded'));
         return;
     }
 
@@ -115,7 +115,7 @@ async function generatePdfReport() {
     try {
         if (pdfButton) {
             pdfButton.disabled = true;
-            pdfButton.textContent = '正在產生 PDF…';
+            pdfButton.textContent = t('pdf.generating');
         }
 
         exportRoot = document.createElement('div');
@@ -154,11 +154,13 @@ async function generatePdfReport() {
         closeReportDialog();
     } catch (error) {
         console.error('Error generating PDF:', error);
-        alert(`匯出 PDF 失敗：${error.message || '請稍後再試'}`);
+        alert(t('pdf.exportFailed', {
+            message: error.message || t('pdf.retry')
+        }));
     } finally {
         if (pdfButton) {
             pdfButton.disabled = false;
-            pdfButton.textContent = '匯出 PDF';
+            pdfButton.textContent = t('report.exportPdf');
         }
         if (exportRoot?.parentNode) {
             exportRoot.parentNode.removeChild(exportRoot);

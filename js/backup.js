@@ -19,12 +19,12 @@ function parseBackupJson(parsed) {
     }
 
     if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.customers)) {
-        throw new Error('無效的 JSON 格式');
+        throw new Error('backup.invalidJson');
     }
 
     const formatVersion = Number(parsed.formatVersion);
     if (!Number.isInteger(formatVersion) || formatVersion < 0) {
-        throw new Error('無效的備份版本');
+        throw new Error('backup.invalidVersion');
     }
 
     return { formatVersion, customers: parsed.customers };
@@ -34,7 +34,11 @@ function validateBackupVersion(fileVersion) {
     if (fileVersion > BACKUP_FORMAT_VERSION) {
         return {
             ok: false,
-            message: `此備份檔版本 (${fileVersion}) 較新，目前應用程式僅支援版本 ${BACKUP_FORMAT_VERSION}。\n請先更新應用程式後再匯入，以免資料損壞。`
+            messageKey: 'backup.versionTooNew',
+            params: {
+                version: fileVersion,
+                supported: BACKUP_FORMAT_VERSION
+            }
         };
     }
 
