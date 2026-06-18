@@ -1,4 +1,4 @@
-const CACHE_NAME = 'customer-app-v6';
+const CACHE_NAME = 'customer-app-v7';
 const ASSETS = [
     './',
     './index.html',
@@ -14,6 +14,7 @@ const ASSETS = [
     './js/pdf-report.js',
     './js/vendor/html2pdf.bundle.min.js',
     './js/vendor/pdf-lib.min.js',
+    './js/backup.js',
     './js/ui.js',
     './manifest.json',
     './icons/icon-72x72.png',

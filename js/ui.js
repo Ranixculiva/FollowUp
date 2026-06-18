@@ -1255,7 +1255,7 @@ async function exportToJSON() {
             return;
         }
 
-        const jsonString = JSON.stringify(customers, null, 2);
+        const jsonString = JSON.stringify(createBackupPayload(customers), null, 2);
         const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1292,11 +1292,13 @@ async function handleFileImport(event) {
                 let importedCustomers;
                 
                 if (file.name.endsWith('.json')) {
-                    // Handle JSON import
-                    importedCustomers = JSON.parse(e.target.result);
-                    if (!Array.isArray(importedCustomers)) {
-                        throw new Error('無效的 JSON 格式');
+                    const backup = parseBackupJson(JSON.parse(e.target.result));
+                    const versionCheck = validateBackupVersion(backup.formatVersion);
+                    if (!versionCheck.ok) {
+                        alert(versionCheck.message);
+                        return;
                     }
+                    importedCustomers = backup.customers;
                 } else if (file.name.endsWith('.csv')) {
                     // Handle CSV import
                     importedCustomers = parseCSV(e.target.result);
