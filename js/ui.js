@@ -9,6 +9,9 @@ let countryFilter = '';
 let sortField = 'updated';
 let sortDir = 'desc';
 let listPanelOpen = false;
+let listViewMode = 'customers';
+let followupSortField = 'discussionDate';
+let followupSortDir = 'desc';
 
 const SORT_FIELD_LABELS = {
     updated: 'sort.updated',
@@ -18,8 +21,18 @@ const SORT_FIELD_LABELS = {
     steam: 'sort.steam'
 };
 
+const FOLLOWUP_SORT_FIELD_LABELS = {
+    discussionDate: 'followup.sort.discussionDate',
+    followupDate: 'followup.sort.actionDate'
+};
+
 function getSortFieldLabel(field) {
     const key = SORT_FIELD_LABELS[field];
+    return key ? t(key) : field;
+}
+
+function getFollowupSortFieldLabel(field) {
+    const key = FOLLOWUP_SORT_FIELD_LABELS[field];
     return key ? t(key) : field;
 }
 
@@ -32,6 +45,12 @@ function loadListPrefs() {
         if (typeof prefs.countryFilter === 'string') countryFilter = prefs.countryFilter;
         if (prefs.sortField && SORT_FIELD_LABELS[prefs.sortField]) sortField = prefs.sortField;
         if (prefs.sortDir === 'asc' || prefs.sortDir === 'desc') sortDir = prefs.sortDir;
+        if (prefs.followupSortField && FOLLOWUP_SORT_FIELD_LABELS[prefs.followupSortField]) {
+            followupSortField = prefs.followupSortField;
+        }
+        if (prefs.followupSortDir === 'asc' || prefs.followupSortDir === 'desc') {
+            followupSortDir = prefs.followupSortDir;
+        }
         if (typeof prefs.listPanelOpen === 'boolean') listPanelOpen = prefs.listPanelOpen;
     } catch (error) {
         console.warn('Could not load list preferences', error);
@@ -45,6 +64,8 @@ function saveListPrefs() {
             countryFilter,
             sortField,
             sortDir,
+            followupSortField,
+            followupSortDir,
             listPanelOpen
         }));
     } catch (error) {
@@ -60,7 +81,14 @@ function hasActiveListFilters() {
     return showOnlyStep2 || Boolean(countryFilter);
 }
 
+function hasNonDefaultFollowupSort() {
+    return followupSortField !== 'discussionDate' || followupSortDir !== 'desc';
+}
+
 function hasActiveListControls() {
+    if (listViewMode === 'followups') {
+        return hasNonDefaultFollowupSort();
+    }
     return hasActiveListFilters() || hasNonDefaultSort();
 }
 
@@ -161,6 +189,7 @@ function bindCustomerFormListeners() {
 async function refreshLocalizedUI() {
     rebuildListToolbar();
     I18n.applyDomI18n();
+    Countries.refreshAllSelects();
 
     const formContainer = document.getElementById('customerForm');
     if (!formContainer) {
@@ -204,7 +233,15 @@ function rebuildListToolbar() {
     }
 
     syncListToolbarUI();
-    refreshCustomerList();
+    refreshListView();
+}
+
+async function refreshListView() {
+    if (listViewMode === 'followups') {
+        await renderFollowUpList();
+        return;
+    }
+    await refreshCustomerList();
 }
 
 // Start initialization when DOM is ready
@@ -245,7 +282,11 @@ function createListToolbar() {
     toggleIcon.className = 'material-icons toolbar-toggle-icon';
     toggleIcon.textContent = 'expand_more';
     toggleBtn.appendChild(toggleIcon);
-    toggleBtn.appendChild(document.createTextNode(` ${t('toolbar.filterSort')}`));
+    const toggleLabel = document.createElement('span');
+    toggleLabel.id = 'toolbarToggleLabel';
+    toggleLabel.textContent = t('toolbar.filterSort');
+    toggleBtn.appendChild(document.createTextNode(' '));
+    toggleBtn.appendChild(toggleLabel);
     toggleBtn.addEventListener('click', () => {
         listPanelOpen = !listPanelOpen;
         syncListToolbarUI();
@@ -273,7 +314,7 @@ function createListToolbar() {
     panel.id = 'toolbarPanel';
 
     const filterSection = document.createElement('div');
-    filterSection.className = 'toolbar-section';
+    filterSection.className = 'toolbar-section toolbar-section-customers';
     const filterHeading = document.createElement('span');
     filterHeading.className = 'toolbar-heading';
     filterHeading.textContent = t('toolbar.filter');
@@ -291,7 +332,7 @@ function createListToolbar() {
         showOnlyStep2 = step2Input.checked;
         saveListPrefs();
         updateToolbarSummary();
-        refreshCustomerList();
+        refreshListView();
     });
     step2Chip.appendChild(step2Input);
     step2Chip.appendChild(document.createTextNode(` ${t('toolbar.step2Only')}`));
@@ -310,7 +351,7 @@ function createListToolbar() {
         countryFilter = countrySelect.value;
         saveListPrefs();
         updateToolbarSummary();
-        refreshCustomerList();
+        refreshListView();
     });
     countryField.appendChild(countryLabel);
     countryField.appendChild(countrySelect);
@@ -319,7 +360,7 @@ function createListToolbar() {
     panel.appendChild(filterSection);
 
     const sortSection = document.createElement('div');
-    sortSection.className = 'toolbar-section';
+    sortSection.className = 'toolbar-section toolbar-section-customers';
     const sortHeading = document.createElement('span');
     sortHeading.className = 'toolbar-heading';
     sortHeading.textContent = t('toolbar.sort');
@@ -342,7 +383,7 @@ function createListToolbar() {
         sortField = sortSelect.value;
         saveListPrefs();
         syncListToolbarUI();
-        refreshCustomerList();
+        refreshListView();
     });
     sortRow.appendChild(sortSelect);
 
@@ -354,11 +395,55 @@ function createListToolbar() {
         sortDir = sortDir === 'desc' ? 'asc' : 'desc';
         saveListPrefs();
         syncListToolbarUI();
-        refreshCustomerList();
+        refreshListView();
     });
     sortRow.appendChild(sortDirBtn);
     sortSection.appendChild(sortRow);
     panel.appendChild(sortSection);
+
+    const followupSortSection = document.createElement('div');
+    followupSortSection.className = 'toolbar-section toolbar-section-followups';
+    followupSortSection.hidden = true;
+
+    const followupSortHeading = document.createElement('span');
+    followupSortHeading.className = 'toolbar-heading';
+    followupSortHeading.textContent = t('toolbar.sort');
+    followupSortSection.appendChild(followupSortHeading);
+
+    const followupSortRow = document.createElement('div');
+    followupSortRow.className = 'toolbar-row toolbar-sort-row';
+
+    const followupSortSelect = document.createElement('select');
+    followupSortSelect.id = 'followupSortField';
+    followupSortSelect.className = 'toolbar-select toolbar-field-grow';
+    followupSortSelect.setAttribute('aria-label', t('toolbar.sortFieldAria'));
+    Object.keys(FOLLOWUP_SORT_FIELD_LABELS).forEach((value) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = getFollowupSortFieldLabel(value);
+        followupSortSelect.appendChild(option);
+    });
+    followupSortSelect.addEventListener('change', () => {
+        followupSortField = followupSortSelect.value;
+        saveListPrefs();
+        syncListToolbarUI();
+        refreshListView();
+    });
+    followupSortRow.appendChild(followupSortSelect);
+
+    const followupSortDirBtn = document.createElement('button');
+    followupSortDirBtn.type = 'button';
+    followupSortDirBtn.id = 'followupSortDirBtn';
+    followupSortDirBtn.className = 'toolbar-icon-btn';
+    followupSortDirBtn.addEventListener('click', () => {
+        followupSortDir = followupSortDir === 'desc' ? 'asc' : 'desc';
+        saveListPrefs();
+        syncListToolbarUI();
+        refreshListView();
+    });
+    followupSortRow.appendChild(followupSortDirBtn);
+    followupSortSection.appendChild(followupSortRow);
+    panel.appendChild(followupSortSection);
 
     toolbar.appendChild(panel);
     return toolbar;
@@ -368,10 +453,23 @@ function syncListToolbarUI() {
     const panel = document.getElementById('toolbarPanel');
     const toggle = document.getElementById('toolbarToggle');
     const toggleIcon = toggle?.querySelector('.toolbar-toggle-icon');
+    const toggleLabel = document.getElementById('toolbarToggleLabel');
     const step2 = document.getElementById('filterStep2');
     const country = document.getElementById('filterCountry');
     const sortSelect = document.getElementById('sortField');
     const sortDirBtn = document.getElementById('sortDirBtn');
+    const followupSortSelect = document.getElementById('followupSortField');
+    const followupSortDirBtn = document.getElementById('followupSortDirBtn');
+    const isFollowups = listViewMode === 'followups';
+
+    document.querySelectorAll('.toolbar-section-customers').forEach((section) => {
+        section.classList.toggle('is-hidden', isFollowups);
+        section.hidden = isFollowups;
+    });
+    document.querySelectorAll('.toolbar-section-followups').forEach((section) => {
+        section.classList.toggle('is-hidden', !isFollowups);
+        section.hidden = !isFollowups;
+    });
 
     if (panel) {
         panel.classList.toggle('is-open', listPanelOpen);
@@ -381,6 +479,9 @@ function syncListToolbarUI() {
     }
     if (toggleIcon) {
         toggleIcon.textContent = listPanelOpen ? 'expand_less' : 'expand_more';
+    }
+    if (toggleLabel) {
+        toggleLabel.textContent = isFollowups ? t('followup.sort.toolbar') : t('toolbar.filterSort');
     }
     if (step2) step2.checked = showOnlyStep2;
     if (country && country.value !== countryFilter) country.value = countryFilter;
@@ -397,6 +498,19 @@ function syncListToolbarUI() {
             sortDir === 'desc' ? t('sort.desc') : t('sort.asc')
         );
     }
+    if (followupSortSelect) followupSortSelect.value = followupSortField;
+    if (followupSortDirBtn) {
+        const icon = followupSortDirBtn.querySelector('.material-icons') || document.createElement('span');
+        icon.className = 'material-icons';
+        icon.textContent = followupSortDir === 'desc' ? 'arrow_downward' : 'arrow_upward';
+        if (!followupSortDirBtn.querySelector('.material-icons')) {
+            followupSortDirBtn.appendChild(icon);
+        }
+        followupSortDirBtn.setAttribute(
+            'aria-label',
+            followupSortDir === 'desc' ? t('sort.desc') : t('sort.asc')
+        );
+    }
 
     updateToolbarSummary();
 }
@@ -407,15 +521,23 @@ function updateToolbarSummary() {
     if (!summary) return;
 
     const parts = [];
-    if (hasActiveListFilters()) {
-        const filters = [];
-        if (showOnlyStep2) filters.push('Step 2');
-        if (countryFilter) filters.push(countryFilter);
-        parts.push(filters.join(' · '));
-    }
-    if (hasNonDefaultSort()) {
-        const arrow = sortDir === 'desc' ? '↓' : '↑';
-        parts.push(`${SORT_FIELD_LABELS[sortField]} ${arrow}`);
+
+    if (listViewMode === 'followups') {
+        if (hasNonDefaultFollowupSort()) {
+            const arrow = followupSortDir === 'desc' ? '↓' : '↑';
+            parts.push(`${getFollowupSortFieldLabel(followupSortField)} ${arrow}`);
+        }
+    } else {
+        if (hasActiveListFilters()) {
+            const filters = [];
+            if (showOnlyStep2) filters.push('Step 2');
+            if (countryFilter) filters.push(Countries.getDisplayLabelForValue(countryFilter));
+            parts.push(filters.join(' · '));
+        }
+        if (hasNonDefaultSort()) {
+            const arrow = sortDir === 'desc' ? '↓' : '↑';
+            parts.push(`${getSortFieldLabel(sortField)} ${arrow}`);
+        }
     }
 
     summary.textContent = parts.join(' · ');
@@ -425,13 +547,18 @@ function updateToolbarSummary() {
 }
 
 function clearListControls() {
-    showOnlyStep2 = false;
-    countryFilter = '';
-    sortField = 'updated';
-    sortDir = 'desc';
+    if (listViewMode === 'followups') {
+        followupSortField = 'discussionDate';
+        followupSortDir = 'desc';
+    } else {
+        showOnlyStep2 = false;
+        countryFilter = '';
+        sortField = 'updated';
+        sortDir = 'desc';
+    }
     saveListPrefs();
     syncListToolbarUI();
-    refreshCustomerList();
+    refreshListView();
 }
 
 function getCountriesInUse(customers) {
@@ -459,14 +586,14 @@ async function updateCountryFilterOptions(customers) {
     countries.forEach(country => {
         const option = document.createElement('option');
         option.value = country;
-        option.textContent = country;
+        option.textContent = Countries.getDisplayLabelForValue(country);
         select.appendChild(option);
     });
 
     if (previous && !countries.includes(previous)) {
         const legacy = document.createElement('option');
         legacy.value = previous;
-        legacy.textContent = previous;
+        legacy.textContent = Countries.getDisplayLabelForValue(previous);
         select.appendChild(legacy);
     }
 
@@ -558,6 +685,11 @@ function handleReportSelectionError(error) {
 // Search handler
 async function handleSearch(event) {
     const query = event.target.value.trim();
+    if (listViewMode === 'followups') {
+        await renderFollowUpList();
+        return;
+    }
+
     const customers = query ? await searchCustomers(query) : await getAllCustomers();
     displayCustomers(customers);
 }
@@ -821,81 +953,108 @@ function displayFollowups(followups) {
 // Show customers list view
 async function showCustomers() {
     document.getElementById('customerDetail').classList.remove('active');
+    listViewMode = 'customers';
+    syncListToolbarUI();
     await refreshCustomerList();
 }
 
-// Show followups view
-async function showFollowUps() {
+function collectFollowupsFromCustomers(customers) {
+    const allFollowups = [];
+
+    customers.forEach((customer) => {
+        if (customer.followup && Array.isArray(customer.followup)) {
+            customer.followup.forEach((followup) => {
+                allFollowups.push({
+                    customerId: customer.id,
+                    customerName: customer.name || t('customer.unnamedShort'),
+                    ...followup
+                });
+            });
+        }
+    });
+
+    return allFollowups;
+}
+
+function matchesFollowupSearch(followup, query) {
+    const normalized = query.toLowerCase();
+    return [followup.customerName, followup.followupPlan, followup.followupFeedback]
+        .some((value) => value && String(value).toLowerCase().includes(normalized));
+}
+
+async function renderFollowUpList() {
     const customerList = document.getElementById('customerList');
     customerList.innerHTML = '';
+    updateToolbarSummary();
 
     try {
         const customers = await getAllCustomers();
-        const followupsByDate = new Map();
+        let allFollowups = collectFollowupsFromCustomers(customers);
 
-        // Group followups by date
-        customers.forEach(customer => {
-            if (customer.followup && Array.isArray(customer.followup)) {
-                customer.followup.forEach(followup => {
-                    const date = new Date(followup.followupDate).toLocaleDateString();
-                    if (!followupsByDate.has(date)) {
-                        followupsByDate.set(date, []);
-                    }
-                    followupsByDate.get(date).push({
-                        customerId: customer.id,
-                        customerName: customer.name || t('customer.unnamedShort'),
-                        ...followup
-                    });
-                });
-            }
+        const searchBar = document.querySelector('.search-bar');
+        const query = searchBar?.value.trim();
+        if (query) {
+            allFollowups = allFollowups.filter((followup) => matchesFollowupSearch(followup, query));
+        }
+
+        if (allFollowups.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'list-empty';
+            empty.textContent = query ? t('list.noResults') : t('followup.sort.empty');
+            customerList.appendChild(empty);
+            return;
+        }
+
+        const groups = FollowupSort.groupFollowupsByDate(allFollowups, {
+            field: followupSortField,
+            ascending: followupSortDir === 'asc'
         });
 
-        // Sort dates in ascending order
-        const sortedDates = Array.from(followupsByDate.keys()).sort((a, b) => 
-            new Date(a) - new Date(b)
-        );
+        groups.forEach(({ dateLabel, items: followups }) => {
+            const card = document.createElement('div');
+            card.className = 'customer-card';
 
-        // Create cards for each date
-        sortedDates.forEach(date => {
-            const followups = followupsByDate.get(date);
-        const card = document.createElement('div');
-        card.className = 'customer-card';
+            const dateHeader = document.createElement('div');
+            dateHeader.className = 'customer-name';
+            dateHeader.textContent = dateLabel || t('followup.noDiscussionDate');
 
-        const dateHeader = document.createElement('div');
-        dateHeader.className = 'customer-name';
-        dateHeader.textContent = date;
+            const followupsList = document.createElement('div');
+            followupsList.className = 'customer-info';
 
-        const followupsList = document.createElement('div');
-        followupsList.className = 'customer-info';
-
-            followups.forEach(followup => {
-            const followupItem = document.createElement('div');
+            followups.forEach((followup) => {
+                const followupItem = document.createElement('div');
                 followupItem.className = 'followup-item';
-            followupItem.style.marginBottom = '8px';
+                followupItem.style.marginBottom = '8px';
                 followupItem.style.cursor = 'pointer';
-            followupItem.innerHTML = `
+                followupItem.innerHTML = `
                     <strong>${followup.customerName}</strong>: ${followup.followupPlan}
                     ${followup.followupFeedback ? `<div class="timeline-feedback">${followup.followupFeedback}</div>` : ''}
                 `;
-                
-                // Add click event to navigate to customer detail
+
                 followupItem.addEventListener('click', () => {
                     showCustomerDetail(followup.customerId);
-                    // Switch to followup tab after a short delay to ensure form is loaded
                     setTimeout(() => showTab('followup'), 100);
                 });
 
-            followupsList.appendChild(followupItem);
-        });
+                followupsList.appendChild(followupItem);
+            });
 
-        card.appendChild(dateHeader);
-        card.appendChild(followupsList);
-        customerList.appendChild(card);
-    });
+            card.appendChild(dateHeader);
+            card.appendChild(followupsList);
+            customerList.appendChild(card);
+        });
     } catch (error) {
         console.error('Error loading followups:', error);
         alert(t('followup.loadFailed'));
     }
+}
+
+// Show followups view
+async function showFollowUps() {
+    document.getElementById('customerDetail').classList.remove('active');
+    listViewMode = 'followups';
+    syncListToolbarUI();
+    await renderFollowUpList();
 }
 
 // Tab switching
@@ -970,7 +1129,7 @@ function createCustomerCard(customer) {
     if (customer.country) {
         const country = document.createElement('p');
         country.className = 'customer-country';
-        country.textContent = customer.country;
+        country.textContent = Countries.getDisplayLabelForValue(customer.country);
         card.appendChild(country);
     }
     

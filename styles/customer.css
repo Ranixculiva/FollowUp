@@ -564,6 +564,11 @@
     gap: 8px;
 }
 
+.toolbar-section.is-hidden,
+.toolbar-section[hidden] {
+    display: none !important;
+}
+
 .toolbar-heading {
     font-size: 12px;
     font-weight: 600;

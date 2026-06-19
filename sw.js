@@ -1,4 +1,4 @@
-const CACHE_NAME = 'customer-app-v9';
+const CACHE_NAME = 'customer-app-v13';
 const ASSETS = [
     './',
     './index.html',
@@ -14,6 +14,8 @@ const ASSETS = [
     './js/form-config.js',
     './js/countries.js',
     './data/countries-fallback.json',
+    './data/countries-en.json',
+    './js/followup-sort.js',
     './js/form-generator.js',
     './js/report-builder.js',
     './js/pdf-report.js',

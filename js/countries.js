@@ -1,13 +1,8 @@
 /**
  * Country list loader (offline-first).
- *
- * Online sources (optional refresh when navigator.onLine):
- * - zh_TW names: https://github.com/umpirsky/country-list (same as bundled fallback)
- * - REST Countries: https://restcountries.com/v3.1/all (English / nativeName.zho; not used for labels)
  */
 const Countries = (() => {
     const STORAGE_KEY = 'followup_countries_v2';
-    /** Default order: TW → ID → HK → MY → SG → AU → GB → US → CN */
     const PRIORITY_COUNTRY_CODES = ['TW', 'ID', 'HK', 'MY', 'SG', 'AU', 'GB', 'US', 'CN'];
     const PRIORITY_LABELS = [
         '台灣',
@@ -34,13 +29,60 @@ const Countries = (() => {
 
     function normalizeOption(entry) {
         if (typeof entry === 'string') {
-            return { value: entry, label: entry };
+            return { value: entry, label: entry, code: '' };
         }
         return {
             value: entry.value || entry.label,
             label: entry.label || entry.value,
             code: entry.code || ''
         };
+    }
+
+    function getLocaleTag() {
+        if (typeof I18n !== 'undefined' && I18n.getLocale) {
+            return I18n.getLocale();
+        }
+        return 'zh-TW';
+    }
+
+    function getDisplayLabel(item) {
+        if (typeof t !== 'function') {
+            return item.label;
+        }
+
+        if (item.code) {
+            const byCode = t(`countries.${item.code}`);
+            if (byCode !== `countries.${item.code}`) {
+                return byCode;
+            }
+        }
+
+        const byValue = t(`countries.${item.value}`);
+        if (byValue !== `countries.${item.value}`) {
+            return byValue;
+        }
+
+        return item.label;
+    }
+
+    function getDisplayLabelForValue(value) {
+        if (!value) {
+            return '';
+        }
+
+        const option = getOptions().find((item) => item.value === value);
+        if (option) {
+            return getDisplayLabel(option);
+        }
+
+        if (typeof t === 'function') {
+            const translated = t(`countries.${value}`);
+            if (translated !== `countries.${value}`) {
+                return translated;
+            }
+        }
+
+        return value;
     }
 
     function getPriorityIndex(item) {
@@ -53,6 +95,7 @@ const Countries = (() => {
     }
 
     function orderCountries(list) {
+        const localeTag = getLocaleTag();
         const seen = new Set();
         const deduped = list
             .map(normalizeOption)
@@ -63,7 +106,7 @@ const Countries = (() => {
             if (priorityDiff !== 0) {
                 return priorityDiff;
             }
-            return a.label.localeCompare(b.label, 'zh-Hant');
+            return getDisplayLabel(a).localeCompare(getDisplayLabel(b), localeTag);
         });
     }
 
@@ -148,20 +191,22 @@ const Countries = (() => {
 
         const placeholder = document.createElement('option');
         placeholder.value = '';
-        placeholder.textContent = '請選擇';
+        placeholder.textContent = typeof t === 'function'
+            ? t('forms.common.pleaseSelect')
+            : '請選擇';
         selectEl.appendChild(placeholder);
 
-        getOptions().forEach(({ value, label }) => {
+        getOptions().forEach((item) => {
             const option = document.createElement('option');
-            option.value = value;
-            option.textContent = label;
+            option.value = item.value;
+            option.textContent = getDisplayLabel(item);
             selectEl.appendChild(option);
         });
 
         if (current && !Array.from(selectEl.options).some(opt => opt.value === current)) {
             const legacy = document.createElement('option');
             legacy.value = current;
-            legacy.textContent = current;
+            legacy.textContent = getDisplayLabelForValue(current);
             selectEl.appendChild(legacy);
         }
 
@@ -169,10 +214,52 @@ const Countries = (() => {
     }
 
     function orderLabels(labels) {
-        return orderCountries(labels.map(label => ({ value: label, label }))).map(item => item.value);
+        return orderCountries(labels.map(label => ({ value: label, label })))
+            .map(item => item.value);
     }
 
-    return { init, getOptions, fillSelect, orderLabels };
-})();
+    function refreshAllSelects() {
+        if (typeof document === 'undefined') {
+            return;
+        }
 
-window.Countries = Countries;
+        document.querySelectorAll('#country, #filterCountry').forEach((selectEl) => {
+            fillSelect(selectEl);
+        });
+    }
+
+    if (typeof I18n !== 'undefined' && I18n.onLocaleChange) {
+        I18n.onLocaleChange(() => {
+            options = options ? orderCountries(options) : options;
+            refreshAllSelects();
+        });
+    }
+
+    const api = {
+        init,
+        getOptions,
+        fillSelect,
+        orderLabels,
+        getDisplayLabel,
+        getDisplayLabelForValue,
+        refreshAllSelects
+    };
+
+    if (typeof window !== 'undefined') {
+        window.Countries = api;
+    }
+
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = {
+            ...api,
+            setOptionsForTesting(list) {
+                options = orderCountries(list);
+            },
+            resetOptionsForTesting() {
+                options = null;
+            }
+        };
+    }
+
+    return api;
+})();

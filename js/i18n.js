@@ -104,7 +104,11 @@ async function setLocale(locale, options = {}) {
 
     messages = data;
     currentLocale = normalized;
-    document.documentElement.lang = normalized;
+
+    if (typeof document !== 'undefined') {
+        document.documentElement.lang = normalized;
+        applyDomI18n();
+    }
 
     if (persist) {
         try {
@@ -114,7 +118,6 @@ async function setLocale(locale, options = {}) {
         }
     }
 
-    applyDomI18n();
     localeListeners.forEach((listener) => listener(currentLocale));
 }
 

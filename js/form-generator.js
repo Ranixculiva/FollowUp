@@ -203,7 +203,10 @@ class FormGenerator {
                 if (listContainer) {
                     listContainer.innerHTML = ''; // Clear existing items
                     if (Array.isArray(data[sectionId])) {
-                        data[sectionId].forEach(itemData => {
+                        const items = sectionId === 'followup'
+                            ? FollowupSort.sortFollowupsByDiscussionDate(data[sectionId], { ascending: false })
+                            : data[sectionId];
+                        items.forEach(itemData => {
                             const itemId = Date.now() + Math.random(); // Generate unique ID
                             const item = document.createElement('div');
                             item.className = 'form-list-item';
